@@ -1,0 +1,108 @@
+{{- $storageSpec := .Values.storageSpec | required ".storageSpec is missing.  This should declare the configuration of the underlying storage." -}}
+{{- $rootPath := .Values.rootPath | required ".rootPath is missing.  This value indicates the parent folder of the /home and /projects folder.  This is also called the TLD in Skaha." -}}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: {{ .Release.Name }}-process
+  name: {{ .Release.Name }}-process
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ default 1 .Values.replicaCount }}
+  selector:
+    matchLabels:
+      run: {{ .Release.Name }}-process
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        run: {{ .Release.Name }}-process
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: nvidia.com/gpu.count
+                operator: DoesNotExist
+    {{- range $extraHost := .Values.extraHosts }}
+      hostAliases:
+        - ip: {{ $extraHost.ip }}
+          hostnames:
+            - {{ $extraHost.hostname }}
+    {{- end }}
+      containers:
+      - image: {{ include "common.image" ( dict "imageObject" .Values.image ) }}
+        imagePullPolicy: Always
+        name: {{ .Release.Name }}-process
+        env:
+        {{- with .Values.extraEnv }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.resources }}
+        resources:
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+        ports:
+        - containerPort: 2222
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /etc/ssh/ssh_host_ecdsa_key.pub
+          name: ssh-host-ecdsa-key-pub
+        - mountPath: /etc/ssh/ssh_host_ed25519_key.pub
+          name: ssh-host-ed25519-key-pub
+        - mountPath: /etc/ssh/ssh_host_rsa_key.pub
+          name: ssh-host-rsa-key-pub
+        - mountPath: /etc/ssh/ssh_host_ecdsa_key
+          name: {{ .Release.Name }}-config
+          subPath: ssh_host_ecdsa_key
+        - mountPath: /etc/ssh/ssh_host_ed25519_key
+          name: {{ .Release.Name }}-config
+          subPath: ssh_host_ed25519_key
+        - mountPath: /etc/ssh/ssh_host_rsa_key
+          name: {{ .Release.Name }}-config
+          subPath: ssh_host_rsa_key
+        - mountPath: /etc/ssh/sshd_config
+          name: {{ .Release.Name }}-config
+          subPath: sshd_config
+        - mountPath: /etc/sssd/sssd.conf
+          subPath: sssd.conf
+          name: sssd-config
+        - mountPath: "{{ .Values.rootPath }}"
+          name: cavern-volume
+          subPath: {{ $rootPath | regexFind "[^/].*$" }}
+        {{- with .Values.extraVolumeMounts }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    {{- range $extraHost := .Values.extraHosts }}
+      hostAliases:
+        - ip: {{ $extraHost.ip }}
+          hostnames:
+            - {{ $extraHost.hostname }}
+    {{- end }}
+      priorityClassName: uber-user-preempt-high
+      serviceAccountName: skaha
+      volumes:
+      - name: sssd-config
+        secret:
+          # Decimal equivalent to 0600 octal
+          defaultMode: 384
+          secretName: sssd-config
+      - name: {{ .Release.Name }}-config
+        secret:
+          # Decimal equivalent to 0600 octal
+          defaultMode: 384
+          secretName: {{ .Release.Name }}-config
+      - name: ssh-host-rsa-key-pub
+        emptyDir: {}
+      - name: ssh-host-ecdsa-key-pub
+        emptyDir: {}
+      - name: ssh-host-ed25519-key-pub
+        emptyDir: {}        
+      - name: cavern-volume
+        {{- toYaml $storageSpec | nindent 8 }}
+      {{- with .Values.extraVolumes }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
