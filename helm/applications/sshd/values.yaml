@@ -26,9 +26,6 @@ image:
   ##   - myRegistryKeySecretName
   ##
   pullSecrets: []
-  ## Enable debug mode
-  ##
-  debug: false
 
 ## @param ldap.url  The URL to contact the LDAP server.
 ## @param ldap.searchBase  The base DN to search for users and groups.
