@@ -1,0 +1,128 @@
+## @param replicaCount Number of SSHD instances to run.
+replicaCount: 1
+
+## @param image.registry [default: images.opencadc.org] SSHD image registry
+## @param image.repository [default: platform/sshd] SSHD image repository
+## @skip image.tag SSHD image tag (immutable tags are recommended)
+## @param image.digest SSHD image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
+## @param image.pullPolicy SSHD image pull policy
+## @param image.pullSecrets SSHD image pull secrets
+## @param image.debug Enable image debug mode
+##
+image:
+  registry: images.opencadc.org
+  repository: platform/sshd
+  tag: 1.0.0
+  digest: ""
+  ## Specify a imagePullPolicy
+  ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
+  ## 
+  pullPolicy: IfNotPresent
+  ## Optionally specify an array of imagePullSecrets.
+  ## Secrets must be manually created in the namespace.
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  ## e.g:
+  ## pullSecrets:
+  ##   - myRegistryKeySecretName
+  ##
+  pullSecrets: []
+
+## @param ldap.url  The URL to contact the LDAP server.
+## @param ldap.searchBase  The base DN to search for users and groups.
+## @param ldap.userSearchBase  The base DN to search for users.
+## @param ldap.groupSearchBase  The base DN to search for groups.
+## @param ldap.bindDN  The DN to bind to the LDAP server.
+## Password for the ldap.bindDN user is stored in a secret.  See [README.md](README) for details.
+## Example:
+## ldap:
+##   url: "ldap://example.org:389"
+##   searchBase: "dc=example,dc=org"
+##   userSearchBase: "ou=users,ou=ds,dc=example,dc=org"
+##   groupSearchBase: "ou=groups,ou=ds,dc=example,dc=org"
+##   bindDN: "uid=binduser,ou=admin,dc=example,dc=org"
+ldap: {}
+
+## @param entryPoint  Name of the Traefik entrypoint to use.
+## Example:
+## entryPoint: sshd
+entryPoint: ""
+
+## @param rootPath  ABSOLUTE path to the folder containing the /home and /projects directories.  This is also the path that users will mount using sshfs.
+## Example:
+## rootPath: "/cavern"
+rootPath: ""
+
+## @param storageSpec Set this to the YAML spec matching your storage.
+## Example (with existing PVC):
+## storageSpec:
+##  persistentVolumeClaim:
+##    claimName: skaha-pvc
+##
+## Example (with dynamic provisioning):
+## storageSpec:
+##   capacity:
+##     storage: 100Gi
+##   volumeMode: Filesystem
+##   accessModes:
+##     - ReadWriteMany
+##   persistentVolumeReclaimPolicy: Delete
+##   storageClassName: ""
+##   cephfs:
+##     monitors:
+##     - 10.30.201.3:6789
+##     - 10.30.202.3:6789
+##     - 10.30.203.3:6789
+##     path: /path/to/cephfs
+##     user: my-user
+##     readOnly: false
+##     secretRef:
+##       name: ceph-key
+##       namespace: skaha-system
+storageSpec: {}
+
+## @param OPTIONAL resources Set container requests and limits for different resources like CPU or memory (essential for production workloads)
+## Example:
+## resources:
+##   requests:
+##     cpu: 1
+##     memory: 512Mi
+##   limits:
+##     cpu: 2
+##     memory: 1024Mi
+##
+resources: {}
+
+## @param extraVolumeMounts OPTIONAL mount a custom CA certificate
+## Example:
+## extraVolumeMounts:
+## - mountPath: "/config/cacerts"
+##   name: cacert-volume
+extraVolumeMounts: []
+
+## @param extraVolumes OPTIONAL Create the volumes to be mounted in extraVolumeMounts
+## Example:
+## extraVolumes:
+## - name: cacert-volume
+##   secret:
+##     defaultMode: 420
+##     secretName: sshd-cacert-secret
+extraVolumes: []
+
+## @param extraHosts OPTIONAL Specify extra hostnames that will be added to the Pod's /etc/hosts file.
+## Example:
+## extraHosts:
+##   - ip: 127.3.34.5
+##     hostname: myhost.example.org
+extraHosts: []
+
+## @param extraEnv OPTIONAL Specify extra environment variables that will be added to the Pod.
+## Example:
+## extraEnv:
+##   - name: MY_ENV_VAR
+extraEnv: []
+
+## @param secrets OPTIONAL Specify extra secrets that will be mounted in the Pod, such as a CA certificate.
+## Example:
+## sshd-cacert-secret:
+##   ca.crt: <base64 encoded CA crt>
+secrets: {}
