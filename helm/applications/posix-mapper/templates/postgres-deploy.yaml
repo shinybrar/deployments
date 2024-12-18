@@ -13,6 +13,9 @@ spec:
       labels:
         app: posix-mapper-postgres
     spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: postgres
           image: postgres:13
@@ -27,6 +30,8 @@ spec:
               name: postgresinit
             - mountPath: /var/lib/postgresql/data
               name: postgresdb
+          securityContext:
+            allowPrivilegeEscalation: false
       volumes:
         - name: postgresdb
           {{- toYaml .Values.postgresql.storage.spec | nindent 10 }}
