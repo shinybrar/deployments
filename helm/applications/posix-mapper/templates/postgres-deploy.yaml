@@ -1,8 +1,10 @@
+{{- with required "PostgreSQL Database configuration is required." .Values.postgresql }}
+{{- if .install }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: posix-mapper-postgres
-  namespace: {{ .Values.skaha.namespace }}
+  namespace: {{ $.Values.skaha.namespace }}
 spec:
   replicas: 1
   selector:
@@ -34,7 +36,8 @@ spec:
             allowPrivilegeEscalation: false
       volumes:
         - name: postgresdb
-          {{- toYaml .Values.postgresql.storage.spec | nindent 10 }}
+          {{- toYaml .storage.spec | nindent 10 }}
         - name: postgresinit
           configMap:
             name: posix-mapper-postgres-init
+{{- end }}
