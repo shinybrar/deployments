@@ -41,3 +41,4 @@ spec:
           configMap:
             name: posix-mapper-postgres-init
 {{- end }}
+{{- end }}
