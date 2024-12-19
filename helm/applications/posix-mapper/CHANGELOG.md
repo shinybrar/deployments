@@ -1,4 +1,7 @@
-# CHANGELOG for POSIX Mapper (Chart 0.2.0)
+# CHANGELOG for POSIX Mapper (Chart 0.2.1)
+
+## 2024.12.19 (0.2.1)
+- Make postgresql configurable for external databases
 
 ## 2024.12.11 (0.2.0)
 - Added support for `securityContext`
