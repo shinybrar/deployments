@@ -1,4 +1,8 @@
-# Storage User Interface Helm Chart (0.4.0)
+# Storage User Interface Helm Chart (0.5.0)
+
+## January 13, 2025 (0.5.0)
+- Fixed issue with duplicate entries in paginated enabled backends
+- Linter fixes
 
 ## December 11, 2024 (0.4.0)
 - Added support for `securityContext`
