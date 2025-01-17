@@ -1,4 +1,7 @@
-# CHANGELOG for Skaha User Session API (Chart 0.9.0)
+# CHANGELOG for Skaha User Session API (Chart 0.9.4)
+
+## 2025.01.17 (0.9.5)
+- Use new Traefik API Group (traefik.io) (https://doc.traefik.io/traefik/v2.10/migration/v2/#kubernetes-crds)
 
 ## 2024.10.23 (0.9.0)
 - Add `x-skaha-registry-auth` request header support to set Harbor CLI secret (or other Image Registry secret)
