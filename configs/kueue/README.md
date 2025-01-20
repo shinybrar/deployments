@@ -24,7 +24,7 @@ The kueue deployment configuration is the cluster environment in which the kueue
   ```yaml
   enablePrometheus: true
   ```
-- Teams can individually enable or disable any kueue `controllerManager.featureGates` as needed. For example, even though enabled by default, 
+- Teams can individually enable or disable any kueue `controllerManager.featureGates` as needed. For example, even though enabled by default,
 
 ### Controller Configuration
 
@@ -35,7 +35,7 @@ The kueue controller configuration is defined under the `managerConfig.controlle
   manageJobsWithoutQueueName: false
   ```
 
-- It is highly recommend enabling metrics for cluster queues, as this provides a lot of insight into the state of the cluster and the queues. 
+- It is highly recommend enabling metrics for cluster queues, as this provides a lot of insight into the state of the cluster and the queues.
   ```yaml
   metrics.enableClusterQueueResources: true
   ```
@@ -136,7 +136,7 @@ spec:
     - name: "default"
       # Can use upto 10 CPUs.
       resources:
-      - name: "cpu"    
+      - name: "cpu"
         nominalQuota: 10
         borowingLimit: 2
         lendingLimit: 2
@@ -228,7 +228,7 @@ Where `KUEUE_ENABLED` is a boolean value that blanket enables or disables kueue 
 ```yaml
 KUEUE_CONFIG: {}
 ```
-`KUEUE_CONFIG` is a dictionary where the key values are name of the possible kinds of workloads that can be submitted to the science platform, i.e.  `notebook`, `carta`, `desktop`, `contributed`, `headless`, and `default`. The `default` key is a special case, which overrides the kueue config, when a specific workload type is not defined in the `KUEUE_CONFIG` object. Each of these keys need an object defining the `localQueue` and `priorityClass` for the workload type. 
+`KUEUE_CONFIG` is a dictionary where the key values are name of the possible kinds of workloads that can be submitted to the science platform, i.e.  `notebook`, `carta`, `desktop`, `contributed`, `headless`, and `default`. The `default` key is a special case, which overrides the kueue config, when a specific workload type is not defined in the `KUEUE_CONFIG` object. Each of these keys need an object defining the `localQueue` and `priorityClass` for the workload type.
 
 For example, shown below is a `KUEUE_CONFIG` object that defines the `queueName` and `priorityClass` for the `notebook` and `default` workload types. Since the `carta`, `desktop`, `contributed`, and `headless` workload types are not defined in the `KUEUE_CONFIG` object, the `default` key is used to define the `queueName` and `priorityClass` for these workload types.
 

@@ -53,7 +53,7 @@ controllerManager:
   manager:
     image:
       repository: us-central1-docker.pkg.dev/k8s-staging-images/kueue/kueue
-      # This should be set to 'IfNotPresent' for released version      
+      # This should be set to 'IfNotPresent' for released version
       pullPolicy: Always
     podAnnotations: {}
     resources:
@@ -139,7 +139,7 @@ managerConfig:
 
     # Wait for admitted workload to reach PodsReady=true. When enabled,
     # if  pods exceeds the timeout, it will be evicted and requeued in the same
-    # cluster queue for backoffLimitCount times with 
+    # cluster queue for backoffLimitCount times with
     waitForPodsReady:
       enable: false
       timeout: 5m
