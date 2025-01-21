@@ -4,7 +4,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 # Enable Prometheus Metrics Endpoint
-# Recommended
+# Recommended but you need the Prometheus Operator for this to work
 enablePrometheus: true
 
 # Enable x509 automated certificate management using cert-manager (cert-manager.io)

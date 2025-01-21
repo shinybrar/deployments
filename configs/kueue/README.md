@@ -62,6 +62,16 @@ The kueue controller configuration is defined under the `managerConfig.controlle
             values: [ skaha-workload ]
   ```
 
+  ### Installation Steps
+
+  After reading through the configuration guide, follow the steps below to install kueue in your cluster:
+
+  ```bash
+  git clone https://github.com/kubernetes-sigs/kueue.git
+  cd kueue/charts/kueue
+  helm install kueue . -f configs/kueue/dev/values.yaml -n kueue-system
+  ```
+
 ## Configuration Guide
 
 There are four main components to configure in kueue before it can be used for the Science Platform:
