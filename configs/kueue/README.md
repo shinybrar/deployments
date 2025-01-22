@@ -254,3 +254,5 @@ KUEUE_CONFIG:
     queueName: "skaha--queue"
     priorityClass: "high"
 ```
+
+**Note:** The science platform, currently does not support the edge-case where kueue is enabled, but for only a subset of the workload types. In such cases, the `default` key in the `KUEUE_CONFIG` object is always used to define the `queueName` and `priorityClass` for the workload types that are not explicitely defined in the `KUEUE_CONFIG` object.
