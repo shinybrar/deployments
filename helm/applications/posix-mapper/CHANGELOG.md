@@ -1,4 +1,7 @@
-# CHANGELOG for POSIX Mapper (Chart 0.2.1)
+# CHANGELOG for POSIX Mapper (0.3.0)
+
+## 2025.01.24 (0.3.0)
+- Fix memory leak in POSIX Mapper application
 
 ## 2024.12.19 (0.2.1)
 - Make postgresql configurable for external databases
