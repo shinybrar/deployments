@@ -1,4 +1,4 @@
-# CHANGELOG for POSIX Mapper (Chart 0.2.1)
+# CHANGELOG for POSIX Mapper
 
 ## 2024.12.19 (0.2.1)
 - Make postgresql configurable for external databases
