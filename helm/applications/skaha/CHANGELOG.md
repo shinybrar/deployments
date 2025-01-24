@@ -1,4 +1,8 @@
-# CHANGELOG for Skaha User Session API (Chart 0.9.4)
+# CHANGELOG for Skaha User Session API (Chart 0.10.0)
+
+## 2025.01.22 (0.10.0)
+- Allow specific hostname for user sessions
+- Code cleanup
 
 ## 2025.01.17 (0.9.5)
 - Use new Traefik API Group (traefik.io) (https://doc.traefik.io/traefik/v2.10/migration/v2/#kubernetes-crds)

@@ -40,8 +40,8 @@ spec:
           allowPrivilegeEscalation: false
       containers:
       - env: 
-        - name: skaha.hostname
-          value: "{{ .Values.deployment.hostname }}"
+        - name: SKAHA_SESSIONS_HOSTNAME
+          value: "{{ .Values.deployment.skaha.sessions.hostname | default .Values.deployment.hostname }}"
         - name: SKAHA_TLD
           value: "{{ .Values.deployment.skaha.skahaTld }}"
         - name: GPU_ENABLED
