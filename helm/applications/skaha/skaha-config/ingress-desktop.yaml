@@ -21,7 +21,7 @@ spec:
     - websecure
   routes:
   - kind: Rule
-    match: Host(`${skaha.hostname}`) && PathPrefix(`/session/desktop/${skaha.sessionid}/`)
+    match: Host(`${skaha.sessions.hostname}`) && PathPrefix(`/session/desktop/${skaha.sessionid}/`)
     services:
     - kind: Service
       name: skaha-desktop-svc-${skaha.sessionid}
