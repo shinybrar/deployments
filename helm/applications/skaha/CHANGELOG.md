@@ -1,4 +1,8 @@
-# CHANGELOG for Skaha User Session API (Chart 0.10.0)
+# CHANGELOG for Skaha User Session API (Chart 0.10.2)
+
+## 2025.02.03 (0.10.2)
+- Fix missing swagger documentation
+- Fix Desktop menu building
 
 ## 2025.01.22 (0.10.0)
 - Allow specific hostname for user sessions
