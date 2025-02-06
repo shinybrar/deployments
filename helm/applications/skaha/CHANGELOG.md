@@ -1,4 +1,7 @@
-# CHANGELOG for Skaha User Session API (Chart 0.10.2)
+# CHANGELOG for Skaha User Session API (Chart 0.10.3)
+
+## 2025.02.06 (0.10.3)
+- Omit image pull secrets (`imagePullSecrets`) from `Job` launch when not used.
 
 ## 2025.02.03 (0.10.2)
 - Fix missing swagger documentation
