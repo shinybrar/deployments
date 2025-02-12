@@ -1,4 +1,8 @@
-# CHANGELOG for POSIX Mapper (0.3.0)
+# CHANGELOG for POSIX Mapper (0.4.0)
+
+## 2025.02.11 (0.4.0)
+- Rework fix of memory leak by properly closing the Hibernate SessionFactory
+- Removed default `hostPath` in storage spec of postgresql database
 
 ## 2025.01.24 (0.3.0)
 - Fix memory leak in POSIX Mapper application
