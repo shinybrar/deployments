@@ -9,18 +9,15 @@ metadata:
 apiVersion: kueue.x-k8s.io/v1beta1
 kind: ClusterQueue
 metadata:
-  name: default-cluster-queue
+  name: skaha-cluster-queue
 spec:
   namespaceSelector:
     matchExpressions:
       - key: kubernetes.io/metadata.name
-        operator: NotIn
-        values: [ kube-system, kueue-system ]
-      - key: kubernetes.io/metadata.name
         operator: In
-        values: [ skaha-workload ]
+        values: [ skaha-workload, canfar-b-workload ]
   queuingStrategy: BestEffortFifo
-  cohort: skaha-workload
+  cohort: skaha-cohort
   resourceGroups:
     - coveredResources: ["cpu", "memory"]
       flavors:
@@ -40,14 +37,23 @@ spec:
     withClusterQueue: LowerPriority
   stopPolicy: None
 ---
-# LocalQueue
+# LocalQueues
 apiVersion: kueue.x-k8s.io/v1beta1
 kind: LocalQueue
 metadata:
   namespace: skaha-workload
-  name: default-skaha-queue
+  name: skaha-local-queue
 spec:
-  clusterQueue: default-cluster-queue
+  clusterQueue: skaha-cluster-queue
+---
+# LocalQueues
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: LocalQueue
+metadata:
+  namespace: canfar-b-workload
+  name: canfar-b-local-queue
+spec:
+  clusterQueue: skaha-cluster-queue
 ---
 # WorkloadPriorityClass
 apiVersion: kueue.x-k8s.io/v1beta1

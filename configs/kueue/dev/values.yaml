@@ -5,7 +5,7 @@ fullnameOverride: ""
 
 # Enable Prometheus Metrics Endpoint
 # Recommended but you need the Prometheus Operator for this to work
-enablePrometheus: true
+enablePrometheus: False
 
 # Enable x509 automated certificate management using cert-manager (cert-manager.io)
 enableCertManager: false
@@ -105,7 +105,7 @@ managerConfig:
     metrics:
       # Bind to for serving prometheus metrics, set to 0 to disable
       # Maps to metricsService.ClusterIP
-      bindAddress: :8443
+      bindAddress: :8080
       # Report the cluster queue resource usage and quotas metrics
       enableClusterQueueResources: true
 
@@ -188,11 +188,8 @@ managerConfig:
         namespaceSelector:
           matchExpressions:
             - key: kubernetes.io/metadata.name
-              operator: NotIn
-              values: [ kube-system, kueue-system ]
-            - key: kubernetes.io/metadata.name
               operator: In
-              values: [ skaha-workload ]
+              values: [ skaha-workload, canfar-b-workload ]
 
     # FairSharing enables fair sharing for all cohorts.
     # See https://kueue.sigs.k8s.io/docs/reference/kueue-config.v1beta1/#FairSharing
