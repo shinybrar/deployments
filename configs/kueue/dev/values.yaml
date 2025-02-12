@@ -5,7 +5,7 @@ fullnameOverride: ""
 
 # Enable Prometheus Metrics Endpoint
 # Recommended but you need the Prometheus Operator for this to work
-enablePrometheus: False
+enablePrometheus: false
 
 # Enable x509 automated certificate management using cert-manager (cert-manager.io)
 enableCertManager: false
@@ -69,9 +69,9 @@ controllerManager:
         type: RuntimeDefault
     containerSecurityContext:
       allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-        - ALL
+      capabilities:
+        drop:
+          - ALL
   replicas: 1
   imagePullSecrets: []
   readinessProbe:
