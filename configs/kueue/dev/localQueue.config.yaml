@@ -1,0 +1,42 @@
+---
+# LocalQueues
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: LocalQueue
+metadata:
+  namespace: skaha-workload
+  name: skaha-local-queue
+spec:
+  clusterQueue: skaha-cluster-queue
+---
+# LocalQueues
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: LocalQueue
+metadata:
+  namespace: canfar-b-workload
+  name: canfar-b-local-queue
+spec:
+  clusterQueue: skaha-cluster-queue
+---
+# WorkloadPriorityClass
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: WorkloadPriorityClass
+metadata:
+  name: low
+value: 10000
+description: "Low Priority"
+---
+# WorkloadPriorityClass
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: WorkloadPriorityClass
+metadata:
+  name: medium
+value: 100000
+description: "Medium Priority"
+---
+# WorkloadPriorityClass
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: WorkloadPriorityClass
+metadata:
+  name: high
+value: 1000000
+description: "High Priority"
