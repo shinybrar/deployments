@@ -16,13 +16,13 @@ spec:
       - key: kubernetes.io/metadata.name
         operator: In
         values: [ skaha-workload, canfar-b-workload ]
-  queuingStrategy: BestEffortFifo
+  queueingStrategy: BestEffortFIFO
   cohort: skaha-cohort
   resourceGroups:
     - coveredResources: ["cpu", "memory"]
       flavors:
-        - name: standard
-          resource:
+        - name: "standard"
+          resources:
             - name: "cpu"
               nominalQuota:   4 #TODO: 100% of the total cluster CPU
               borrowingLimit: 1 #TODO: 50% of the total cluster CPU
@@ -33,8 +33,10 @@ spec:
               lendingLimit:   1Gi #TODO: 50% of the total cluster memory
   preemption:
     reclaimWithinCohort: LowerPriority
-    borrowWithinCohort: LowerPriority
-    withClusterQueue: LowerPriority
+    borrowWithinCohort:
+      policy: LowerPriority
+      maxPriorityThreshold: 10000
+    withinClusterQueue: LowerPriority
   stopPolicy: None
 ---
 # LocalQueues
