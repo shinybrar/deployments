@@ -233,14 +233,16 @@ In order to integrate kueue with the Science Platform's `Skaha` service, the fol
 ```yaml
 KUEUE_ENABLED: bool
 ```
-Where `KUEUE_ENABLED` is a boolean value that blanket enables or disables kueue for the `skaha-workload` namespace.
+Where `KUEUE_ENABLED` is a boolean value that blanket enables or disables kueue for the entirety of the `skaha-workload` namespace.
 
 ```yaml
 KUEUE_CONFIG: {}
 ```
-`KUEUE_CONFIG` is a dictionary where the key values are name of the possible kinds of workloads that can be submitted to the science platform, i.e.  `notebook`, `carta`, `desktop`, `contributed`, `headless`, and `default`. The `default` key is a special case, which overrides the kueue config, when a specific workload type is not defined in the `KUEUE_CONFIG` object. Each of these keys need an object defining the `localQueue` and `priorityClass` for the workload type.
+`KUEUE_CONFIG` is a dictionary where the key values are name of the possible kinds of workloads that can be submitted to the science platform, i.e.  `notebook`, `carta`, `desktop`, `contributed`, `headless`, and `default`. Each of these keys need an object defining the `localQueue` and `priorityClass` for the workload type.
 
-For example, shown below is a `KUEUE_CONFIG` object that defines the `queueName` and `priorityClass` for the `notebook` and `default` workload types. Since the `carta`, `desktop`, `contributed`, and `headless` workload types are not defined in the `KUEUE_CONFIG` object, the `default` key is used to define the `queueName` and `priorityClass` for these workload types.
+The `default` key is a special case, which is attributed to all workload types, if they are not uniquely defined in the `KUEUE_CONFIG` object.
+
+For example, shown below is a `KUEUE_CONFIG` object that defines the `queueName` and `priorityClass` for the `notebook` and `default` workload types. Since the `carta`, `desktop`, `contributed`, and `headless` workload types are not defined in the `KUEUE_CONFIG` object, the `default` key is used for them.
 
 ```yaml
 KUEUE_CONFIG:
@@ -255,4 +257,11 @@ KUEUE_CONFIG:
     priorityClass: "high"
 ```
 
-**Note:** The science platform, currently does not support the edge-case where kueue is enabled, but for only a subset of the workload types. In such cases, the `default` key in the `KUEUE_CONFIG` object is always used to define the `queueName` and `priorityClass` for the workload types that are not explicitely defined in the `KUEUE_CONFIG` object.
+Alternatively, if you wish to enable kueue for only specific workload types only, you can omit the `default` key from the `KUEUE_CONFIG` object. For example, shown below is a `KUEUE_CONFIG` object that defines the `queueName` and `priorityClass` for the `notebook` workload type only.
+
+```yaml
+KUEUE_CONFIG:
+  notebook:
+    queueName: "skaha-queue"
+    priorityClass: "high"
+```

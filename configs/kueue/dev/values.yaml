@@ -5,7 +5,7 @@ fullnameOverride: ""
 
 # Enable Prometheus Metrics Endpoint
 # Recommended but you need the Prometheus Operator for this to work
-enablePrometheus: true
+enablePrometheus: false
 
 # Enable x509 automated certificate management using cert-manager (cert-manager.io)
 enableCertManager: false
@@ -21,33 +21,7 @@ controllerManager:
   # Based on v0.10.0 retrieved on 2025-01-01
   # Source: https://kueue.sigs.k8s.io/docs/installation/
   featureGates:
-    - name: TopologyAwareScheduling
-      enabled: false
-    - name: LocalQueueDefaulting
-      enabled: false
-    - name: FlavorFungibility
-      enabled: true
-    - name: MultiKueue
-      enabled: true
-    - name: MultiKueueBatchJobWithManagedBy
-      enabled: false
-    - name: PartialAdmission
-      enabled: true
-    - name: ProvisioningACC
-      enabled: true
-    - name: VisibilityOnDemand
-      enabled: true
-    - name: PrioritySortingWithinCohort
-      enabled: true
-    - name: LendingLimit
-      enabled: true
-    - name: MultiplePreemptions
-      enabled: true
-    - name: ConfigurableResourceTransformations
-      enabled: true
-    - name: WorkloadResourceRequestsSummary
-      enabled: true
-    - name: ManagedJobsNamespaceSelector
+    - name: LocalQueueMetrics
       enabled: true
   # Kueue Deployment Configuration
   manager:
@@ -69,9 +43,9 @@ controllerManager:
         type: RuntimeDefault
     containerSecurityContext:
       allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-        - ALL
+      capabilities:
+        drop:
+          - ALL
   replicas: 1
   imagePullSecrets: []
   readinessProbe:
@@ -105,7 +79,7 @@ managerConfig:
     metrics:
       # Bind to for serving prometheus metrics, set to 0 to disable
       # Maps to metricsService.ClusterIP
-      bindAddress: :8443
+      bindAddress: :8080
       # Report the cluster queue resource usage and quotas metrics
       enableClusterQueueResources: true
 
@@ -188,11 +162,8 @@ managerConfig:
         namespaceSelector:
           matchExpressions:
             - key: kubernetes.io/metadata.name
-              operator: NotIn
-              values: [ kube-system, kueue-system ]
-            - key: kubernetes.io/metadata.name
               operator: In
-              values: [ skaha-workload ]
+              values: [ skaha-workload, canfar-b-workload ]
 
     # FairSharing enables fair sharing for all cohorts.
     # See https://kueue.sigs.k8s.io/docs/reference/kueue-config.v1beta1/#FairSharing

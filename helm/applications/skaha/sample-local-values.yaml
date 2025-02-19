@@ -43,6 +43,9 @@ deployment:
 
     # Session settings.
     sessions:
+      # Optionally setup a separate host for User Sessions for Skaha to redirect to.  The HTTPS scheme is assumed.  Defaults to the Skaha hostname.
+      hostname: "workload.example.org"
+      
       expirySeconds: "345600" # Four days
       maxCount: "2"  # Users may have 2 interactive sessions at once
       minEphemeralStorage: "10Gi" # Initial request for ephemeral storage (scratch disk space)

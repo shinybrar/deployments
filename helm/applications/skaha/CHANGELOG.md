@@ -1,4 +1,15 @@
-# CHANGELOG for Skaha User Session API (Chart 0.9.4)
+# CHANGELOG for Skaha User Session API (Chart 0.10.3)
+
+## 2025.02.06 (0.10.3)
+- Omit image pull secrets (`imagePullSecrets`) from `Job` launch when not used.
+
+## 2025.02.03 (0.10.2)
+- Fix missing swagger documentation
+- Fix Desktop menu building
+
+## 2025.01.22 (0.10.0)
+- Allow specific hostname for user sessions
+- Code cleanup
 
 ## 2025.01.17 (0.9.5)
 - Use new Traefik API Group (traefik.io) (https://doc.traefik.io/traefik/v2.10/migration/v2/#kubernetes-crds)

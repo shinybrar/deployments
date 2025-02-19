@@ -22,7 +22,7 @@ skaha:
 deployment:
   hostname: example.org    # Change this!
   posixMapper:
-    image: images.opencadc.org/platform/posix-mapper:0.2.1
+    image: images.opencadc.org/platform/posix-mapper:0.3.1
     imagePullPolicy: Always
     resourceID: ivo://opencadc.org/posix-mapper
 
@@ -107,5 +107,3 @@ postgresql:
     schema: mapping
   storage:
     spec:
-      hostPath:
-        path: "/posix-mapper/data"

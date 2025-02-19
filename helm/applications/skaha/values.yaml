@@ -17,7 +17,7 @@ skahaWorkload:
 deployment:
   hostname: myhost.example.com  # Change this!
   skaha:
-    image: images.opencadc.org/platform/skaha:0.23.1
+    image: images.opencadc.org/platform/skaha:0.27.5
     imagePullPolicy: Always
 
     # Cron string for the image caching cron job schedule. Defaults to every minute.
@@ -115,7 +115,12 @@ deployment:
       #      default:
       #        queueName: "all-user-sessions-local-queue"
       #        priorityClass: "user-sessions-med"
-      queue:
+      queue: {}
+
+      # Optionally setup a separate host for User Sessions for Skaha to redirect to.  The HTTPS scheme is assumed.  Defaults to the Skaha hostname.
+      # Example:
+      #   hostname: myhost.example.org
+      # hostname:
 
       # Declare extra volume mounts in User Sessions.  The "type: parameter in volume section is constant.
       # extraVolumes:
