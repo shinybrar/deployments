@@ -1,6 +1,6 @@
 # Helm Chart for the Skaha web service CANFAR Science Platform
 
-See the [Deployment Guide](../README.md) for a better idea of a full system.
+See the [Deployment Guide](../science-platform/README.md) for a better idea of a full system.
 
 ## Install
 
@@ -27,6 +27,27 @@ $ helm install -n skaha-system --dependency-update --values my-values-local.yaml
 Where `<name>` is the name of this installation.  Example:
 ```sh
 $ helm install -n skaha-system --dependency-update --values my-values-local.yaml skaha ./skaha
+```
+This will install Skaha service dependency, as well as the Skaha webservice and any necessary Ingress.
+```
+NAME: skaha
+LAST DEPLOYED: <Timestamp e.g. Fri Jun 30 10:39:04 2023>
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+```
+
+### From the CANFAR Harbor repository
+
+```sh
+$ helm repo add science-platform https://images.opencadc.org/chartrepo/platform
+$ helm repo update
+$ helm install -n skaha-system --dependency-update --values my-values-local.yaml <name> science-platform/skaha
+```
+
+Where `<name>` is the name of this installation.  Example:
+```sh
+$ helm install -n skaha-system --dependency-update --values my-values-local.yaml skaha science-platform/skaha
 ```
 This will install Skaha service dependency, as well as the Skaha webservice and any necessary Ingress.
 ```
