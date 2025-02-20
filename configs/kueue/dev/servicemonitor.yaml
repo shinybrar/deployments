@@ -8,7 +8,6 @@ metadata:
     argocd.argoproj.io/instance: kueue
     control-plane: controller-manager
   name: kueue-controller-manager-metrics-service
-  namespace: kueue-system
 spec:
   endpoints:
     - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
