@@ -17,12 +17,12 @@ skahaWorkload:
 deployment:
   hostname: myhost.example.com  # Change this!
   skaha:
-    image: images.opencadc.org/platform/skaha:0.27.5
+    image: images.opencadc.org/platform/skaha:0.28.0
     imagePullPolicy: IfNotPresent
 
-    # Cron string for the image caching cron job schedule. Defaults to every minute.
+    # Cron string for the image caching cron job schedule. Defaults to every half hour.
     imageCache:
-      refreshSchedule: "@daily"
+      refreshSchedule: "*/30 * * * *"
   
     # Set the top-level-directory name that gets mounted at the root.
     # skahaTld: "/cavern"
