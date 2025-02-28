@@ -38,3 +38,27 @@ spec:
       maxPriorityThreshold: 10000
     withinClusterQueue: LowerPriority
   stopPolicy: None
+---
+# WorkloadPriorityClass
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: WorkloadPriorityClass
+metadata:
+  name: low
+value: 10000
+description: "Low Priority"
+---
+# WorkloadPriorityClass
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: WorkloadPriorityClass
+metadata:
+  name: medium
+value: 100000
+description: "Medium Priority"
+---
+# WorkloadPriorityClass
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: WorkloadPriorityClass
+metadata:
+  name: high
+value: 1000000
+description: "High Priority"
