@@ -1,4 +1,7 @@
-# CHANGELOG for Skaha User Session API (Chart 0.10.3)
+# CHANGELOG for Skaha User Session API (Chart 0.11.0)
+
+## 2025.03.11 (0.11.0)
+- Configure queueing system via Kueue.
 
 ## 2025.02.06 (0.10.3)
 - Omit image pull secrets (`imagePullSecrets`) from `Job` launch when not used.
