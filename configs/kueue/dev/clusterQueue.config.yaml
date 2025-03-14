@@ -19,7 +19,7 @@ spec:
   queueingStrategy: BestEffortFIFO
   cohort: skaha-cohort
   resourceGroups:
-    - coveredResources: ["cpu", "memory"]
+    - coveredResources: ["cpu", "memory", "ephemeral-storage"]
       flavors:
         - name: "default"
           resources:
@@ -31,6 +31,10 @@ spec:
               nominalQuota:   174Gi #100% of keel-dev
               borrowingLimit: 32Gi
               lendingLimit:   32Gi
+            - name: "ephemeral-storage"
+              nominalQuota:   1088Gi #100% of keel-dev
+              borrowingLimit: 200Gi
+              lendingLimit:   100Gi
   preemption:
     reclaimWithinCohort: LowerPriority
     borrowWithinCohort:
