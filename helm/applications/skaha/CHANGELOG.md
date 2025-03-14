@@ -1,4 +1,7 @@
-# CHANGELOG for Skaha User Session API (Chart 0.11.0)
+# CHANGELOG for Skaha User Session API (Chart 0.11.2)
+
+## 2025.03.14 (0.11.2)
+- Fix for how Skaha queries for `LocalQueue` objects.
 
 ## 2025.03.11 (0.11.0)
 - Configure queueing system via Kueue.
