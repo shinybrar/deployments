@@ -1,0 +1,75 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    kueue.x-k8s.io/priority-class: low
+    kueue.x-k8s.io/queue-name: canfar-b-local-queue
+  name: kueue-stress
+  namespace: canfar-b-workload
+spec:
+  activeDeadlineSeconds: 1209600
+  backoffLimit: 0
+  completionMode: NonIndexed
+  completions: 1
+  parallelism: 1
+  suspend: false
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: skaha.opencadc.org/node-type
+                operator: NotIn
+                values:
+                - service-node
+      automountServiceAccountToken: false
+      containers:
+      - args:
+        - --cpu
+        - "1"
+        - --cpu-method
+        - matrixprod
+        - --vm
+        - "1"
+        - --vm-bytes
+        - 768.0M
+        - --temp-path
+        - /tmp
+        - --timeout
+        - "300"
+        - --metrics-brief
+        command:
+        - stress-ng
+        image: images.canfar.net/skaha/stress-ng:latest
+        imagePullPolicy: IfNotPresent
+        name: kueue-stress
+        resources:
+          limits:
+            cpu: "1"
+            ephemeral-storage: 200Gi
+            memory: 1Gi
+          requests:
+            cpu: "1"
+            ephemeral-storage: 20Gi
+            memory: 1Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          privileged: false
+      restartPolicy: Never
+      securityContext:
+        fsGroup: 99999
+        runAsGroup: 99999
+        runAsNonRoot: true
+        runAsUser: 99999
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - emptyDir: {}
+        name: scratch-dir
+  ttlSecondsAfterFinished: 3600
