@@ -1,4 +1,5 @@
 import asyncio
+from copy import deepcopy
 from typing import Any, Dict, List, Optional
 
 import aiofiles
@@ -69,7 +70,7 @@ def main(
 
     for num in range(count):
         name: str = f"kueuer-job-{num}"
-        config = job.copy()
+        config = deepcopy(job)
         tasks.append(run(config, name))
 
     loop = asyncio.get_event_loop()
