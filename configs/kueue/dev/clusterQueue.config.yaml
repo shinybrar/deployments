@@ -4,13 +4,6 @@ apiVersion: kueue.x-k8s.io/v1beta1
 kind: ResourceFlavor
 metadata:
   name: default
-spec:
-  nodeTaints:
-    - key: rcs.uvic.ca/node-type
-      value: service-node
-      effect: NoSchedule
-    - key: kubernetes.io/control-plane
-      effect: NoSchedule
 ---
 # ClusterQueue
 apiVersion: kueue.x-k8s.io/v1beta1
