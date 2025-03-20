@@ -7,8 +7,7 @@ from typing import Any, Awaitable, Dict, List, Optional
 import aiofiles
 import typer
 import yaml
-
-from kueuer.jobs import tracker
+import subprocess
 
 app = typer.Typer(help="Kueuer Job Launcher")
 
@@ -51,6 +50,62 @@ async def run(data: Dict[Any, Any], name: str) -> str:
     )
     await proc.communicate()
     return str(temp.name)
+
+
+def delete_jobs_with_prefix(namespace: str, prefix: str, dry_run: bool = False):
+    """
+    Delete all Kubernetes jobs in a specific namespace with a given prefix.
+
+    Args:
+        namespace (str): Kubernetes namespace containing the jobs
+        prefix (str): Prefix to filter jobs by
+        dry_run (bool): If True, only print jobs that would be deleted without actually deleting
+
+    Returns:
+        int: Number of deleted jobs
+    """
+    # Get all jobs in the namespace
+    cmd = [
+        "kubectl",
+        "get",
+        "jobs",
+        "-n",
+        namespace,
+        "--no-headers",
+        "-o",
+        "custom-columns=:metadata.name",
+    ]
+
+    try:
+        result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+        jobs = result.stdout.strip().split("\n")
+
+        # Filter jobs by prefix
+        jobs_to_delete = [job for job in jobs if job and job.startswith(prefix)]
+
+        if not jobs_to_delete:
+            print(f"No jobs with prefix '{prefix}' found in namespace '{namespace}'")
+            return 0
+
+        print(
+            f"Found {len(jobs_to_delete)} jobs with prefix '{prefix}' in namespace '{namespace}'"
+        )
+
+        if dry_run:
+            return 1
+
+        # Delete each job
+        for job in jobs_to_delete:
+            delete_cmd = ["kubectl", "delete", "job", "-n", namespace, job]
+            subprocess.run(delete_cmd, check=True, capture_output=True, text=True)
+            print(f"Deleted job: {job}")
+
+        return len(jobs_to_delete)
+
+    except subprocess.CalledProcessError as e:
+        print(f"Error executing kubectl command: {e}")
+        print(f"Error output: {e.stderr}")
+        return 0
 
 
 @app.command()
@@ -137,10 +192,6 @@ def main(
     loop = asyncio.get_event_loop()
     asyncio.set_event_loop(loop)
     loop.run_until_complete(asyncio.gather(*tasks))
-
-    times = tracker.for_completion(namespace, prefix)
-    stats = tracker.compute_statistics(times)
-    print(stats)
 
 
 if __name__ == "__main__":
