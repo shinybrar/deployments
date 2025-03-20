@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Shiny Brar", email = "shiny.brar@nrc-cnrc.gc.ca" }
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 dependencies = [
     "aiofiles>=24.1.0",
     "httpx>=0.28.1",

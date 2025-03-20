@@ -1,6 +1,8 @@
+"""Launches a job in a Kubernetes cluster."""
+
 import asyncio
 from copy import deepcopy
-from typing import Any, Dict, List, Optional
+from typing import Any, Awaitable, Dict, List, Optional
 
 import aiofiles
 import typer
@@ -12,37 +14,57 @@ app = typer.Typer(help="Kueuer Job Launcher")
 
 
 def template(filepath: str) -> Dict[Any, Any]:
-    with open(filepath) as f:
-        template = f.read()
-        return yaml.safe_load(template)
+    """K8s job template.
+
+    Args:
+        filepath (str): Path to the K8s job template.
+
+    Returns:
+        Dict[Any, Any]: K8s job template.
+    """
+    with open(filepath, encoding="utf-8") as f:
+        data = f.read()
+        return yaml.safe_load(data)
 
 
-async def run(template: Dict[Any, Any], name: str) -> str:
-    template["metadata"]["name"] = name
-    for container in template["spec"]["template"]["spec"]["containers"]:
+async def run(data: Dict[Any, Any], name: str) -> str:
+    """Runs a job in a Kubernetes cluster.
+
+    Args:
+        data (Dict[Any, Any]): K8s job template.
+        name (str): Name of the job.
+
+    Returns:
+        str: _description_
+    """
+    data["metadata"]["name"] = name
+    for container in data["spec"]["template"]["spec"]["containers"]:
         container["name"] = name
     async with aiofiles.tempfile.NamedTemporaryFile(
         delete=False, mode="w", suffix=".yaml"
     ) as temp:
-        await temp.write(yaml.dump(template))
+        await temp.write(yaml.dump(data))
 
     command = f"kubectl apply -f {temp.name}"
     proc = await asyncio.create_subprocess_shell(
         command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
     )
-    stdout, stderr = await proc.communicate()
+    await proc.communicate()
     return str(temp.name)
 
 
 @app.command()
 def main(
     filepath: str = (typer.Option(..., "-f", "--filepath", help="K8s job template.")),
+    namespace: str = (
+        typer.Option(..., "-n", "--namespace", help="Namespace to launch jobs in.")
+    ),
+    prefix: str = typer.Option(
+        "kueuer-job", "-p", "--prefix", help="Prefix for job names."
+    ),
     count: int = (typer.Option(1, "-c", "--count", help="Number of jobs to launch.")),
     duration: int = (
         typer.Option(60, "-d", "--duration", help="Duration for each job in seconds.")
-    ),
-    namespace: str = (
-        typer.Option(..., "-n", "--namespace", help="Namespace to launch jobs in.")
     ),
     cores: int = (
         typer.Option(1, "--cores", help="Number of CPU cores to allocate to each job.")
@@ -53,9 +75,8 @@ def main(
     storage: int = (
         typer.Option(
             1,
-            "-s",
             "--storage",
-            help="Amount of ephemeralstorage to allocate to each job in GB.",
+            help="Amount of ephemeral-storage to allocate to each job in GB.",
         )
     ),
     kueue: Optional[str] = (
@@ -67,6 +88,7 @@ def main(
         )
     ),
 ):
+    """Stress Test Kubernetes Cluster."""
     ram_mb: float = ram * 1024.0
     args: List[str] = [
         "--cpu",
@@ -105,10 +127,10 @@ def main(
         container["resources"]["requests"]["memory"] = f"{ram_mb}Mi"
         container["resources"]["requests"]["ephemeral-storage"] = f"{storage}Gi"
 
-    tasks = []
+    tasks: List[Awaitable[str]] = []
 
     for num in range(count):
-        name: str = f"kueuer-job-{num}"
+        name: str = f"{prefix}-{num}"
         config = deepcopy(job)
         tasks.append(run(config, name))
 
@@ -116,7 +138,7 @@ def main(
     asyncio.set_event_loop(loop)
     loop.run_until_complete(asyncio.gather(*tasks))
 
-    times = tracker.for_completion(namespace, "kueuer-job-")
+    times = tracker.for_completion(namespace, prefix)
     stats = tracker.compute_statistics(times)
     print(stats)
 
