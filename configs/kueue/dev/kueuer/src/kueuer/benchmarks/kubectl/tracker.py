@@ -63,7 +63,7 @@ def for_completion(
     namespace: str,
     prefix: str,
     desired_status: str = "Complete",
-    poll_interval: int = 10,
+    poll_interval: int = 30,
 ) -> Dict[str, JobTiming]:
     """
     Tracks jobs in the specified namespace whose names start with the given prefix.
@@ -111,7 +111,7 @@ def for_completion(
         # Step 4: Re-check only pending jobs.
         if len(pending) > 0:
             print(f"Waiting for {len(pending)} jobs to reach '{desired_status}'...")
-            print("Sleeping for a while...")
+            print("Sleeping for a while, Zzz...{poll_interval}s")
             time.sleep(poll_interval)
 
     return done

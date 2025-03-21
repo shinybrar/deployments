@@ -74,7 +74,7 @@ def experiment(
 
     # Track jobs to completion and get timing statistics
     print("Jobs launched, tracking completion...")
-    times = tracker.for_completion(namespace, prefix)
+    times = tracker.for_completion(namespace, prefix, poll_interval=max(30, duration))
     stats = tracker.compute_statistics(times)
 
     # End time measurement
