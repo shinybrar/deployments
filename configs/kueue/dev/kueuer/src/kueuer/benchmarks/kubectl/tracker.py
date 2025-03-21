@@ -111,7 +111,7 @@ def for_completion(
         # Step 4: Re-check only pending jobs.
         if len(pending) > 0:
             print(f"Waiting for {len(pending)} jobs to reach '{desired_status}'...")
-            print("Sleeping for a while, Zzz...{poll_interval}s")
+            print(f"Sleeping for a while, Zzz...{poll_interval}s")
             time.sleep(poll_interval)
 
     return done
