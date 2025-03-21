@@ -45,6 +45,7 @@ async def run(data: Dict[Any, Any], prefix: str, count: int) -> bool:
                 container["name"] = name
             await temp.write(yaml.dump(data))
             await temp.write("\n---\n")
+    print(f"Applying {temp.name}")
     try:
         command = f"kubectl apply -f {temp.name}"
         proc = await asyncio.create_subprocess_shell(
