@@ -5,13 +5,13 @@ import os
 import time
 from datetime import datetime
 from time import sleep
-from typing import Annotated, Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
 
 import typer
 
-from kueuer.jobs import launcher, tracker
+from kueuer.benchmarks.kubectl import launcher, tracker
 
-app = typer.Typer(help="Kueuer Job Benchmark")
+app = typer.Typer(help="Launch Benchmark Suite")
 
 
 def experiment(
@@ -114,14 +114,12 @@ def experiment(
     }
 
     print(f"Experiment completed in {total_execution_time:.2f}s")
-    print(
-        f"Total time from first creation to last completion: {result['total_time_from_first_creation_to_last_completion']:.2f}s"
-    )
+    total = result["total_time_from_first_creation_to_last_completion"]
+    print(f"Total time from first creation to last completion: {total:.2f}s")
 
     # Cleanup jobs
     print("Cleaning up jobs...")
-    launcher.delete_jobs_with_prefix(namespace, prefix, dry_run=False)
-
+    launcher.delete_jobs_with_prefix(namespace, prefix)
     return result
 
 
@@ -137,7 +135,6 @@ def benchmark(
     priority: str,
     resultsfile: str,
     wait: int,
-    cleanup: bool,
 ) -> List[Dict[str, Any]]:
     """
     Run a complete benchmark comparing direct Kubernetes jobs vs Kueue jobs.
@@ -219,15 +216,15 @@ def save_results_to_csv(results: List[Dict[str, Any]], filename: str) -> None:
         filename: Path to save CSV file
     """
     # Define fieldnames based on all possible keys in results
-    fieldnames = set()
+    fieldnames: Set[str] = set()
     for result in results:
         fieldnames.update(result.keys())
-    fieldnames = sorted(fieldnames)
+    fieldnames = sorted(fieldnames)  # type: ignore
 
     # Check if file exists to determine if header is needed
     file_exists = os.path.isfile(filename)
 
-    with open(filename, mode="a", newline="") as csvfile:
+    with open(filename, mode="a", newline="", encoding="utf-8") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         if not file_exists:
@@ -246,15 +243,18 @@ def save_results_to_csv(results: List[Dict[str, Any]], filename: str) -> None:
     print(f"Results saved to {filename}")
 
 
-@app.command()
+@app.command("compare")
 def main(
     filepath: str = (typer.Option(..., "-f", "--filepath", help="K8s job template.")),
     namespace: str = (
         typer.Option(..., "-n", "--namespace", help="Namespace to launch jobs in.")
     ),
-    counts: Annotated[
-        List[int], typer.Option("-c", "--counts", help="Number of jobs to launch.")
-    ] = [2, 4, 8],
+    exponent: int = typer.Option(
+        3,
+        "-e",
+        "--exponent",
+        help="Maximum exponent for to create jobs [2^0, ..., 2^n])",
+    ),
     duration: int = (
         typer.Option(1, "-d", "--duration", help="Duration for each job in seconds.")
     ),
@@ -285,12 +285,9 @@ def main(
             60, "--wait-between-runs", help="Time to wait between experiments."
         )
     ),
-    cleanup: bool = (
-        typer.Option(
-            True, "--cleanup", help="Delete all jobs and pods after each experiment."
-        )
-    ),
 ):
+    """Run a benchmark comparing direct k8s job execution with Kueue."""
+    counts = [2**i for i in range(exponent + 1)]
     print("Starting benchmark with the following configuration:")
     print(f"Job counts: {counts}")
     print(f"Job duration: {duration}s")
@@ -314,7 +311,6 @@ def main(
         priority=priority,
         resultsfile=resultfile,
         wait=wait,
-        cleanup=cleanup,
     )
     print("Benchmark completed successfully.")
     print(f"Results saved to {resultfile}")

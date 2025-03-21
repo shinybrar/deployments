@@ -7,9 +7,10 @@ from typing import Any, Awaitable, Dict, List, Optional
 import aiofiles
 import typer
 import yaml
-import subprocess
+from kubernetes import client, config
+from kubernetes.client.rest import ApiException
 
-app = typer.Typer(help="Kueuer Job Launcher")
+app = typer.Typer(help="Launch Jobs")
 
 
 def template(filepath: str) -> Dict[Any, Any]:
@@ -52,63 +53,46 @@ async def run(data: Dict[Any, Any], name: str) -> str:
     return str(temp.name)
 
 
-def delete_jobs_with_prefix(namespace: str, prefix: str, dry_run: bool = False):
-    """
-    Delete all Kubernetes jobs in a specific namespace with a given prefix.
+def delete_jobs_with_prefix(namespace: str, prefix: str) -> int:
+    """Deletes all jobs with a given prefix in a namespace.
 
     Args:
-        namespace (str): Kubernetes namespace containing the jobs
-        prefix (str): Prefix to filter jobs by
-        dry_run (bool): If True, only print jobs that would be deleted without actually deleting
+        namespace (str): Namespace to delete jobs in.
+        prefix (str): Prefix for job names.
 
     Returns:
-        int: Number of deleted jobs
+        int: Number of jobs deleted
     """
-    # Get all jobs in the namespace
-    cmd = [
-        "kubectl",
-        "get",
-        "jobs",
-        "-n",
-        namespace,
-        "--no-headers",
-        "-o",
-        "custom-columns=:metadata.name",
-    ]
+    config.load_kube_config()
+
+    batch_v1 = client.BatchV1Api()
 
     try:
-        result = subprocess.run(cmd, check=True, capture_output=True, text=True)
-        jobs = result.stdout.strip().split("\n")
-
-        # Filter jobs by prefix
-        jobs_to_delete = [job for job in jobs if job and job.startswith(prefix)]
+        jobs = batch_v1.list_namespaced_job(namespace)
+        jobs_to_delete = [
+            job.metadata.name
+            for job in jobs.items
+            if job.metadata.name.startswith(prefix)
+        ]
 
         if not jobs_to_delete:
             print(f"No jobs with prefix '{prefix}' found in namespace '{namespace}'")
             return 0
-
-        print(
-            f"Found {len(jobs_to_delete)} jobs with prefix '{prefix}' in namespace '{namespace}'"
-        )
-
-        if dry_run:
-            return 1
-
-        # Delete each job
-        for job in jobs_to_delete:
-            delete_cmd = ["kubectl", "delete", "job", "-n", namespace, job]
-            subprocess.run(delete_cmd, check=True, capture_output=True, text=True)
-            print(f"Deleted job: {job}")
-
+        num = len(jobs_to_delete)
+        print(f"Found {num} jobs with prefix '{prefix}' in namespace '{namespace}'")
+        for job_name in jobs_to_delete:
+            batch_v1.delete_namespaced_job(
+                name=job_name,
+                namespace=namespace,
+                body=client.V1DeleteOptions(propagation_policy="Foreground"),
+            )
         return len(jobs_to_delete)
-
-    except subprocess.CalledProcessError as e:
-        print(f"Error executing kubectl command: {e}")
-        print(f"Error output: {e.stderr}")
+    except ApiException as e:
+        print(f"Exception when deleting jobs: {e}")
         return 0
 
 
-@app.command()
+@app.command("jobs")
 def main(
     filepath: str = (typer.Option(..., "-f", "--filepath", help="K8s job template.")),
     namespace: str = (
@@ -186,8 +170,8 @@ def main(
 
     for num in range(count):
         name: str = f"{prefix}-{num}"
-        config = deepcopy(job)
-        tasks.append(run(config, name))
+        resampled = deepcopy(job)
+        tasks.append(run(resampled, name))
 
     loop = asyncio.get_event_loop()
     asyncio.set_event_loop(loop)

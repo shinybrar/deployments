@@ -1,16 +1,15 @@
 """Enhanced visualization module for analyzing Kubernetes vs Kueue benchmark results."""
 
 import os
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import typer
 from matplotlib.ticker import ScalarFormatter
 
-import typer
-
-app = typer.Typer(help="Enhanced Kueuer Results Visualizer")
+app = typer.Typer(help="Plot Benchmark Results")
 
 
 def load_and_clean_results(filename: str) -> pd.DataFrame:
@@ -138,7 +137,7 @@ def plot_completion_times(
     plt.xticks(all_counts, [str(count) for count in all_counts], rotation=45)
 
     # Add value annotations
-    for count, time in zip(direct_counts, direct_times):
+    for count, time in zip(direct_counts, direct_times, strict=False):
         plt.annotate(
             f"{time:.1f}s",
             (count, time),
@@ -147,7 +146,7 @@ def plot_completion_times(
             ha="center",
         )
 
-    for count, time in zip(kueue_counts, kueue_times):
+    for count, time in zip(kueue_counts, kueue_times, strict=False):
         plt.annotate(
             f"{time:.1f}s",
             (count, time),
@@ -184,7 +183,12 @@ def plot_completion_times(
             f"Direct trend: {equation_text}",
             xy=(0.05, 0.95),
             xycoords="axes fraction",
-            bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="blue", alpha=0.8),
+            bbox={
+                "boxstyle": "round,pad=0.3",
+                "fc": "white",
+                "ec": "blue",
+                "alpha": 0.8,
+            },
         )
 
     if len(kueue_counts) > 1:
@@ -214,7 +218,12 @@ def plot_completion_times(
             f"Kueue trend: {equation_text}",
             xy=(0.05, 0.89),
             xycoords="axes fraction",
-            bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="red", alpha=0.8),
+            bbox={
+                "boxstyle": "round,pad=0.3",
+                "fc": "white",
+                "ec": "red",
+                "alpha": 0.8,
+            },
         )
 
     # Adjust layout and save
@@ -284,7 +293,7 @@ def plot_performance_comparison(
     ax1.grid(axis="y", linestyle="--", alpha=0.7)
 
     # Add value labels on top of the bars
-    for bar, value in zip(bars1, percent_diffs):
+    for bar, value in zip(bars1, percent_diffs, strict=False):
         height = bar.get_height()
         text_y_pos = height + 0.5 if height > 0 else height - 3.5
         ax1.text(
@@ -313,7 +322,7 @@ def plot_performance_comparison(
     ax2.set_xticklabels([str(int(count)) for count in job_counts], rotation=45)
 
     # Add value labels on top of the bars
-    for bar, value in zip(bars2, absolute_diffs):
+    for bar, value in zip(bars2, absolute_diffs, strict=False):
         height = bar.get_height()
         text_y_pos = height + 5 if height > 0 else height - 15
         ax2.text(
@@ -426,7 +435,7 @@ def plot_scaling_efficiency(
     plt.xticks(all_counts, [str(int(count)) for count in all_counts], rotation=45)
 
     # Add value annotations for direct efficiency
-    for i, row in direct_df.iterrows():
+    for _i, row in direct_df.iterrows():
         plt.annotate(
             f"{row['efficiency']:.2f}",
             (row["job_count"], row["efficiency"]),
@@ -436,7 +445,7 @@ def plot_scaling_efficiency(
         )
 
     # Add value annotations for kueue efficiency
-    for i, row in kueue_df.iterrows():
+    for _i, row in kueue_df.iterrows():
         plt.annotate(
             f"{row['efficiency']:.2f}",
             (row["job_count"], row["efficiency"]),
@@ -516,7 +525,7 @@ def plot_average_job_time(
     plt.xticks(all_counts, [str(int(count)) for count in all_counts], rotation=45)
 
     # Add value annotations
-    for count, time in zip(direct_counts, direct_times):
+    for count, time in zip(direct_counts, direct_times, strict=False):
         plt.annotate(
             f"{time:.1f}s",
             (count, time),
@@ -525,7 +534,7 @@ def plot_average_job_time(
             ha="center",
         )
 
-    for count, time in zip(kueue_counts, kueue_times):
+    for count, time in zip(kueue_counts, kueue_times, strict=False):
         plt.annotate(
             f"{time:.1f}s",
             (count, time),
@@ -540,7 +549,7 @@ def plot_average_job_time(
     print(f"Average job time plot saved to {output_file}")
 
 
-@app.command()
+@app.command("compare-results")
 def main(
     filepath: str = typer.Option(..., "-f", "--filepath", help="Results CSV File."),
     output_dir: str = typer.Option(

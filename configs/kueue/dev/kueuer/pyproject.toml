@@ -20,7 +20,7 @@ dependencies = [
     "skaha",
     "typer>=0.15.2",
 ]
-scripts = { kue-stress = "kueuer.jobs.launcher:app" }
+scripts = { kueuer = "kueuer.cli:app" }
 
 [build-system]
 requires = ["hatchling"]
