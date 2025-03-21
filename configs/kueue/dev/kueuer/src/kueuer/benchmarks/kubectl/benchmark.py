@@ -244,7 +244,7 @@ def save_results_to_csv(results: List[Dict[str, Any]], filename: str) -> None:
 
 
 @app.command("compare")
-def main(
+def comparison(
     filepath: str = (typer.Option(..., "-f", "--filepath", help="K8s job template.")),
     namespace: str = (
         typer.Option(..., "-n", "--namespace", help="Namespace to launch jobs in.")

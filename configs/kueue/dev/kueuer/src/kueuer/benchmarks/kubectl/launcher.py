@@ -1,10 +1,10 @@
 """Launches a job in a Kubernetes cluster."""
 
 import asyncio
-from copy import deepcopy
 from typing import Any, Awaitable, Dict, List, Optional
 
 import aiofiles
+import aiofiles.os
 import typer
 import yaml
 from kubernetes import client, config
@@ -27,30 +27,35 @@ def template(filepath: str) -> Dict[Any, Any]:
         return yaml.safe_load(data)
 
 
-async def run(data: Dict[Any, Any], name: str) -> str:
+async def run(data: Dict[Any, Any], prefix: str, count: int) -> bool:
     """Runs a job in a Kubernetes cluster.
 
     Args:
         data (Dict[Any, Any]): K8s job template.
         name (str): Name of the job.
 
-    Returns:
-        str: _description_
     """
-    data["metadata"]["name"] = name
-    for container in data["spec"]["template"]["spec"]["containers"]:
-        container["name"] = name
     async with aiofiles.tempfile.NamedTemporaryFile(
         delete=False, mode="w", suffix=".yaml"
     ) as temp:
-        await temp.write(yaml.dump(data))
-
-    command = f"kubectl apply -f {temp.name}"
-    proc = await asyncio.create_subprocess_shell(
-        command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-    )
-    await proc.communicate()
-    return str(temp.name)
+        for num in range(count):
+            name: str = f"{prefix}-{num}"
+            data["metadata"]["name"] = name
+            for container in data["spec"]["template"]["spec"]["containers"]:
+                container["name"] = name
+            await temp.write(yaml.dump(data))
+            await temp.write("\n---\n")
+    try:
+        command = f"kubectl apply -f {temp.name}"
+        proc = await asyncio.create_subprocess_shell(
+            command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+        )
+        await proc.communicate()
+        return True
+    finally:
+        print(f"Deleting {temp.name}")
+        await temp.close()
+        await aiofiles.os.remove(str(temp.name))
 
 
 def delete_jobs_with_prefix(namespace: str, prefix: str) -> int:
@@ -166,13 +171,8 @@ def main(
         container["resources"]["requests"]["memory"] = f"{ram_mb}Mi"
         container["resources"]["requests"]["ephemeral-storage"] = f"{storage}Gi"
 
-    tasks: List[Awaitable[str]] = []
-
-    for num in range(count):
-        name: str = f"{prefix}-{num}"
-        resampled = deepcopy(job)
-        tasks.append(run(resampled, name))
-
+    tasks: List[Awaitable[bool]] = []
+    tasks.append(run(job, prefix, count))
     loop = asyncio.get_event_loop()
     asyncio.set_event_loop(loop)
     loop.run_until_complete(asyncio.gather(*tasks))
