@@ -59,7 +59,7 @@ def experiment(
     start_time = time.time()
 
     # Execute the launcher
-    launcher.main(
+    launcher.jobs(
         filepath=filepath,
         namespace=namespace,
         prefix=prefix,
@@ -131,8 +131,8 @@ def benchmark(
     storage: int,
     namespace: str,
     filepath: str,
-    kueue: str,
-    priority: str,
+    kueue: Optional[str],
+    priority: Optional[str],
     resultsfile: str,
     wait: int,
 ) -> List[Dict[str, Any]]:
@@ -243,17 +243,29 @@ def save_results_to_csv(results: List[Dict[str, Any]], filename: str) -> None:
     print(f"Results saved to {filename}")
 
 
-@app.command("compare")
-def comparison(
+@app.command("performance")
+def performance(
     filepath: str = (typer.Option(..., "-f", "--filepath", help="K8s job template.")),
     namespace: str = (
         typer.Option(..., "-n", "--namespace", help="Namespace to launch jobs in.")
     ),
+    kueue: str = (typer.Option(..., "--kueue", help="Kueue queue to launch jobs in.")),
+    priority: str = (
+        typer.Option(
+            ..., "--kueue-priority", help="Kueue priority to launch jobs with."
+        )
+    ),
+    e0: int = typer.Option(
+        4,
+        "-e0",
+        "--exponent0",
+        help="Minimum exponent for to create jobs [2^e0, ..., 2^e])",
+    ),
     exponent: int = typer.Option(
-        3,
+        10,
         "-e",
         "--exponent",
-        help="Maximum exponent for to create jobs [2^0, ..., 2^n])",
+        help="Maximum exponent for to create jobs [2^e0, ..., 2^e])",
     ),
     duration: int = (
         typer.Option(1, "-d", "--duration", help="Duration for each job in seconds.")
@@ -271,12 +283,6 @@ def comparison(
             help="Amount of ephemeral-storage to allocate to each job in GB.",
         )
     ),
-    kueue: str = (typer.Option(..., "--kueue", help="Kueue queue to launch jobs in.")),
-    priority: str = (
-        typer.Option(
-            ..., "--kueue-priority", help="Kueue priority to launch jobs with."
-        )
-    ),
     resultfile: str = (
         typer.Option("results.csv", "--results-file", help="File to save results to.")
     ),
@@ -287,7 +293,7 @@ def comparison(
     ),
 ):
     """Run a benchmark comparing direct k8s job execution with Kueue."""
-    counts = [2**i for i in range(exponent + 1)]
+    counts = [2**i for i in range(e0, exponent + 1)]
     print("Starting benchmark with the following configuration:")
     print(f"Job counts: {counts}")
     print(f"Job duration: {duration}s")
@@ -314,7 +320,49 @@ def comparison(
     )
     print("Benchmark completed successfully.")
     print(f"Results saved to {resultfile}")
-    print("You can now run 'python -m kueuer.plot' to visualize the results.")
+    print("You can now run 'kueuer plot performance' to visualize the results.")
+
+# @app.command("eviction")
+# def eviction(
+#     filepath: str = (typer.Option(..., "-f", "--filepath", help="K8s job template.")),
+#     namespace: str = (
+#         typer.Option(..., "-n", "--namespace", help="Namespace to launch jobs in.")
+#     ),
+#     kueue: str= (
+#         typer.Option(..., "--kueue", help="Local Kueue queue to launch jobs in.")
+#     ),
+#     priorities: List[str] = (
+#         typer.Option(
+#             [],
+#             "--kueue-priorities",
+#             help="Ordered Kueue priorities to launch jobs with, from low to high.",
+#         )
+#     ),
+#     cores: int = (
+#         typer.Option(
+#             8, "--cores", help="Total number of CPU cores in the kueue ClusterQueue."
+#         )
+#     ),
+#     ram: int = (
+#         typer.Option(
+#             8, "--ram", help="Total amount of RAM in the kueue ClusterQueue in GB."
+#         )
+#     ),
+#     storage: int = (
+#         typer.Option(
+#             8,
+#             "--storage",
+#             help="Total amount of storage in the kueue ClusterQueue in GB.",
+#         )
+#     ),
+# ):
+#     # Eviction Benchmark
+#     # 1. Create long running jobs packing the cluster queue
+#     # 2. Create a new shortlived higher priority job using minimum resources
+#     # 3. Confirm if a workload is evicted
+#     # 4. Confirm if the higher priority job is executed
+#     # 5. Cleanup
+#     pass
 
 
 if __name__ == "__main__":

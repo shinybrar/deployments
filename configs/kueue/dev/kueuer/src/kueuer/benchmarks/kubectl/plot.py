@@ -549,9 +549,11 @@ def plot_average_job_time(
     print(f"Average job time plot saved to {output_file}")
 
 
-@app.command("compare-results")
-def main(
-    filepath: str = typer.Option(..., "-f", "--filepath", help="Results CSV File."),
+@app.command("performance")
+def performance(
+    filepath: str = typer.Option(
+        "results.csv", "-f", "--filepath", help="Results CSV File."
+    ),
     output_dir: str = typer.Option(
         "./plots", "--output-dir", "-o", help="Output directory for plots"
     ),

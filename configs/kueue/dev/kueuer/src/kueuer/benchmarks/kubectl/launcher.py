@@ -1,6 +1,7 @@
 """Launches a job in a Kubernetes cluster."""
 
 import asyncio
+from time import time
 from typing import Any, Awaitable, Dict, List, Optional
 
 import aiofiles
@@ -46,6 +47,7 @@ async def run(data: Dict[Any, Any], prefix: str, count: int) -> bool:
             await temp.write(yaml.dump(data))
             await temp.write("\n---\n")
     print(f"Applying {temp.name}")
+    now = time()
     try:
         command = f"kubectl apply -f {temp.name}"
         proc = await asyncio.create_subprocess_shell(
@@ -54,6 +56,7 @@ async def run(data: Dict[Any, Any], prefix: str, count: int) -> bool:
         await proc.communicate()
         return True
     finally:
+        print(f"Took {time()- now} seconds to apply {temp.name}")
         print(f"Deleting {temp.name}")
         await temp.close()
         await aiofiles.os.remove(str(temp.name))
@@ -99,7 +102,7 @@ def delete_jobs_with_prefix(namespace: str, prefix: str) -> int:
 
 
 @app.command("jobs")
-def main(
+def jobs(
     filepath: str = (typer.Option(..., "-f", "--filepath", help="K8s job template.")),
     namespace: str = (
         typer.Option(..., "-n", "--namespace", help="Namespace to launch jobs in.")
