@@ -21,19 +21,19 @@ leaderElection:
 controller:
   # Number of concurrent reconciliation allowed for a controller.
   groupKindConcurrency:
-    Job.batch: 5
-    Pod: 5
-    Workload.kueue.x-k8s.io: 5
-    LocalQueue.kueue.x-k8s.io: 1
-    ClusterQueue.kueue.x-k8s.io: 1
-    ResourceFlavor.kueue.x-k8s.io: 1
+    Job.batch: 32
+    Pod: 16
+    Workload.kueue.x-k8s.io: 32
+    LocalQueue.kueue.x-k8s.io: 4
+    ClusterQueue.kueue.x-k8s.io: 4
+    ResourceFlavor.kueue.x-k8s.io: 4
 
 # Client connection details for the k8s_apiserver
 clientConnection:
   # queries/second allowed for k8s_apiserver
-  qps: 50
+  qps: 64
   # extra queries to accumulate when a client is exceeding its rate.
-  burst: 100
+  burst: 128
 
 
 # pprof is a tool for visualization and analysis of profiling data enabled by setting the bind address.
@@ -41,7 +41,7 @@ clientConnection:
 
 # Wait for admitted workload to reach PodsReady=true. When enabled,
 # if  pods exceeds the timeout, it will be evicted and requeued in the same
-# cluster queue for backoffLimitCount times with
+# cluster queue for backoffLimitCount times
 waitForPodsReady:
   enable: false
   timeout: 5m
