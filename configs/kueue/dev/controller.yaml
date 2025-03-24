@@ -21,11 +21,11 @@ leaderElection:
 controller:
   # Number of concurrent reconciliation allowed for a controller.
   groupKindConcurrency:
-    Job.batch: 32
-    Pod: 16
-    Workload.kueue.x-k8s.io: 32
-    LocalQueue.kueue.x-k8s.io: 4
-    ClusterQueue.kueue.x-k8s.io: 4
+    Job.batch: 256
+    Pod: 4
+    Workload.kueue.x-k8s.io: 256
+    LocalQueue.kueue.x-k8s.io: 256
+    ClusterQueue.kueue.x-k8s.io: 256
     ResourceFlavor.kueue.x-k8s.io: 4
 
 # Client connection details for the k8s_apiserver
