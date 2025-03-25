@@ -53,7 +53,9 @@ async def run(data: Dict[Any, Any], prefix: str, count: int) -> bool:
         proc = await asyncio.create_subprocess_shell(
             command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
         )
-        await proc.communicate()
+        stdout, stderr = await proc.communicate()
+        print(f"stdout: {stdout.decode()}")
+        print(f"stderr: {stderr.decode()}")
         return True
     finally:
         print(f"Took {time()- now} seconds to apply {temp.name}")

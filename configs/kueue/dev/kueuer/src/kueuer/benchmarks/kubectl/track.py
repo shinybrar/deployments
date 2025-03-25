@@ -1,9 +1,8 @@
 import statistics
-import time
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
-from kubernetes import client, config
+from kubernetes import client, config, watch
 
 # Type alias for job tracking: (creation_time, completion_time, duration_in_seconds)
 JobTiming = Tuple[datetime, Optional[datetime], Optional[float]]
@@ -59,11 +58,10 @@ def compute_statistics(done_jobs: Dict[str, JobTiming]) -> Dict[str, Any]:
     return stats
 
 
-def for_completion(
+def jobs(
     namespace: str,
     prefix: str,
-    desired_status: str = "Complete",
-    poll_interval: int = 30,
+    desired_status: str,
 ) -> Dict[str, JobTiming]:
     """
     Tracks jobs in the specified namespace whose names start with the given prefix.
@@ -72,15 +70,19 @@ def for_completion(
     (creation_time, completion_time, duration_in_seconds).
     """
     config.load_kube_config()
-
     batch_v1: client.BatchV1Api = client.BatchV1Api()
+    watcher = watch.Watch()
 
     # Step 1: Fetch all jobs once.
     print(f"Fetching jobs with prefix '{prefix}' in namespace '{namespace}'")
+
     pending: Dict[str, datetime] = {}
     done: Dict[str, JobTiming] = {}
 
-    for job in batch_v1.list_namespaced_job(namespace=namespace).items:
+    jobs = batch_v1.list_namespaced_job(namespace)
+    revision: str = jobs.metadata.resource_version
+
+    for job in jobs.items:
         if job.metadata.name.startswith(prefix):
             creation_time: datetime = job.metadata.creation_timestamp
             pending[job.metadata.name] = creation_time
@@ -89,29 +91,30 @@ def for_completion(
         print("No jobs found with the given prefix.")
         return done
 
-    while len(pending) > 0:
-        print(f"Tracking {len(pending)} jobs...")
-        # Iterate over a copy of keys to avoid mutation issues.
-        for job in batch_v1.list_namespaced_job(namespace=namespace).items:
-            job_name: str = job.metadata.name
-            if job_name not in pending:
-                continue
+    print(
+        f"Found {len(pending)} jobs with prefix '{prefix}' in namespace '{namespace}'"
+    )
+    print("Starting to track job completion...")
 
-            if job_is_done(job, desired_status):
-                completion_time: datetime = job.status.completion_time
-                creation_time: datetime = pending[job_name]
-                duration: float = (completion_time - creation_time).total_seconds()
-                print(
-                    f"Job '{job_name}' reached '{desired_status}' in {duration:.2f} seconds."
-                )
-                done[job_name] = (creation_time, completion_time, duration)
-                # Step 3: Move job from pending to done.
-                del pending[job_name]
+    for event in watcher.stream(
+        batch_v1.list_namespaced_job, namespace=namespace, resource_version=revision
+    ):
+        job: client.V1Job = event["object"]
+        job_name: str = job.metadata.name
+        if job_name not in pending:
+            continue
 
-        # Step 4: Re-check only pending jobs.
-        if len(pending) > 0:
-            print(f"Waiting for {len(pending)} jobs to reach '{desired_status}'...")
-            print(f"Sleeping for a while, Zzz...{poll_interval}s")
-            time.sleep(poll_interval)
+        if job_is_done(job, desired_status):
+            completion_time: datetime = job.status.completion_time
+            creation_time: datetime = pending[job_name]
+            duration: float = (completion_time - creation_time).total_seconds()
+            print(
+                f"Job '{job_name}' reached '{desired_status}' in {duration:.2f} seconds."
+            )
+            done[job_name] = (creation_time, completion_time, duration)
+            del pending[job_name]
 
+        if not pending:
+            print(f"All jobs with prefix '{prefix}' reached '{desired_status}'")
+            watcher.stop()
     return done

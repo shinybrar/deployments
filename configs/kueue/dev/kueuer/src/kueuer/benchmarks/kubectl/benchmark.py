@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional, Set
 
 import typer
 
-from kueuer.benchmarks.kubectl import launcher, tracker
+from kueuer.benchmarks.kubectl import launcher, track
 
 app = typer.Typer(help="Launch Benchmark Suite")
 
@@ -74,8 +74,8 @@ def experiment(
 
     # Track jobs to completion and get timing statistics
     print("Jobs launched, tracking completion...")
-    times = tracker.for_completion(namespace, prefix, poll_interval=max(30, duration))
-    stats = tracker.compute_statistics(times)
+    times = track.jobs(namespace, prefix, "Complete")
+    stats = track.compute_statistics(times)
 
     # End time measurement
     end_time = time.time()
@@ -322,6 +322,7 @@ def performance(
     print(f"Results saved to {resultfile}")
     print("You can now run 'kueuer plot performance' to visualize the results.")
 
+
 # @app.command("eviction")
 # def eviction(
 #     filepath: str = (typer.Option(..., "-f", "--filepath", help="K8s job template.")),
@@ -363,7 +364,6 @@ def performance(
 #     # 4. Confirm if the higher priority job is executed
 #     # 5. Cleanup
 #     pass
-
 
 if __name__ == "__main__":
     app()
