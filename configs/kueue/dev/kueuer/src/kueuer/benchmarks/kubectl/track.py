@@ -16,7 +16,6 @@ def job_is_done(job: client.V1Job, desired_status: str) -> bool:
     if job.status.conditions:
         for condition in job.status.conditions:
             if condition.type == desired_status and condition.status == "True":
-                print(f"Job '{job.metadata.name}' reached '{desired_status}'")
                 return True
     return False
 
