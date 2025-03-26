@@ -40,10 +40,10 @@ spec:
         - --timeout
         - "300"
         - --metrics-brief
-        # command:
-        # - stress-ng
-        # image: images.canfar.net/skaha/stress-ng:latest
-        image: spurin/stress-ng:latest
+        command:
+        - stress-ng
+        image: images.canfar.net/skaha/stress-ng:latest
+        # image: spurin/stress-ng:latest
         imagePullPolicy: IfNotPresent
         name: kueue-stress
         resources:

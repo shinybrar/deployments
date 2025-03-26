@@ -11,6 +11,8 @@ import yaml
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 
+from kueuer.utils.logging import logger
+
 app = typer.Typer(help="Launch Jobs")
 
 
@@ -46,7 +48,7 @@ async def run(data: Dict[Any, Any], prefix: str, count: int) -> bool:
                 container["name"] = name
             await temp.write(yaml.dump(data))
             await temp.write("\n---\n")
-    print(f"Applying {temp.name}")
+    logger.debug("Applying %s", temp.name)
     now = time()
     try:
         command = f"kubectl apply -f {temp.name}"
@@ -54,12 +56,15 @@ async def run(data: Dict[Any, Any], prefix: str, count: int) -> bool:
             command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
         )
         stdout, stderr = await proc.communicate()
-        print(f"stdout: {stdout.decode()}")
-        print(f"stderr: {stderr.decode()}")
+        logger.debug("stdout: %s", stdout.decode() if stdout else "")
+        logger.debug("stderr: %s", stderr.decode() if stderr else "")
+        if proc.returncode != 0:
+            logger.error("Error applying %s", temp.name)
+            return False
         return True
     finally:
-        print(f"Took {time()- now} seconds to apply {temp.name}")
-        print(f"Deleting {temp.name}")
+        logger.info("Took %ss to apply k8s manifest", time() - now)
+        logger.debug("Deleting %s", temp.name)
         await temp.close()
         await aiofiles.os.remove(str(temp.name))
 
@@ -75,31 +80,32 @@ def delete_jobs_with_prefix(namespace: str, prefix: str) -> int:
         int: Number of jobs deleted
     """
     config.load_kube_config()
-
     batch_v1 = client.BatchV1Api()
-
+    logger.info("Deleting jobs with prefix %s in namespace %s", prefix, namespace)
     try:
         jobs = batch_v1.list_namespaced_job(namespace)
-        jobs_to_delete = [
+        jobs_to_delete: List[str] = [
             job.metadata.name
             for job in jobs.items
             if job.metadata.name.startswith(prefix)
         ]
 
         if not jobs_to_delete:
-            print(f"No jobs with prefix '{prefix}' found in namespace '{namespace}'")
+            logger.info("No jobs with found")
             return 0
         num = len(jobs_to_delete)
-        print(f"Found {num} jobs with prefix '{prefix}' in namespace '{namespace}'")
+        logger.info("Found %s jobs to delete", num)
+        now = time()
         for job_name in jobs_to_delete:
             batch_v1.delete_namespaced_job(
                 name=job_name,
                 namespace=namespace,
                 body=client.V1DeleteOptions(propagation_policy="Foreground"),
             )
+        logger.info("Took %ss to delete %s jobs", time() - now, num)
         return len(jobs_to_delete)
     except ApiException as e:
-        print(f"Exception when deleting jobs: {e}")
+        logger.error("Exception when deleting jobs: %s", e)
         return 0
 
 

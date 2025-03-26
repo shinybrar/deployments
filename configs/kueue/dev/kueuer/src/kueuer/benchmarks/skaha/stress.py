@@ -31,7 +31,8 @@ async def system(
         concurrency (int, optional): Parallel requests. Defaults to 128.
         total (int, optional): Total requests. Defaults to 512.
         timeout (int, optional): Timeout. Defaults to 120.
-        image (str, optional): Docker image. Defaults to "images.canfar.net/skaha/stress-ng:latest".
+        image (str, optional): Docker image.
+            Defaults to "images.canfar.net/skaha/stress-ng:latest".
         duration (int, optional): Duration. Defaults to 30.
         cores (int, optional): Number of cores. Defaults to 1.
         ram (int, optional): Amount of RAM in GB. Defaults to 1.

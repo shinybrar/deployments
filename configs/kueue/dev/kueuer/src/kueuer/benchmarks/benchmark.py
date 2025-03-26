@@ -9,7 +9,8 @@ from typing import Any, Dict, List, Optional, Set
 
 import typer
 
-from kueuer.benchmarks.kubectl import launcher, track
+from kueuer.benchmarks import launch, track
+from kueuer.utils.logging import logger
 
 app = typer.Typer(help="Launch Benchmark Suite")
 
@@ -26,8 +27,7 @@ def experiment(
     kueue: Optional[str] = None,
     priority: Optional[str] = None,
 ) -> Dict[str, Any]:
-    """
-    Run a single experiment with the specified configuration.
+    """Run a single experiment with the specified configuration.
 
     Args:
         job_count: Number of jobs to create
@@ -46,20 +46,25 @@ def experiment(
     """
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     prefix = f"{'kueue' if use_kueue else 'direct'}-{timestamp}-{count}"
-
-    print(f"\n{'='*80}")
-    print(f"Starting experiment with {count} jobs, duration {duration}s")
-    print(f"Configuration: {'With Kueue' if use_kueue else 'Direct Kubernetes'}")
+    logger.info("=" * 80)
+    logger.info("Starting experiment with %d jobs, duration %ds", count, duration)
+    logger.info("Configuration: %s", "With Kueue" if use_kueue else "Direct Kubernetes")
     if use_kueue:
-        print(f"Kueue Queue: {kueue}, Priority: {priority}")
-    print(f"Namespace: {namespace}, Cores: {cores}, RAM: {ram}GB, Storage: {storage}GB")
-    print(f"{'='*80}")
+        logger.info("Kueue Queue: %s, Priority: %s", kueue, priority)
+    logger.info(
+        "Namespace: %s, Cores: %s, RAM: %sGB, Storage: %sGB",
+        namespace,
+        cores,
+        ram,
+        storage,
+    )
+    logger.info("=" * 80)
 
     # Start measuring time
     start_time = time.time()
 
     # Execute the launcher
-    launcher.jobs(
+    launch.jobs(
         filepath=filepath,
         namespace=namespace,
         prefix=prefix,
@@ -73,8 +78,9 @@ def experiment(
     )
 
     # Track jobs to completion and get timing statistics
-    print("Jobs launched, tracking completion...")
+    logger.info("Jobs launched, tracking completion...")
     times = track.jobs(namespace, prefix, "Complete")
+    logger.info("All jobs completed, computing statistics...")
     stats = track.compute_statistics(times)
 
     # End time measurement
@@ -113,13 +119,13 @@ def experiment(
         ),
     }
 
-    print(f"Experiment completed in {total_execution_time:.2f}s")
+    logger.info("Experiment completed in %.2fs", total_execution_time)
     total = result["total_time_from_first_creation_to_last_completion"]
-    print(f"Total time from first creation to last completion: {total:.2f}s")
+    logger.info("Total time from first creation to last completion: %.2fs", total)
 
     # Cleanup jobs
-    print("Cleaning up jobs...")
-    launcher.delete_jobs_with_prefix(namespace, prefix)
+    logger.info("Cleaning up jobs...")
+    launch.delete_jobs_with_prefix(namespace, prefix)
     return result
 
 
@@ -178,7 +184,7 @@ def benchmark(
         save_results_to_csv(results, resultsfile)
 
         # Wait between experiments
-        print(f"Waiting {wait} seconds before next experiment...")
+        logger.info("Waiting %ss before next experiment...", wait)
         sleep(wait)
 
         # Run with Kueue
@@ -201,7 +207,7 @@ def benchmark(
 
         # Wait between experiments
         if count != counts[-1]:  # Don't wait after the last experiment
-            print(f"Waiting {wait} seconds before next experiment...")
+            logger.info("Waiting %s seconds before next experiment...", wait)
             sleep(wait)
 
     return results
@@ -240,7 +246,7 @@ def save_results_to_csv(results: List[Dict[str, Any]], filename: str) -> None:
                     row_data[key] = value
             writer.writerow(row_data)
 
-    print(f"Results saved to {filename}")
+    logger.info("Results saved to %s", filename)
 
 
 @app.command("performance")
@@ -249,61 +255,66 @@ def performance(
     namespace: str = (
         typer.Option(..., "-n", "--namespace", help="Namespace to launch jobs in.")
     ),
-    kueue: str = (typer.Option(..., "--kueue", help="Kueue queue to launch jobs in.")),
+    kueue: str = (
+        typer.Option(..., "-k", "--kueue", help="Local kueue to launch jobs in.")
+    ),
     priority: str = (
         typer.Option(
-            ..., "--kueue-priority", help="Kueue priority to launch jobs with."
+            ..., "-p", "--priority", help="Kueue priority to launch jobs with."
         )
     ),
     e0: int = typer.Option(
         4,
         "-e0",
         "--exponent0",
-        help="Minimum exponent for to create jobs [2^e0, ..., 2^e])",
+        help="Lower bound exponent for to create jobs [2^e0, ..., 2^e])",
     ),
     exponent: int = typer.Option(
         10,
         "-e",
         "--exponent",
-        help="Maximum exponent for to create jobs [2^e0, ..., 2^e])",
+        help="Upper bound for to create jobs [2^e0, ..., 2^e])",
     ),
     duration: int = (
         typer.Option(1, "-d", "--duration", help="Duration for each job in seconds.")
     ),
     cores: int = (
-        typer.Option(1, "--cores", help="Number of CPU cores to allocate to each job.")
+        typer.Option(
+            1, "-c", "--cores", help="Number of CPU cores to allocate to each job."
+        )
     ),
     ram: int = (
-        typer.Option(1, "--ram", help="Amount of RAM to allocate to each job in GB.")
+        typer.Option(
+            1, "-r", "--ram", help="Amount of RAM to allocate to each job in GB."
+        )
     ),
     storage: int = (
         typer.Option(
             1,
+            "-s",
             "--storage",
             help="Amount of ephemeral-storage to allocate to each job in GB.",
         )
     ),
-    resultfile: str = (
-        typer.Option("results.csv", "--results-file", help="File to save results to.")
+    output: str = (
+        typer.Option("results.csv", "-o", "--output", help="File to save results to.")
     ),
     wait: int = (
-        typer.Option(
-            60, "--wait-between-runs", help="Time to wait between experiments."
-        )
+        typer.Option(60, "-w", "--wait", help="Time to wait between experiments.")
     ),
 ):
-    """Run a benchmark comparing direct k8s job execution with Kueue."""
+    """Run a benchmark comparing native K8s job scheduling performance against Kueue."""
     counts = [2**i for i in range(e0, exponent + 1)]
-    print("Starting benchmark with the following configuration:")
-    print(f"Job counts: {counts}")
-    print(f"Job duration: {duration}s")
-    print(f"Cores: {cores}, RAM: {ram}GB, Storage: {storage}GB")
-    print(f"Namespace: {namespace}")
-    print(f"Template file: {filepath}")
-    print(f"Kueue queue: {kueue}")
-    print(f"Kueue priority: {priority}")
-    print(f"Results file: {resultfile}")
-    print(f"Wait between runs: {wait}s")
+    logger.info("Starting benchmark with the following configuration:")
+    logger.info("Jobs     : %s", counts)
+    logger.info("Duration : %ss", duration)
+    logger.info("Cores    : %s, RAM: %sGB, Storage: %sGB", cores, ram, storage)
+    logger.info("Namespace: %s", namespace)
+    logger.info("Template : %s", filepath)
+    logger.info("Kueue    : %s", kueue)
+    logger.info("Priority : %s", priority)
+    logger.info("Output   : %s", output)
+    logger.info("Wait     : %ss", wait)
 
     benchmark(
         counts=counts,
@@ -315,12 +326,12 @@ def performance(
         filepath=filepath,
         kueue=kueue,
         priority=priority,
-        resultsfile=resultfile,
+        resultsfile=output,
         wait=wait,
     )
-    print("Benchmark completed successfully.")
-    print(f"Results saved to {resultfile}")
-    print("You can now run 'kueuer plot performance' to visualize the results.")
+    logger.info("Benchmark completed successfully.")
+    logger.info("Results saved to %s", output)
+    logger.info("You can now run 'kueuer plot performance' to visualize the results.")
 
 
 # @app.command("eviction")
