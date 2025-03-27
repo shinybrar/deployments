@@ -12,13 +12,13 @@ import typer
 from kueuer.benchmarks import launch, track
 from kueuer.utils.logging import logger
 
-app = typer.Typer(help="Launch Benchmark Suite")
+benchmark_cli: typer.Typer = typer.Typer(help="Launch Benchmark Suite")
 
 
 def experiment(
     count: int,
     duration: int,
-    cores: int,
+    cores: int, 
     ram: int,
     storage: int,
     namespace: str,
@@ -249,7 +249,7 @@ def save_results_to_csv(results: List[Dict[str, Any]], filename: str) -> None:
     logger.info("Results saved to %s", filename)
 
 
-@app.command("performance")
+@benchmark_cli.command("performance")
 def performance(
     filepath: str = (typer.Option(..., "-f", "--filepath", help="K8s job template.")),
     namespace: str = (
@@ -334,47 +334,57 @@ def performance(
     logger.info("You can now run 'kueuer plot performance' to visualize the results.")
 
 
-# @app.command("eviction")
-# def eviction(
-#     filepath: str = (typer.Option(..., "-f", "--filepath", help="K8s job template.")),
-#     namespace: str = (
-#         typer.Option(..., "-n", "--namespace", help="Namespace to launch jobs in.")
-#     ),
-#     kueue: str= (
-#         typer.Option(..., "--kueue", help="Local Kueue queue to launch jobs in.")
-#     ),
-#     priorities: List[str] = (
-#         typer.Option(
-#             [],
-#             "--kueue-priorities",
-#             help="Ordered Kueue priorities to launch jobs with, from low to high.",
-#         )
-#     ),
-#     cores: int = (
-#         typer.Option(
-#             8, "--cores", help="Total number of CPU cores in the kueue ClusterQueue."
-#         )
-#     ),
-#     ram: int = (
-#         typer.Option(
-#             8, "--ram", help="Total amount of RAM in the kueue ClusterQueue in GB."
-#         )
-#     ),
-#     storage: int = (
-#         typer.Option(
-#             8,
-#             "--storage",
-#             help="Total amount of storage in the kueue ClusterQueue in GB.",
-#         )
-#     ),
-# ):
-#     # Eviction Benchmark
-#     # 1. Create long running jobs packing the cluster queue
-#     # 2. Create a new shortlived higher priority job using minimum resources
-#     # 3. Confirm if a workload is evicted
-#     # 4. Confirm if the higher priority job is executed
-#     # 5. Cleanup
-#     pass
+@app.command("evictions")
+def eviction(
+    filepath: str = (typer.Option(..., "-f", "--filepath", help="K8s job template.")),
+    namespace: str = (
+        typer.Option(..., "-n", "--namespace", help="Namespace to launch jobs in.")
+    ),
+    kueue: str= (
+        typer.Option(..., "--kueue", help="Local Kueue queue to launch jobs in.")
+    ),
+    priorities: List[str] = (
+        typer.Option(
+            ["low", "medium", "high"],
+            "--kueue-priorities",
+            help="Ordered Kueue priorities to launch jobs with, from low to high.",
+        )
+    ),
+    cores: int = (
+        typer.Option(
+            8, "--cores", help="Total number of CPU cores in the kueue ClusterQueue."
+        )
+    ),
+    ram: int = (
+        typer.Option(
+            8, "--ram", help="Total amount of RAM in the kueue ClusterQueue in GB."
+        )
+    ),
+    storage: int = (
+        typer.Option(
+            8,
+            "--storage",
+            help="Total amount of storage in the kueue ClusterQueue in GB.",
+        )
+    ),
+):
+    logger.info("Starting eviction benchmarks with the following configuration:")
+    logger.info("Template     : %s", filepath)
+    logger.info("Namespace    : %s", namespace)
+    logger.info("Kueue        : %s", kueue)
+    logger.info("Priorities   : %s", priorities)
+    logger.info("Total Cores  : %s", cores)
+    logger.info("Total RAM    : %sGB", ram)
+    logger.info("Total Storage: %sGB", storage)
+
+    logger.info("Implementation in progress...")
+    # Eviction Benchmark
+    # 1. Create long running jobs packing the cluster queue
+    # 2. Create a new shortlived higher priority job using minimum resources
+    # 3. Confirm if a workload is evicted
+    # 4. Confirm if the higher priority job is executed
+    # 5. Cleanup
+    pass
 
 if __name__ == "__main__":
-    app()
+    benchmark_cli()
