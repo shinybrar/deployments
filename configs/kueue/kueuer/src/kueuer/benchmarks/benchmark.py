@@ -334,7 +334,7 @@ def performance(
     logger.info("You can now run 'kueuer plot performance' to visualize the results.")
 
 
-@app.command("evictions")
+@benchmark_cli.command("evictions")
 def eviction(
     filepath: str = (typer.Option(..., "-f", "--filepath", help="K8s job template.")),
     namespace: str = (
