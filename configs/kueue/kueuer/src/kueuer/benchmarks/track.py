@@ -100,8 +100,20 @@ def jobs(
         logfire.info(f"No jobs found with prefix '{prefix}' in namespace '{namespace}'")
         logfire.info("Exiting...")
         return done
+    
+    # There is an edge case, where jobs can finish even before we start tracking them.
+    # So, we need to check if any of the jobs are already in the desired state.
+    for item in data.items:
+        if item.metadata.name in pending and status(item, to_state):
+            completion: datetime = item.status.completion_time
+            creation: datetime = item.metadata.creation_timestamp
+            duration: float = (completion - creation).total_seconds()
+            msg = f"{item.metadata.name} reached state {to_state} in {duration:.2f} seconds."
+            logfire.info(msg)
+            done[item.metadata.name] = (creation, completion, duration)
+            pending[item.metadata.name] = False
 
-    logfire.info(f"Found {len(pending)} jobs.")
+    logfire.info(f"{len(pending)} jobs need to be tracked.")
     logfire.info(f"Starting to track jobs to state {to_state}...")
 
     while any(pending.values()):
@@ -130,7 +142,7 @@ def jobs(
                 done[name] = (creation, completion, duration)
                 pending[name] = False
 
-            logfire.info(f"Pending Jobs Left: {sum(pending.values())}")
+            logfire.debug(f"Pending Jobs Left: {sum(pending.values())}")
 
             if sum(pending.values()) == 0:
                 logfire.info(f"All jobs with prefix {prefix} reached state {to_state}")
