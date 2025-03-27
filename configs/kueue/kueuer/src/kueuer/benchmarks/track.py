@@ -105,6 +105,7 @@ def jobs(
     logfire.info(f"Starting to track jobs to state {to_state}...")
 
     while any(pending.values()):
+        start = datetime.now()
         for event in watcher.stream(
             batch_v1.list_namespaced_job,
             namespace=namespace,
@@ -129,9 +130,15 @@ def jobs(
                 done[name] = (creation, completion, duration)
                 pending[name] = False
 
-            logfire.debug(f"Pending Jobs Left: {sum(pending.values())}")
+            logfire.info(f"Pending Jobs Left: {sum(pending.values())}")
 
             if sum(pending.values()) == 0:
                 logfire.info(f"All jobs with prefix {prefix} reached state {to_state}")
                 watcher.stop()
+                break
+            
+            if (datetime.now() - start).seconds > 600:
+                logfire.info("Timeout reached. Exiting...")
+                watcher.stop()
+                break
     return done
