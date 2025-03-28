@@ -84,6 +84,12 @@ integrations:
   # - "deployment"
   # externalFrameworks:
   # - "Foo.v1.example.com"
+  labelKeysToCopy:
+  - canfar-net-sessionID
+  - canfar-net-sessionName
+  - canfar-net-sessionType
+  - canfar-net-userid
+  - batch.kubernetes.io/job-name
 
   # kueue controller behaviour for pod objects
   podOptions:
