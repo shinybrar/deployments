@@ -2,6 +2,7 @@
 
 import csv
 import os
+import math
 import time
 from datetime import datetime
 from time import sleep
@@ -18,7 +19,7 @@ benchmark_cli: typer.Typer = typer.Typer(help="Launch Benchmark Suite")
 def experiment(
     count: int,
     duration: int,
-    cores: int, 
+    cores: int,
     ram: int,
     storage: int,
     namespace: str,
@@ -340,34 +341,49 @@ def eviction(
     namespace: str = (
         typer.Option(..., "-n", "--namespace", help="Namespace to launch jobs in.")
     ),
-    kueue: str= (
-        typer.Option(..., "--kueue", help="Local Kueue queue to launch jobs in.")
+    kueue: str = (
+        typer.Option(..., "-k", "--kueue", help="Local Kueue queue to launch jobs in.")
     ),
     priorities: List[str] = (
         typer.Option(
             ["low", "medium", "high"],
-            "--kueue-priorities",
+            "-p",
+            "--priorities",
             help="Ordered Kueue priorities to launch jobs with, from low to high.",
         )
     ),
+    jobs: int = (
+        typer.Option(8, "-j", "--jobs", help="Jobs per priority level to launch.")
+    ),
     cores: int = (
         typer.Option(
-            8, "--cores", help="Total number of CPU cores in the kueue ClusterQueue."
+            8,
+            "-c",
+            "--cores",
+            help="Total number of CPU cores in the kueue ClusterQueue.",
         )
     ),
     ram: int = (
         typer.Option(
-            8, "--ram", help="Total amount of RAM in the kueue ClusterQueue in GB."
+            8,
+            "-r",
+            "--ram",
+            help="Total amount of RAM in the kueue ClusterQueue in GB.",
         )
     ),
     storage: int = (
         typer.Option(
             8,
+            "-s",
             "--storage",
             help="Total amount of storage in the kueue ClusterQueue in GB.",
         )
     ),
+    duration: int = (
+        typer.Option(120, "-d", "--duration", help="Longest duration for jobs in seconds.")
+    )
 ):
+    """Run a benchmark to test eviction behavior of Kueue in a packed cluster queue." """
     logger.info("Starting eviction benchmarks with the following configuration:")
     logger.info("Template     : %s", filepath)
     logger.info("Namespace    : %s", namespace)
@@ -377,7 +393,48 @@ def eviction(
     logger.info("Total RAM    : %sGB", ram)
     logger.info("Total Storage: %sGB", storage)
 
-    logger.info("Implementation in progress...")
+    prefix: str = "kueue-eviction"
+    job_count = jobs
+    job_core: int = math.ceil(cores / job_count)
+    job_ram: int = math.ceil(ram / job_count)
+    job_storage: int = math.ceil(storage / job_count)
+
+    for index, priority in enumerate(priorities):
+        job_duration = max(int(duration / (2 ** index)), 1)
+        logger.info("Job Parameters: Cores: %s, RAM: %sGB, Storage: %sGB", job_core, job_ram, job_storage)
+        logger.info("Launching %s jobs with %s priority and duration of %ss" , job_count, priority, job_duration)
+        launch.jobs(
+            filepath=filepath,
+            namespace=namespace,
+            prefix=f"{prefix}-{priority}-job",
+            count=job_count,
+            duration=job_duration,
+            cores=job_core,
+            ram=job_ram,
+            storage=job_storage,
+            kueue=kueue,
+            priority=priority,
+        )
+
+    logger.info("All jobs launched successfully.")
+    logger.info("Tracking jobs to completion...")
+    data: Dict[str, Any] = {}
+    for priority in reversed(priorities):
+        prefix = f"{prefix}-{priority}-job"
+        data[priority] = track.jobs(namespace, prefix, "Complete")
+    logger.info("All jobs completed, computing statistics...")
+    stats: Dict[str, Any] = {}
+    
+    for priority in priorities:
+        stats[priority] = track.compute_statistics(data[priority])
+    
+    logger.info("Saving statistics to CSV...")
+    for priority in priorities:
+        save_results_to_csv(stats[priority], f"{prefix}-{priority}-stats.csv")
+    
+
+
+
     # Eviction Benchmark
     # 1. Create long running jobs packing the cluster queue
     # 2. Create a new shortlived higher priority job using minimum resources
@@ -385,6 +442,7 @@ def eviction(
     # 4. Confirm if the higher priority job is executed
     # 5. Cleanup
     pass
+
 
 if __name__ == "__main__":
     benchmark_cli()

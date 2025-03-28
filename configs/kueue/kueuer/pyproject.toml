@@ -37,3 +37,8 @@ extend-ignore = ["D"]
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
+
+[dependency-groups]
+dev = [
+    "ipython>=9.0.0",
+]

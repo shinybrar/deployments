@@ -693,6 +693,11 @@ dependencies = [
     { name = "typer" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "ipython" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "aiofiles", specifier = ">=24.1.0" },
@@ -708,6 +713,9 @@ requires-dist = [
     { name = "skaha", git = "https://github.com/shinybrar/skaha.git?branch=CADC-14066-scaling-issues" },
     { name = "typer", specifier = ">=0.15.2" },
 ]
+
+[package.metadata.requires-dev]
+dev = [{ name = "ipython", specifier = ">=9.0.0" }]
 
 [[package]]
 name = "logfire"

@@ -100,7 +100,7 @@ def jobs(
         logfire.info(f"No jobs found with prefix '{prefix}' in namespace '{namespace}'")
         logfire.info("Exiting...")
         return done
-    
+
     # There is an edge case, where jobs can finish even before we start tracking them.
     # So, we need to check if any of the jobs are already in the desired state.
     for item in data.items:
@@ -148,7 +148,7 @@ def jobs(
                 logfire.info(f"All jobs with prefix {prefix} reached state {to_state}")
                 watcher.stop()
                 break
-            
+
             if (datetime.now() - start).seconds > 600:
                 logfire.info("Timeout reached. Exiting...")
                 watcher.stop()

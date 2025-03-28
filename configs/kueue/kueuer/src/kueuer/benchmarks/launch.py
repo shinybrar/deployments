@@ -143,7 +143,7 @@ def jobs(
             None, "--kueue-priority", help="Kueue priority to launch jobs with."
         )
     ),
-):
+) -> None:
     """Stress Test Kubernetes Cluster."""
     ram_mb: float = ram * 1024.0
     args: List[str] = [
