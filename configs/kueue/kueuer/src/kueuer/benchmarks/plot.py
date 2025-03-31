@@ -60,7 +60,7 @@ def load_and_clean_results(filename: str) -> pd.DataFrame:
     return df
 
 
-def plot_completion_times(
+def plot_completion_times( # noqa: C901
     df: pd.DataFrame,
     output_file: str = "completion_times.png",
     log_scale: bool = True,
@@ -238,7 +238,7 @@ def plot_performance_comparison(
     metric: str = "total_time_from_first_creation_to_last_completion",
 ) -> None:
     """
-    Plot performance comparison showing the difference between direct and Kueue approaches.
+    Plot performance comparison between direct and Kueue approaches.
 
     Args:
         df: DataFrame containing experiment results
@@ -356,7 +356,7 @@ def plot_scaling_efficiency(
 
     if len(direct_df) < 2 or len(kueue_df) < 2:
         print(
-            "Warning: Insufficient data for scaling efficiency plot (need at least 2 job counts for each approach)."
+            "Warning: Insufficient data for scaling efficiency plot."
         )
         return
 

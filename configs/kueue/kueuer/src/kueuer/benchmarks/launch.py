@@ -56,8 +56,8 @@ async def run(data: Dict[Any, Any], prefix: str, count: int) -> bool:
             command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
         )
         stdout, stderr = await proc.communicate()
-        logger.debug("stdout: %s", stdout.decode() if stdout else "")
-        logger.debug("stderr: %s", stderr.decode() if stderr else "")
+        logger.info("stdout: %s", stdout.decode() if stdout else "")
+        logger.info("stderr: %s", stderr.decode() if stderr else "")
         if proc.returncode != 0:
             logger.error("Error applying %s", temp.name)
             return False

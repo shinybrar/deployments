@@ -65,7 +65,76 @@ def compute_statistics(data: Dict[str, JobTiming]) -> Dict[str, Any]:
     return stats
 
 
-def jobs(
+def evictions(
+    namespace: str,
+    revision: str,
+):
+    """Track the status of Kubernetes workloads.
+
+    Args:
+        namespace (str): Namespace of the workloads.
+        revision (str): K8s resource version to start tracking from.
+
+    Returns:
+        Dict[str, Dict[str, Any]]: Workload information.
+    """
+    config.load_kube_config()
+    crd: client.CustomObjectsApi = client.CustomObjectsApi()
+    watcher = watch.Watch()
+    workloads: Dict[str, Dict[str, Any]] = {}
+    completed: int = 0
+    logfire.info(f"Tracking evictions in namespace '{namespace}'")
+    for event in watcher.stream(  # type: ignore
+        crd.list_namespaced_custom_object,  # type: ignore
+        group="kueue.x-k8s.io",
+        version="v1beta1",
+        namespace=namespace,
+        plural="workloads",
+        resource_version=revision,
+        timeout_seconds=600,
+    ):
+        logfire.debug(f"K8s Event: {event['type']}")
+        data: Dict[str, Any] = event["object"]
+        uid: str = str(data["metadata"]["uid"])
+        workload = workloads.get(uid, {})
+
+        for condition in data.get("status", {}).get("conditions", []):
+            if condition["type"] == "Admitted" and condition["status"] == "True":
+                name: str = str(data["metadata"]["name"])
+                priority: str = str(data["spec"]["priority"])
+                workloads[uid] = {
+                    "name": name,
+                    "priority": int(priority),
+                    "admitted_at": datetime.now(),
+                    "finished_at": None,
+                    "requeues": 0,
+                    "preemptors": [],
+                }
+                logfire.info(f"{name} admitted with priority {priority}")
+
+            if condition["type"] == "Evicted" and condition["status"] == "True":
+                preemptor: str = (
+                    condition.get("message", "").split("UID: ")[1].split(")")[0].strip()
+                )
+                workloads[uid]["preemptors"].append((preemptor, datetime.now()))
+                logfire.info(f"{workload.get('name')} evicted by {preemptor}")
+
+            elif condition["type"] == "Finished" and condition["status"] == "True":
+                workload["finished_at"] = datetime.now()
+                completed += 1
+                logfire.info(f"{workload.get('name')} finished.")
+
+            elif condition["type"] == "Requeued" and condition["status"] == "True":
+                workload["requeues"] += 1
+                logfire.info(f"{workload.get('name')} requeued.")
+
+        if workloads and completed == len(workloads):
+            logfire.info("All workloads finished.")
+            watcher.stop()
+    return workloads
+
+
+def jobs( # noqa: C901
     namespace: str,
     prefix: str,
     to_state: str = "Complete",
@@ -108,7 +177,7 @@ def jobs(
             completion: datetime = item.status.completion_time
             creation: datetime = item.metadata.creation_timestamp
             duration: float = (completion - creation).total_seconds()
-            msg = f"{item.metadata.name} reached state {to_state} in {duration:.2f} seconds."
+            msg = f"{item.metadata.name} reached {to_state} in {duration:.2f} seconds."
             logfire.info(msg)
             done[item.metadata.name] = (creation, completion, duration)
             pending[item.metadata.name] = False

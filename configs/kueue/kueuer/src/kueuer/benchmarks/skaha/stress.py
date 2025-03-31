@@ -9,7 +9,7 @@ logfire.configure()
 logfire.instrument_httpx()
 
 
-async def system(
+async def system(  # noqa: C901
     server: str,
     token: Optional[str] = None,
     concurrency: int = 16,

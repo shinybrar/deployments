@@ -1,16 +1,17 @@
 """Benchmark module for comparing Kubernetes job execution with and without Kueue."""
 
 import csv
-import os
 import math
+import os
 import time
 from datetime import datetime
 from time import sleep
 from typing import Any, Dict, List, Optional, Set
 
 import typer
+from kubernetes import client, config
 
-from kueuer.benchmarks import launch, track
+from kueuer.benchmarks import analyze, launch, track
 from kueuer.utils.logging import logger
 
 benchmark_cli: typer.Typer = typer.Typer(help="Launch Benchmark Suite")
@@ -334,7 +335,6 @@ def performance(
     logger.info("Results saved to %s", output)
     logger.info("You can now run 'kueuer plot performance' to visualize the results.")
 
-
 @benchmark_cli.command("evictions")
 def eviction(
     filepath: str = (typer.Option(..., "-f", "--filepath", help="K8s job template.")),
@@ -345,7 +345,7 @@ def eviction(
         typer.Option(..., "-k", "--kueue", help="Local Kueue queue to launch jobs in.")
     ),
     priorities: List[str] = (
-        typer.Option(
+        typer.Option( # noqa: B008
             ["low", "medium", "high"],
             "-p",
             "--priorities",
@@ -380,10 +380,16 @@ def eviction(
         )
     ),
     duration: int = (
-        typer.Option(120, "-d", "--duration", help="Longest duration for jobs in seconds.")
-    )
+        typer.Option(
+            120, "-d", "--duration", help="Longest duration for jobs in seconds."
+        )
+    ),
 ):
-    """Run a benchmark to test eviction behavior of Kueue in a packed cluster queue." """
+    """Run a benchmark to test eviction behavior of Kueue in a packed cluster queue."""
+    config.load_kube_config()
+    v1 = client.CoreV1Api()
+    resource_id: str = str(v1.list_namespace(limit=1).metadata.resource_version)  # type: ignore
+
     logger.info("Starting eviction benchmarks with the following configuration:")
     logger.info("Template     : %s", filepath)
     logger.info("Namespace    : %s", namespace)
@@ -392,6 +398,9 @@ def eviction(
     logger.info("Total Cores  : %s", cores)
     logger.info("Total RAM    : %sGB", ram)
     logger.info("Total Storage: %sGB", storage)
+    logger.info("Job Duration : %ss", duration)
+    logger.info("Job Count    : %s", jobs)
+    logger.info("K8s Resource : %s", resource_id)
 
     prefix: str = "kueue-eviction"
     job_count = jobs
@@ -400,9 +409,19 @@ def eviction(
     job_storage: int = math.ceil(storage / job_count)
 
     for index, priority in enumerate(priorities):
-        job_duration = max(int(duration / (2 ** index)), 1)
-        logger.info("Job Parameters: Cores: %s, RAM: %sGB, Storage: %sGB", job_core, job_ram, job_storage)
-        logger.info("Launching %s jobs with %s priority and duration of %ss" , job_count, priority, job_duration)
+        job_duration = max(int(duration / (2**index)), 1)
+        logger.info(
+            "Job Parameters: Cores: %s, RAM: %sGB, Storage: %sGB",
+            job_core,
+            job_ram,
+            job_storage,
+        )
+        logger.info(
+            "Launching %s jobs with %s priority and duration of %ss",
+            job_count,
+            priority,
+            job_duration,
+        )
         launch.jobs(
             filepath=filepath,
             namespace=namespace,
@@ -418,30 +437,20 @@ def eviction(
 
     logger.info("All jobs launched successfully.")
     logger.info("Tracking jobs to completion...")
-    data: Dict[str, Any] = {}
-    for priority in reversed(priorities):
-        prefix = f"{prefix}-{priority}-job"
-        data[priority] = track.jobs(namespace, prefix, "Complete")
-    logger.info("All jobs completed, computing statistics...")
-    stats: Dict[str, Any] = {}
-    
-    for priority in priorities:
-        stats[priority] = track.compute_statistics(data[priority])
-    
-    logger.info("Saving statistics to CSV...")
-    for priority in priorities:
-        save_results_to_csv(stats[priority], f"{prefix}-{priority}-stats.csv")
-    
-
-
-
-    # Eviction Benchmark
-    # 1. Create long running jobs packing the cluster queue
-    # 2. Create a new shortlived higher priority job using minimum resources
-    # 3. Confirm if a workload is evicted
-    # 4. Confirm if the higher priority job is executed
-    # 5. Cleanup
-    pass
+    output = track.evictions(
+        namespace=namespace,
+        revision=resource_id,
+    )
+    issues: bool = analyze.evictions(output)
+    if issues:
+        logger.error("Eviction issues detected!")
+    else:
+        logger.info("No eviction issues detected.")
+    logger.info("Eviction tracking completed.")
+    logger.info("Cleaning up jobs...")
+    launch.delete_jobs_with_prefix(namespace, prefix)
+    logger.info("Jobs cleaned up successfully.")
+    logger.info("Eviction benchmark completed.")
 
 
 if __name__ == "__main__":
