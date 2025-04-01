@@ -169,6 +169,7 @@ def jobs(
     job["metadata"]["namespace"] = namespace
     if kueue:
         job["metadata"]["labels"]["kueue.x-k8s.io/queue-name"] = kueue
+        job["spec"]["suspend"] = True
     if priority:
         job["metadata"]["labels"]["kueue.x-k8s.io/priority-class"] = priority
     for container in job["spec"]["template"]["spec"]["containers"]:
