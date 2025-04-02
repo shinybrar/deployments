@@ -1,20 +1,53 @@
-# K8s Kueue on Science Platform
+# Kueue on Science Platform
 
-_This documentation and design consideration are based on kueue v0.10.0._
+_The documentation and design consideration are based on kueue v0.10.2._
 
 ## Overview
 
-Kueue is a kubernetes-native system that manages resources, quotas and queues for workloads.
+Kueue is a kubernetes-native system to manages resources, quotas and queues for workloads in a kubernetes cluster. It is designed to alleviate the pressure from the kubernetes control plane and apiservers, while also providing a lot of flexibility in how workloads are managed.
 
-When Kueue is enabled for a kubernetes namespace where a workload is launched, it is launched in a `Suspended` [Pod Phase](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-phase) rather than the nominal `Pending` state. This allows Kueue to manage the workload based on the resource, quota, priority and queue rulesets created by the cluster administrator. When all conditions are met, Kueue injects the `nodeAffinity` and releases the workload into a `Pending` state for the kubernetes job controller to manage.
+When Kueue is enabled for a namespace, workloads within it are launched in a `Suspended` [Pod Phase](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-phase) rather than the nominal `Pending` state. This allows Kueue to manage the workload based on the resources, quotas, priority and queue rulesets created by the cluster administrator. When all conditions are met, Kueue injects the `nodeAffinity` and releases the workload into a `Pending` state, at which point the nominal control plane and apiservers take over the lifecycle management.
 
-In short, kueue intercepts the workload, and releases it when the cluster is ready to accept it, thus alleviating the pressure from the kubernetes control plane and apiservers, while also providing a lot of flexibility in how workloads are managed.
+In short, **kueue intercepts the workload, and releases it when the cluster is ready to accept it**.
 
 ## Installation Guide
 
 We strongly recommend using the helm chart provided by the kubernetes-sigs/kueue project to install the system in your cluster, found [here](https://github.com/kubernetes-sigs/kueue/tree/main/charts/kueue).
 
-The kueue installation requires a helm `values.yaml` file to be provided during installation. A sample values file is provided with this work.
+The helm install requires a `values.yaml` file to be provided during installation with deployment specific configurations. You can find example configs provided with this codebase which are used in production and development environments at Canadian Astronomy Data Centre (CADC) by the Science Platform Team.
+ -  `configs/kueue/dev/values.yaml`
+ -  `configs/kueue/prod/values.yaml`
+
+### Installation Steps
+
+To install kueue in your cluster with the development configuration, follow the steps below:
+
+```bash
+git clone https://github.com/kubernetes-sigs/kueue.git
+git clone https://github.com/opencadc/deployments.git
+cd kueue/charts/kueue
+helm install kueue . -f ../../../deployments/configs/kueue/dev/values.yaml -n kueue-system
+```
+
+Once Kueue is installed, you need to configure the system to manage workloads in the cluster. This is done by creating `ResourceFlavors`, `ClusterQueues`, `LocalQueues`, and `WorkloadPriorityClass` objects in the cluster. Sample configurations for these objects are provided in the `configs/kueue/dev/` and `configs/kueue/prod/` directories. To install them, you can use the following commands;
+
+```bash
+cd deployments/configs/kueue/dev/
+kubectl apply -f clusterQueue.config.yaml  #Requires Cluster Admin Access
+kubectl apply -f localQueue.config.yaml    #Does not require admin access
+```
+
+The default configurations are based on the following assumptions:
+1. Hardware is homogenous across the cluster.
+2. User workloads are launched in `skaha-workload` or `canfar-b-workload` namespaces. Set via `ClusterQueue.spec.namespaceSelector.matchExpressions.values`
+3. Only `cpu`, `memory`, and `ephermeral-storage` resources are used in the cluster. Set via `ClusterQueue.spec.resourceGroups.coveredResources`
+4. There are three priority classes defined in the cluster, `high`, `medium`, and `low`. Set via `WorkloadPriorityClass` objects.
+
+See detailed configuration guide below for more information on how to configure kueue for your cluster. We highly recommend customizing the configurations to suit your cluster environment and workload requirements.
+
+## Kueue Configurations
+
+Configurations for kueue are divided into two main categories: ***deployment* configuration** and ***controller* configuration**. The deployment configuration is the cluster environment in which the kueue system is deployed. The controller configuration is the behavior of the kueue system itself, which includes settings that govern how the kueue interacts with the cluster and manages workloads.
 
 ### Deployment Configuration
 
@@ -24,13 +57,41 @@ The kueue deployment configuration is the cluster environment in which the kueue
   ```yaml
   enablePrometheus: true
   ```
-- Teams can individually enable or disable any kueue `controllerManager.featureGates` as needed. For example, even though enabled by default,
-
+- Teams can individually enable or disable any kueue `controllerManager.featureGates` as needed. For example, if you want to enable the `LocalQueueMetrics` feature gate, you can do so by adding the following to your helm values file:
+  ```yaml
+  featureGates:
+    - name: LocalQueueMetrics
+      enabled: true
+  ```
 ### Controller Configuration
 
-The kueue controller configuration is defined under the `managerConfig.controllerManagerConfigYaml` key in the helm values file. The following changes are recommended to the default values provided by the kueue helm chart:
+The kueue controller configuration is defined under the `managerConfig.controllerManagerConfigYaml` key in the helm values file. The following changes are recommended to the default values provided by the kueue helm chart. These are also provided in a `configs/kueue/[dev|prod]/controller.yaml` file in this repository for reference.
 
-- Explicitly set the kueue controller to not manage jobs that do not have kueue.x-k8s.io/queue-name annotation set. This ensures that jobs that are not managed by kueue are not intercepted by the system.
+- `groupKindConcurrency`: This is the number of concurrent reconciliations allowed for a controller. The default values are set to 1, which is not recommended for production environments. It is recommended to set the concurrency limits to a higher value, depending on the workload and resources available in your cluster. For example, shown below are the recommended concurrency limits for the kueue controller for the Science Platform.
+  ```yaml
+  controller:
+  # Number of concurrent reconciliation allowed for a controller.
+  groupKindConcurrency:
+    Job.batch: 256
+    Pod: 4
+    Workload.kueue.x-k8s.io: 256
+    LocalQueue.kueue.x-k8s.io: 256
+    ClusterQueue.kueue.x-k8s.io: 256
+    ResourceFlavor.kueue.x-k8s.io: 4
+  ```
+
+- Client Connections Details: This is the number of queries per second allowed for the kubernetes apiserver. The default values are set to 16, which is not recommended for production environments. It is recommended to set the qps and burst values to a higher value, depending on the workload and resources available in your cluster. For example, shown below are the recommended qps and burst values for the kueue controller for the Science Platform.
+  ```yaml
+  # Client connection details for the k8s_apiserver
+  clientConnection:
+    # queries/second allowed for k8s_apiserver
+    qps: 64
+    # extra queries to accumulate when a client is exceeding its rate.
+    burst: 128
+  ```
+
+
+- Explicitly set the kueue controller to not manage jobs that do not have `kueue.x-k8s.io/queue-name` annotation set. This ensures that jobs that are not managed by kueue are not intercepted by the system.
   ```yaml
   manageJobsWithoutQueueName: false
   ```
@@ -62,14 +123,14 @@ The kueue controller configuration is defined under the `managerConfig.controlle
             values: [ skaha-workload ]
   ```
 
-  ### Installation Steps
-
-  After reading through the configuration guide, follow the steps below to install kueue in your cluster:
-
-  ```bash
-  git clone https://github.com/kubernetes-sigs/kueue.git
-  cd kueue/charts/kueue
-  helm install kueue . -f configs/kueue/dev/values.yaml -n kueue-system
+- In order to copy labels from the `batch/job` to the `kueue` workload, you can set the `labelKeysToCopy` to the labels you want to copy. This is useful for tracking and managing workloads in the cluster.
+  ```yaml
+    labelKeysToCopy:
+  - canfar-net-sessionID
+  - canfar-net-sessionName
+  - canfar-net-sessionType
+  - canfar-net-userid
+  - batch.kubernetes.io/job-name
   ```
 
 ## Configuration Guide
@@ -95,6 +156,8 @@ spec:
   nodeLabels:
     instance-type: gpu
 ```
+
+***NOTE:** Kueue only supports positive node labels. You cannot use negative node labels to define a `ResourceFlavor`. For example, you cannot use `nodeLabels: instance-type: !gpu` to define a `ResourceFlavor` for non-gpu nodes. This is a design decision made by the kueue team to ensure the complexity of the placement solution is kept to a minimum.*
 
 You can can also create a `ResourceFlavor` fine-tuned to any specific hardware configuration. For example, shown below is a `ResourceFlavor` object that defines a `nvidia-gpu` resource flavor mapping to specific nodes which have `nvidia.com/gpu.product` with values `NVIDIA-A100-PCIE-40GB-MIG-3g.20gb` and `GRID-V100D-16C`.
 
@@ -122,8 +185,22 @@ metadata:
 
 ### [2. ClusterQueues](https://kueue.sigs.k8s.io/docs/concepts/cluster_queue/)
 
-`ClusterQueues` govern resources (defined by `ResourceFlavors`) and distribute them among various workloads at a cluster level. A ClusterQueue can draw resources from multiple `ResourceFlavor` objects and share (borrow & lend) them amongst other `ClusterQueues` in the same cohort while respecting workload priorities, job ordering, preemption, and fairness.
+`ClusterQueues` govern resources defined by `ResourceFlavors` and distribute them among various workloads at a cluster level. A ClusterQueue can draw resources from multiple `ResourceFlavor` objects and share (borrow & lend) them amongst other `ClusterQueues` in the same cohort while respecting workload priorities, job ordering, preemption, and fairness.
 
+#### Design Considerations
+
+When designing the `ClusterQueue` objects, it is important to consider the following:
+- **Cohorts**: `ClusterQueues` can be grouped into cohorts to share resources among themselves. This is useful for workloads that have similar resource requirements and can benefit from sharing resources.
+- **Resources**: By default, administrators must specify all resources required by user jobs in the `ClusterQueues`. If you want to exclude some resources in the quota management and admission process, you **must** specify the resource prefixes to be excluded in a kueue configuration on the cluster level, otherwise the users jobs will not be admitted and forever remain in the `Suspended` state.
+  ```yaml
+  apiVersion: config.kueue.x-k8s.io/v1beta1
+  kind: Configuration
+  resources:
+    excludeResourcePrefixes:
+    - "memory"
+  ```
+- **nominalQuota**: When defining the `nominalQuota` for a cluster, it is important to consider that Kueue expects all resources within the nominal quota are availaible for use at all times. This means, if you have a cluster with non-kueue workloads, kueue will overcommit the resources in the cluster. Though this is not an inherent problem it can lead to a lot of `Pending` workloads in the cluster, and in some cases even `OutOfMemory` errors in the cluster. It is recommended to set the `nominalQuota` to a value that is less than the total resources available in the cluster. For example, if you have a cluster with 100 CPUs and 200GB of memory, you can set the `nominalQuota` to 90 CPUs and 180GB of memory, i.e. 90% of the total resources available in the cluster. This will ensure that kueue does not overcommit the resources in the cluster and can manage the workloads effectively.
+-
 
 For example, shown below are two `ClusterQueues` objects that use resources defined by the `ResourceFlavor` objects created in the previous step.
 
@@ -238,30 +315,16 @@ Where `KUEUE_ENABLED` is a boolean value that blanket enables or disables kueue 
 ```yaml
 KUEUE_CONFIG: {}
 ```
-`KUEUE_CONFIG` is a dictionary where the key values are name of the possible kinds of workloads that can be submitted to the science platform, i.e.  `notebook`, `carta`, `desktop`, `contributed`, `headless`, and `default`. Each of these keys need an object defining the `localQueue` and `priorityClass` for the workload type.
+`KUEUE_CONFIG` is a dictionary where the key values are name of the possible kinds of workloads that can be submitted to the science platform, which are currently either `interactive` or `headless`, where `notebook`, `carta`, `desktop`, `contributed` are considered as a subset of `interative` jobs.Both of these keys need an object defining the `localQueue` and `priorityClass` for the workload type.
 
-The `default` key is a special case, which is attributed to all workload types, if they are not uniquely defined in the `KUEUE_CONFIG` object.
-
-For example, shown below is a `KUEUE_CONFIG` object that defines the `queueName` and `priorityClass` for the `notebook` and `default` workload types. Since the `carta`, `desktop`, `contributed`, and `headless` workload types are not defined in the `KUEUE_CONFIG` object, the `default` key is used for them.
+For example, shown below is a `KUEUE_CONFIG` object that defines the `queueName` and `priorityClass` in the `KUEUE_CONFIG` object,
 
 ```yaml
 KUEUE_CONFIG:
-  default:
-    queueName: "skaha-queue"
+  interative:
+    queueName: "skaha-workload-local-queue"
+    priorityClass: "high"
+  headless:
+    queueName: "skaha-workload-local-queue"
     priorityClass: "low"
-  notebook:
-    queueName: "skaha-gpu-queue"
-    priorityClass: "high"
-  carta:
-    queueName: "skaha--queue"
-    priorityClass: "high"
-```
-
-Alternatively, if you wish to enable kueue for only specific workload types only, you can omit the `default` key from the `KUEUE_CONFIG` object. For example, shown below is a `KUEUE_CONFIG` object that defines the `queueName` and `priorityClass` for the `notebook` workload type only.
-
-```yaml
-KUEUE_CONFIG:
-  notebook:
-    queueName: "skaha-queue"
-    priorityClass: "high"
 ```
