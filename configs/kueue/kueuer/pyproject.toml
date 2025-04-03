@@ -21,14 +21,14 @@ dependencies = [
     "skaha",
     "typer>=0.15.2",
 ]
-scripts = { kueuer = "kueuer.cli:app" }
+scripts = { kr = "kueuer.cli:app" }
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.uv.sources]
-skaha = { git = "https://github.com/shinybrar/skaha.git", branch = "CADC-14066-scaling-issues" }
+skaha = { git = "https://github.com/shinybrar/skaha.git", branch = "main" }
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "C", "N", "B", "I"]

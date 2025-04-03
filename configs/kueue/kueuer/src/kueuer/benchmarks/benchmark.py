@@ -1,20 +1,19 @@
 """Benchmark module for comparing Kubernetes job execution with and without Kueue."""
 
-import csv
 import math
-import os
 import time
 from datetime import datetime
 from time import sleep
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
 
 import typer
 from kubernetes import client, config
 
-from kueuer.benchmarks import analyze, launch, track
+from kueuer.benchmarks import DEFAULT_JOBSPEC_FILEPATH, analyze, k8s, track
+from kueuer.utils import io
 from kueuer.utils.logging import logger
 
-benchmark_cli: typer.Typer = typer.Typer(help="Launch Benchmark Suite")
+benchmark_cli: typer.Typer = typer.Typer(help="Launch Benchmarks")
 
 
 def experiment(
@@ -66,11 +65,11 @@ def experiment(
     start_time = time.time()
 
     # Execute the launcher
-    launch.jobs(
+    k8s.run(
         filepath=filepath,
         namespace=namespace,
         prefix=prefix,
-        count=count,
+        jobs=count,
         duration=duration,
         cores=cores,
         ram=ram,
@@ -127,7 +126,7 @@ def experiment(
 
     # Cleanup jobs
     logger.info("Cleaning up jobs...")
-    launch.delete_jobs_with_prefix(namespace, prefix)
+    k8s.delete_jobs(namespace, prefix)
     return result
 
 
@@ -183,7 +182,7 @@ def benchmark(
         results.append(result)
 
         # Save intermediate results
-        save_results_to_csv(results, resultsfile)
+        io.save_results_to_csv(results, resultsfile)
 
         # Wait between experiments
         logger.info("Waiting %ss before next experiment...", wait)
@@ -205,7 +204,7 @@ def benchmark(
         results.append(kueue_result)
 
         # Save intermediate results
-        save_results_to_csv(results, resultsfile)
+        io.save_results_to_csv(results, resultsfile)
 
         # Wait between experiments
         if count != counts[-1]:  # Don't wait after the last experiment
@@ -215,67 +214,42 @@ def benchmark(
     return results
 
 
-def save_results_to_csv(results: List[Dict[str, Any]], filename: str) -> None:
-    """
-    Save benchmark results to a CSV file.
-
-    Args:
-        results: List of experiment result dictionaries
-        filename: Path to save CSV file
-    """
-    # Define fieldnames based on all possible keys in results
-    fieldnames: Set[str] = set()
-    for result in results:
-        fieldnames.update(result.keys())
-    fieldnames = sorted(fieldnames)  # type: ignore
-
-    # Check if file exists to determine if header is needed
-    file_exists = os.path.isfile(filename)
-
-    with open(filename, mode="a", newline="", encoding="utf-8") as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-        if not file_exists:
-            writer.writeheader()
-
-        for result in results:
-            # Handle datetime objects by converting them to strings
-            row_data = {}
-            for key, value in result.items():
-                if isinstance(value, datetime):
-                    row_data[key] = value.isoformat()
-                else:
-                    row_data[key] = value
-            writer.writerow(row_data)
-
-    logger.info("Results saved to %s", filename)
-
-
 @benchmark_cli.command("performance")
 def performance(
-    filepath: str = (typer.Option(..., "-f", "--filepath", help="K8s job template.")),
+    filepath: str = (
+        typer.Option(
+            DEFAULT_JOBSPEC_FILEPATH, "-f", "--filepath", help="K8s job template."
+        )
+    ),
     namespace: str = (
-        typer.Option(..., "-n", "--namespace", help="Namespace to launch jobs in.")
+        typer.Option(
+            "skaha-workload", "-n", "--namespace", help="Namespace to launch jobs in."
+        )
     ),
     kueue: str = (
-        typer.Option(..., "-k", "--kueue", help="Local kueue to launch jobs in.")
+        typer.Option(
+            "skaha-local-queue",
+            "-k",
+            "--kueue",
+            help="Local kueue to launch jobs in.",
+        )
     ),
     priority: str = (
         typer.Option(
-            ..., "-p", "--priority", help="Kueue priority to launch jobs with."
+            "high", "-p", "--priority", help="Kueue priority to launch jobs with."
         )
     ),
     e0: int = typer.Option(
-        4,
-        "-e0",
-        "--exponent0",
-        help="Lower bound exponent for to create jobs [2^e0, ..., 2^e])",
+        1,
+        "-el",
+        "--exponent-lower",
+        help="Lower bound exponent for job count range [2^el, ..., 2^eh].",
     ),
     exponent: int = typer.Option(
-        10,
-        "-e",
-        "--exponent",
-        help="Upper bound for to create jobs [2^e0, ..., 2^e])",
+        3,
+        "-eh",
+        "--exponent-higher",
+        help="Higher bound exponent for job count range [2^el, ..., 2^eh].",
     ),
     duration: int = (
         typer.Option(1, "-d", "--duration", help="Duration for each job in seconds.")
@@ -305,7 +279,7 @@ def performance(
         typer.Option(60, "-w", "--wait", help="Time to wait between experiments.")
     ),
 ):
-    """Run a benchmark comparing native K8s job scheduling performance against Kueue."""
+    """Compare native K8s job scheduling vs. Kueue."""
     counts = [2**i for i in range(e0, exponent + 1)]
     logger.info("Starting benchmark with the following configuration:")
     logger.info("Jobs     : %s", counts)
@@ -317,6 +291,10 @@ def performance(
     logger.info("Priority : %s", priority)
     logger.info("Output   : %s", output)
     logger.info("Wait     : %ss", wait)
+
+    if not k8s.check(namespace, kueue, priority):
+        logger.error("Please check your Kueue configuration.")
+        raise typer.Exit(code=1)
 
     benchmark(
         counts=counts,
@@ -335,17 +313,29 @@ def performance(
     logger.info("Results saved to %s", output)
     logger.info("You can now run 'kueuer plot performance' to visualize the results.")
 
+
 @benchmark_cli.command("evictions")
 def eviction(
-    filepath: str = (typer.Option(..., "-f", "--filepath", help="K8s job template.")),
+    filepath: str = (
+        typer.Option(
+            DEFAULT_JOBSPEC_FILEPATH, "-f", "--filepath", help="K8s job template."
+        )
+    ),
     namespace: str = (
-        typer.Option(..., "-n", "--namespace", help="Namespace to launch jobs in.")
+        typer.Option(
+            "skaha-workload", "-n", "--namespace", help="Namespace to launch jobs in."
+        )
     ),
     kueue: str = (
-        typer.Option(..., "-k", "--kueue", help="Local Kueue queue to launch jobs in.")
+        typer.Option(
+            "skaha-local-queue",
+            "-k",
+            "--kueue",
+            help="Local Kueue queue to launch jobs in.",
+        )
     ),
     priorities: List[str] = (
-        typer.Option( # noqa: B008
+        typer.Option(  # noqa: B008
             ["low", "medium", "high"],
             "-p",
             "--priorities",
@@ -402,6 +392,12 @@ def eviction(
     logger.info("Job Count    : %s", jobs)
     logger.info("K8s Resource : %s", resource_id)
 
+    for priority in priorities:
+        if not k8s.check(namespace, kueue, priority):
+            logger.error("Please check your Kueue configuration.")
+            raise typer.Exit(code=1)
+    logger.info("Kueue configuration is valid.")
+
     prefix: str = "kueue-eviction"
     job_count = jobs
     job_core: int = math.ceil(cores / job_count)
@@ -422,11 +418,11 @@ def eviction(
             priority,
             job_duration,
         )
-        launch.jobs(
+        k8s.run(
             filepath=filepath,
             namespace=namespace,
             prefix=f"{prefix}-{priority}-job",
-            count=job_count,
+            jobs=job_count,
             duration=job_duration,
             cores=job_core,
             ram=job_ram,
@@ -448,7 +444,7 @@ def eviction(
         logger.info("No eviction issues detected.")
     logger.info("Eviction tracking completed.")
     logger.info("Cleaning up jobs...")
-    launch.delete_jobs_with_prefix(namespace, prefix)
+    k8s.delete_jobs(namespace, prefix)
     logger.info("Jobs cleaned up successfully.")
     logger.info("Eviction benchmark completed.")
 

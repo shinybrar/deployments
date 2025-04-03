@@ -710,7 +710,7 @@ requires-dist = [
     { name = "nest-asyncio", specifier = ">=1.6.0" },
     { name = "pandas", specifier = ">=2.2.3" },
     { name = "pyyaml", specifier = ">=6.0.2" },
-    { name = "skaha", git = "https://github.com/shinybrar/skaha.git?branch=CADC-14066-scaling-issues" },
+    { name = "skaha", git = "https://github.com/shinybrar/skaha.git?branch=main" },
     { name = "typer", specifier = ">=0.15.2" },
 ]
 
@@ -1555,7 +1555,7 @@ wheels = [
 [[package]]
 name = "skaha"
 version = "1.5.2"
-source = { git = "https://github.com/shinybrar/skaha.git?branch=CADC-14066-scaling-issues#56d85485b766e24f04acfd3299787c2087cfff5b" }
+source = { git = "https://github.com/shinybrar/skaha.git?branch=main#b4fbd45bddca3e15c841abd15c8fa73dafa4072a" }
 dependencies = [
     { name = "defusedxml" },
     { name = "httpx" },

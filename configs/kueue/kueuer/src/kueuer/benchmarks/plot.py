@@ -60,7 +60,7 @@ def load_and_clean_results(filename: str) -> pd.DataFrame:
     return df
 
 
-def plot_completion_times( # noqa: C901
+def plot_completion_times(  # noqa: C901
     df: pd.DataFrame,
     output_file: str = "completion_times.png",
     log_scale: bool = True,
@@ -355,9 +355,7 @@ def plot_scaling_efficiency(
     kueue_df = df[df["use_kueue"]].sort_values("job_count")
 
     if len(direct_df) < 2 or len(kueue_df) < 2:
-        print(
-            "Warning: Insufficient data for scaling efficiency plot."
-        )
+        print("Warning: Insufficient data for scaling efficiency plot.")
         return
 
     # Calculate throughput (jobs per second)

@@ -134,7 +134,7 @@ def evictions(
     return workloads
 
 
-def jobs( # noqa: C901
+def jobs(  # noqa: C901
     namespace: str,
     prefix: str,
     to_state: str = "Complete",
