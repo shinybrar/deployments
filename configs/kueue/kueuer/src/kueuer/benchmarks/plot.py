@@ -1,10 +1,12 @@
-from typing import Tuple
+from typing import Dict, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import typer
+
+from kueuer.utils import io
 
 sns.set(style="whitegrid")
 
@@ -171,7 +173,7 @@ def compute_scheduling_overhead(df: pd.DataFrame) -> pd.DataFrame:
 
 
 @app.command("performance")
-def analyze_and_plot(filepath: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
+def performance(filepath: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
     df = load_results(filepath)
     df = compute_throughput(df)
     df = compute_latency(df)
@@ -192,3 +194,114 @@ def analyze_and_plot(filepath: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
     plot_scheduling_overhead(df)
 
     return df, comparative_df
+
+
+@app.command("evictions")
+def evictions(filepath: str) -> None:
+    priority_map: Dict[int, str] = {10000: "Low", 100000: "Medium", 1000000: "High"}
+    data = io.read_yaml(filepath)
+    df = pd.DataFrame.from_dict(data, orient="index")
+    # Ensure time columns are datetime objects
+    df["admitted_at"] = pd.to_datetime(df["admitted_at"])
+    df["finished_at"] = pd.to_datetime(df["finished_at"])
+    # Compute number of evictions for each job (length of preemptors list)
+    df["num_evictions"] = df["preemptors"].apply(len)
+    # Optionally, define categorical priority labels for readability
+    df["priority_label"] = df["priority"].map(priority_map)
+    # Total evictions per priority
+    evictions_by_priority = df.groupby("priority")["num_evictions"].sum()
+    df.groupby("priority")["requeues"].describe()
+
+    # Event list for timeline (start and end events)
+    events = []
+    for _job_id, row in df.iterrows():
+        events.append(
+            {"time": row["admitted_at"], "event": "start", "priority": row["priority"]}
+        )
+        if pd.notna(row["finished_at"]):
+            events.append(
+                {
+                    "time": row["finished_at"],
+                    "event": "end",
+                    "priority": row["priority"],
+                }
+            )
+    events_df = pd.DataFrame(events)
+
+    # Prepare eviction events for heatmap
+    eviction_events = []
+    for _job_id, row in df.iterrows():
+        job_priority = row["priority"]
+        for _preemptor_id, evict_time in row["preemptors"]:
+            eviction_events.append(
+                {"time": pd.to_datetime(evict_time), "priority": job_priority}
+            )
+    evict_df = pd.DataFrame(eviction_events)
+    # If needed, bin the times to 1-second intervals to reduce resolution
+    if not evict_df.empty:
+        evict_df["time_bin"] = evict_df["time"].dt.floor(
+            "1S"
+        )  # round down to nearest second
+
+    # Plot total evictions per priority as a bar chart
+    plt.figure(figsize=(10, 6))
+    sns.barplot(
+        x=evictions_by_priority.index.map(
+            priority_map
+        ),  # map numeric priorities to labels
+        y=evictions_by_priority.values,
+        palette="pastel",
+    )
+    plt.title("Total Evictions by Priority Level")
+    plt.xlabel("Priority")
+    plt.ylabel("Total Evictions")
+    plt.tight_layout()
+    plt.show()
+
+    # Use priority label as y just for grouping (or use a dummy index if preferred)
+    plt.figure(figsize=(10, 6))
+    sns.scatterplot(
+        data=events_df,
+        x="time",
+        y="priority",
+        hue="priority",
+        style="event",
+        markers={"start": "o", "end": "X"},
+        palette="deep",
+    )
+    plt.title("Job Start and End Times by Priority")
+    plt.xlabel("Time")
+    plt.ylabel("Job Priority")
+    plt.legend(title="Priority", loc="upper right")
+    plt.tight_layout()
+    plt.show()
+
+    if not evict_df.empty:
+        # Group by priority and time_bin to count events
+        evict_pivot = (
+            evict_df.groupby(["priority", "time_bin"]).size().reset_index(name="count")
+        )
+        heat_data = evict_pivot.pivot(
+            index="priority", columns="time_bin", values="count"
+        ).fillna(0)
+        plt.figure(figsize=(10, 4))
+        sns.heatmap(heat_data, cmap="Reds", cbar_kws={"label": "Evictions"})
+        plt.title("Eviction Events Over Time vs Priority")
+        plt.ylabel("Job Priority")
+        plt.xlabel("Time")
+        plt.tight_layout()
+        plt.show()
+
+    plt.figure(figsize=(6, 4))
+    sns.boxplot(
+        data=df,
+        x="priority_label",
+        y="requeues",
+        order=["Low", "Medium", "High"],
+        palette="Set3",
+    )
+    plt.title("Requeues Distribution by Priority")
+    plt.xlabel("Priority")
+    plt.ylabel("Number of Requeues")
+    plt.tight_layout()
+    plt.show()
