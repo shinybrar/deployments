@@ -24,11 +24,11 @@ spec:
         - name: "default"
           resources:
             - name: "cpu"
-              nominalQuota:   60 #100% of keel-dev
+              nominalQuota:   20 #30% of keel-dev
               borrowingLimit: 12
               lendingLimit:   12
             - name: "memory"
-              nominalQuota:   174Gi #100% of keel-dev
+              nominalQuota:   52Gi #30% of keel-dev
               borrowingLimit: 32Gi
               lendingLimit:   32Gi
             - name: "ephemeral-storage"
