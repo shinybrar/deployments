@@ -115,17 +115,23 @@ def evictions(
                 preemptor: str = (
                     condition.get("message", "").split("UID: ")[1].split(")")[0].strip()
                 )
-                workloads[uid]["preemptors"].append((preemptor, datetime.now()))
-                logfire.info(f"{workloads[uid]["name"]} evicted by {preemptor}")
+                details: Tuple[str, datetime] = (preemptor, datetime.now())
+                if details[0] not in [
+                    preemptor[0] for preemptor in workloads[uid]["preemptors"]
+                ]:
+                    workloads[uid]["preemptors"].append(details)
+                    logfire.info(
+                        f"{workloads.get(uid,{}).get('name')} evicted by {preemptor}"
+                    )
 
             elif condition["type"] == "Finished" and condition["status"] == "True":
                 workloads[uid]["finished_at"] = datetime.now()
                 completed += 1
-                logfire.info(f"{workloads[uid]["name"]} succeeded.")
+                logfire.info(f"{workloads.get(uid,{}).get('name')} succeeded.")
 
             elif condition["type"] == "Requeued" and condition["status"] == "True":
                 workloads[uid]["requeues"] += 1
-                logfire.info(f"{workloads[uid]["name"]} requeued.")
+                logfire.info(f"{workloads.get(uid,{}).get('name')} requeued.")
 
         if workloads and completed == len(workloads):
             logfire.info("All workloads finished.")
