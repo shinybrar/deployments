@@ -312,7 +312,7 @@ def performance(
     logger.info("Benchmark completed successfully.")
     logger.info("Results saved to %s", output)
     logger.info(
-        "You can now run 'kueuer plot performance %s' to visualize the results.", output
+        "You can now run 'kr plot performance %s' to visualize the results.", output
     )
 
 
@@ -460,6 +460,9 @@ def eviction(
     k8s.delete_jobs(namespace, prefix)
     logger.info("Jobs cleaned up successfully.")
     logger.info("Eviction benchmark completed.")
+    logger.info(
+        "You can now run 'kr plot evictions %s' to visualize the results.", output
+    )
 
 
 if __name__ == "__main__":
