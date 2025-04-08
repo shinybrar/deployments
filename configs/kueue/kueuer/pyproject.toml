@@ -14,10 +14,10 @@ dependencies = [
     "kubernetes>=32.0.1",
     "kubernetes-typed[client]>=18.20.2",
     "logfire[httpx]>=3.7.1",
-    "matplotlib>=3.10.1",
     "nest-asyncio>=1.6.0",
     "pandas>=2.2.3",
     "pyyaml>=6.0.2",
+    "seaborn>=0.13.2",
     "skaha",
     "typer>=0.15.2",
 ]

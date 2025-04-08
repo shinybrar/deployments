@@ -96,7 +96,6 @@ def evictions(
         logfire.debug(f"K8s Event: {event['type']}")
         data: Dict[str, Any] = event["object"]
         uid: str = str(data["metadata"]["uid"])
-        workload = workloads.get(uid, {})
 
         for condition in data.get("status", {}).get("conditions", []):
             if condition["type"] == "Admitted" and condition["status"] == "True":
@@ -117,20 +116,21 @@ def evictions(
                     condition.get("message", "").split("UID: ")[1].split(")")[0].strip()
                 )
                 workloads[uid]["preemptors"].append((preemptor, datetime.now()))
-                logfire.info(f"{workload.get('name')} evicted by {preemptor}")
+                logfire.info(f"{workloads[uid]["name"]} evicted by {preemptor}")
 
             elif condition["type"] == "Finished" and condition["status"] == "True":
-                workload["finished_at"] = datetime.now()
+                workloads[uid]["finished_at"] = datetime.now()
                 completed += 1
-                logfire.info(f"{workload.get('name')} finished.")
+                logfire.info(f"{workloads[uid]["name"]} succeeded.")
 
             elif condition["type"] == "Requeued" and condition["status"] == "True":
-                workload["requeues"] += 1
-                logfire.info(f"{workload.get('name')} requeued.")
+                workloads[uid]["requeues"] += 1
+                logfire.info(f"{workloads[uid]["name"]} requeued.")
 
         if workloads and completed == len(workloads):
             logfire.info("All workloads finished.")
             watcher.stop()
+
     return workloads
 
 
