@@ -87,7 +87,8 @@ The performance benchmark launches a series of jobs with increasing job counts, 
 | `--help`           |           |         | Show this message and exit.                                                                    |                                                                                             |
 
 #### Example Usage
-[![asciicast](https://asciinema.org/a/WsSGGVuyLRHTxzzUbcI3XR5rh.svg)](https://asciinema.org/a/WsSGGVuyLRHTxzzUbcI3XR5rh)
+![perf](https://github.com/user-attachments/assets/68337c82-a4de-4710-85bf-ad201ec84c5a)
+
 
 
 ### Eviction Benchmarks
