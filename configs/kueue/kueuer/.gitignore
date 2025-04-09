@@ -5,3 +5,6 @@ __pycache__/
 
 # Ignore Results CSV
 *.csv
+
+# Ignore the plots directory
+plots/

@@ -182,7 +182,7 @@ def benchmark(
         results.append(result)
 
         # Save intermediate results
-        io.save_results_to_csv(results, resultsfile)
+        io.save_performance_to_csv(results, resultsfile)
 
         # Wait between experiments
         logger.info("Waiting %ss before next experiment...", wait)
@@ -204,7 +204,7 @@ def benchmark(
         results.append(kueue_result)
 
         # Save intermediate results
-        io.save_results_to_csv(results, resultsfile)
+        io.save_performance_to_csv(results, resultsfile)
 
         # Wait between experiments
         if count != counts[-1]:  # Don't wait after the last experiment
@@ -311,7 +311,9 @@ def performance(
     )
     logger.info("Benchmark completed successfully.")
     logger.info("Results saved to %s", output)
-    logger.info("You can now run 'kueuer plot performance' to visualize the results.")
+    logger.info(
+        "You can now run 'kr plot performance %s' to visualize the results.", output
+    )
 
 
 @benchmark_cli.command("evictions")
@@ -374,6 +376,11 @@ def eviction(
             120, "-d", "--duration", help="Longest duration for jobs in seconds."
         )
     ),
+    output: str = (
+        typer.Option(
+            "evictions.yaml", "-o", "--output", help="Filen to save results to."
+        )
+    ),
 ):
     """Run a benchmark to test eviction behavior of Kueue in a packed cluster queue."""
     config.load_kube_config()
@@ -433,11 +440,17 @@ def eviction(
 
     logger.info("All jobs launched successfully.")
     logger.info("Tracking jobs to completion...")
-    output = track.evictions(
+    results = track.evictions(
         namespace=namespace,
         revision=resource_id,
     )
-    issues: bool = analyze.evictions(output)
+
+    logger.info("Saving results to %s", filepath)
+    io.save_evictions_to_yaml(results=results, filename=output)
+    logger.info("Results saved successfully.")
+    logger.info("Analyzing eviction results...")
+
+    issues: bool = analyze.evictions(results)
     if issues:
         logger.error("Eviction issues detected!")
     else:
@@ -447,6 +460,9 @@ def eviction(
     k8s.delete_jobs(namespace, prefix)
     logger.info("Jobs cleaned up successfully.")
     logger.info("Eviction benchmark completed.")
+    logger.info(
+        "You can now run 'kr plot evictions %s' to visualize the results.", output
+    )
 
 
 if __name__ == "__main__":

@@ -21,10 +21,10 @@ def read_yaml(filepath: str) -> Dict[Any, Any]:
     """
     with open(filepath, encoding="utf-8") as f:
         data = f.read()
-        return yaml.safe_load(data)
+        return yaml.load(data, Loader=yaml.FullLoader)  # type: ignore
 
 
-def save_results_to_csv(results: List[Dict[str, Any]], filename: str) -> None:
+def save_performance_to_csv(results: List[Dict[str, Any]], filename: str) -> None:
     """
     Save benchmark results to a CSV file.
 
@@ -58,3 +58,19 @@ def save_results_to_csv(results: List[Dict[str, Any]], filename: str) -> None:
             writer.writerow(row_data)  # type: ignore
 
     logger.info("Results saved to %s", filename)
+
+
+def save_evictions_to_yaml(
+    results: Dict[str, Dict[str, Any]],
+    filename: str,
+) -> None:
+    """
+    Save evictions data to a YAML file.
+
+    Args:
+        workloads: Dictionary containing workload information
+        filename: Path to save YAML file
+    """
+    with open(filename, "w", encoding="utf-8") as fopen:
+        yaml.dump(results, fopen, default_flow_style=False)
+    fopen.close()
