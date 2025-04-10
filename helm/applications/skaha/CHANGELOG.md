@@ -1,4 +1,7 @@
-# CHANGELOG for Skaha User Session API (Chart 0.11.2)
+# CHANGELOG for Skaha User Session API (Chart 0.11.3)
+
+## 2025.04.10 (0.11.3)
+- Fix for multiple Harbor repository hosts (`registryHosts` variable)
 
 ## 2025.03.14 (0.11.2)
 - Fix for how Skaha queries for `LocalQueue` objects.
