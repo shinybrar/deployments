@@ -19,25 +19,33 @@ spec:
   queueingStrategy: BestEffortFIFO
   cohort: skaha-cohort
   resourceGroups:
-    - coveredResources: ["cpu", "memory", "ephemeral-storage"]
+    - coveredResources: ["cpu", "memory", "ephemeral-storage", "nvidia.com/gpu"]
       flavors:
         - name: "default"
+          # Cluster Hardware Configuration
+          # Compute Nodes: 40 x [64 cores, 241Gi memory, 2048Gi ephemeral-storage]
+          # GPU Nodes A: 3 x [8 cores, 40Gi memory, 140Gi ephemeral-storage, GRID-V100D-16C] 
+          # GPU Nodes B: 6 x [4 cores, 20Gi memory, 80Gi ephemeral-storage, GRID-V100D-8C]
+          # nominalQuota = count * size - 2% overhead
+          # borrowing / lending = size * 40%
           resources:
             - name: "cpu"
-              # 40 Nodes * 64 cores = 2560 cores - 1%
-              nominalQuota:   2535
-              borrowingLimit: 1000
-              lendingLimit:   1000
+              nominalQuota:   2555
+              borrowingLimit: 1022
+              lendingLimit:   1022
             - name: "memory"
-              # 40 Nodes * 241Gi = 9640Gi - 1%
-              nominalQuota:   9365Gi
-              borrowingLimit: 3750Gi
-              lendingLimit:   3750Gi
+              nominalQuota:   9682Gi
+              borrowingLimit: 3873Gi
+              lendingLimit:   3873Gi
               # 40 nodes * 2048Gi = 81920Gi
             - name: "ephemeral-storage"
-              nominalQuota:   81920Gi
-              borrowingLimit: 32768Gi
-              lendingLimit:   32768Gi
+              nominalQuota:   81164Gi
+              borrowingLimit: 32465Gi
+              lendingLimit:   32465Gi
+            - name: "nvidia.com/gpu"
+              nominalQuota: 9
+              borrowingLimit: 3
+              lendingLimit: 3
   preemption:
     reclaimWithinCohort: LowerPriority
     borrowWithinCohort:
