@@ -19,22 +19,36 @@ spec:
   queueingStrategy: BestEffortFIFO
   cohort: skaha-cohort
   resourceGroups:
-    - coveredResources: ["cpu", "memory", "ephemeral-storage"]
+    - coveredResources: ["cpu", "memory", "ephemeral-storage", "nvidia.com/gpu"]
       flavors:
         - name: "default"
+          # Cluster Hardware Configuration
+          # Does not include
+          #   - skaha.opencadc.org/node-type=service-node (p-nodes)
+          #   - node-role.kubernetes.io/control-plane
+          # Compute Nodes: 40 x [64 cores, 241Gi memory, 2048Gi ephemeral-storage]
+          # GPU Nodes A: 3 x [8 cores, 40Gi memory, 140Gi ephemeral-storage, GRID-V100D-16C] 
+          # GPU Nodes B: 6 x [4 cores, 20Gi memory, 80Gi ephemeral-storage, GRID-V100D-8C]
+          # nominalQuota = count * size - 2% overhead
+          # borrowing / lending = size * 40%
           resources:
             - name: "cpu"
-              nominalQuota:   2700
-              borrowingLimit: 1000
-              lendingLimit:   1000
+              nominalQuota:   2555
+              borrowingLimit: 1022
+              lendingLimit:   1022
             - name: "memory"
-              nominalQuota:   10000Gi
-              borrowingLimit: 2000Gi
-              lendingLimit:   2000Gi
+              nominalQuota:   9682Gi
+              borrowingLimit: 3873Gi
+              lendingLimit:   3873Gi
+              # 40 nodes * 2048Gi = 81920Gi
             - name: "ephemeral-storage"
-              nominalQuota:   84000Gi
-              borrowingLimit: 20000Gi
-              lendingLimit:   20000Gi
+              nominalQuota:   81164Gi
+              borrowingLimit: 32465Gi
+              lendingLimit:   32465Gi
+            - name: "nvidia.com/gpu"
+              nominalQuota: 9
+              borrowingLimit: 3
+              lendingLimit: 3
   preemption:
     reclaimWithinCohort: LowerPriority
     borrowWithinCohort:
