@@ -1,11 +1,59 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
+      "description": "Prometheus data source",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "bargauge",
+      "name": "Bar gauge",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "9.4.3"
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
         "builtIn": 1,
         "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
+          "type": "datasource",
+          "uid": "grafana"
         },
         "enable": true,
         "hide": true,
@@ -30,6 +78,10 @@
   "panels": [
     {
       "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "000000001"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -38,13 +90,22 @@
       },
       "id": 51,
       "panels": [],
+      "targets":[
+        {
+          "datasource":{
+            "type": "prometheus",
+            "uid": "000000001"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "Cluster Wide Metrics",
       "type": "row"
     },
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -130,7 +191,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "expr": "sum((rate(container_cpu_usage_seconds_total{namespace!=\"\"}[$__rate_interval])))",
@@ -143,7 +204,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -157,7 +218,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "expr": "sum(rate(node_cpu_seconds_total{mode!~\"idle|iowait|steal\"}[$__rate_interval]))",
@@ -170,7 +231,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "expr": "sum(machine_cpu_cores)",
@@ -183,7 +244,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "disableTextWrap": false,
           "editorMode": "code",
@@ -204,7 +265,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -296,7 +357,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -310,7 +371,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "expr": "sum(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes)",
@@ -323,7 +384,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "expr": "sum(kube_pod_container_resource_limits{namespace!=\"\", resource=\"memory\"})",
@@ -336,7 +397,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "expr": "sum(container_memory_usage_bytes{namespace!=\"\", container!=\"\"})",
@@ -349,7 +410,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "disableTextWrap": false,
           "editorMode": "code",
@@ -383,7 +444,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "description": "Pending: The Pod has been accepted by the Kubernetes cluster, but one or more of the containers has not been set up and made ready to run. This includes time a Pod spends waiting to be scheduled as well as the time spent downloading container images over the network.\n\nRunning: The Pod has been bound to a node, and all of the containers have been created. At least one container is still running, or is in the process of starting or restarting.\n\nSucceeded: All containers in the Pod have terminated in success, and will not be restarted.\n\nFailed: All containers in the Pod have terminated, and at least one container has terminated in failure. That is, the container either exited with non-zero status or was terminated by the system, and is not set for automatic restarting.\n\nUnknown: For some reason the state of the Pod could not be obtained. This phase typically occurs due to an error in communicating with the node where the Pod should be running.",
       "fieldConfig": {
@@ -474,7 +535,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -492,6 +553,10 @@
     },
     {
       "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "000000001"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -500,13 +565,22 @@
       },
       "id": 40,
       "panels": [],
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "000000001"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "Kueue Health",
       "type": "row"
     },
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "description": "The total number of attempts to admit workloads. Each admission attempt might try to admit more than one workload.",
       "fieldConfig": {
@@ -558,7 +632,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "expr": "sum(rate(kueue_admission_attempts_total[$__interval]))",
@@ -573,7 +647,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "description": "The latency of an admission attempt.",
       "fieldConfig": {
@@ -622,7 +696,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "expr": "sum(histogram_quantile(0.99, rate(kueue_admission_attempt_duration_seconds_bucket[$__interval]))>0)",
@@ -637,7 +711,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "description": "The latency of an admission attempt.",
       "fieldConfig": {
@@ -689,7 +763,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "expr": "sum(histogram_quantile(0.75, rate(kueue_admission_attempt_duration_seconds_bucket[$__interval]))>0)",
@@ -705,7 +779,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "description": "The total number of all active workloads in all cluster queues",
       "fieldConfig": {
@@ -753,7 +827,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "builder",
           "expr": "sum(kueue_admitted_active_workloads)",
@@ -768,7 +842,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "description": "The total number of all pending workloads in all cluster queues",
       "fieldConfig": {
@@ -824,7 +898,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "builder",
           "expr": "sum(kueue_pending_workloads)",
@@ -852,7 +926,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "description": "",
       "fieldConfig": {
@@ -928,7 +1002,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "expr": "sum by(cluster_queue)(kueue_admitted_active_workloads)",
@@ -943,7 +1017,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "description": "",
       "fieldConfig": {
@@ -1020,7 +1094,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "expr": "sum by(cluster_queue)(kueue_pending_workloads)",
@@ -1048,7 +1122,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1127,7 +1201,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "disableTextWrap": false,
           "editorMode": "builder",
@@ -1147,7 +1221,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1227,7 +1301,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "disableTextWrap": false,
           "editorMode": "builder",
@@ -1247,7 +1321,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1326,7 +1400,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "disableTextWrap": false,
           "editorMode": "builder",
@@ -1346,7 +1420,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1425,7 +1499,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "disableTextWrap": false,
           "editorMode": "builder",
@@ -1445,7 +1519,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1524,7 +1598,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "disableTextWrap": false,
           "editorMode": "builder",
@@ -1557,7 +1631,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "description": "The total number of nodes in a cluster",
       "fieldConfig": {
@@ -1609,7 +1683,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "expr": "sum(kube_node_info)",
@@ -1624,7 +1698,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1699,7 +1773,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "expr": "sum(kube_node_status_condition{condition=\"Ready\",status=\"true\"})",
@@ -1710,7 +1784,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -1728,7 +1802,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1785,7 +1859,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "expr": "sum(kube_pod_container_resource_requests{resource=\"memory\"}) / sum(kube_node_status_allocatable{resource=\"memory\"})",
@@ -1800,7 +1874,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1882,7 +1956,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "expr": "sum(kube_pod_container_resource_requests{resource=\"memory\"})/(sum(kube_node_status_allocatable{resource=\"memory\"}))",
@@ -1898,7 +1972,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1956,7 +2030,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "builder",
           "expr": "sum(kube_pod_container_resource_requests{resource=\"cpu\"}) / sum(kube_node_status_allocatable{resource=\"cpu\"})",
@@ -1971,7 +2045,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -2053,7 +2127,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "expr": "sum(kube_pod_container_resource_requests{resource=\"cpu\"}) / sum(kube_node_status_allocatable{resource=\"cpu\"})",
@@ -2070,7 +2144,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "description": "The total number of nodes that can't schedule PODs",
       "fieldConfig": {
@@ -2118,7 +2192,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "expr": "sum(kube_node_spec_unschedulable)",
@@ -2133,7 +2207,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "description": "The total number of nodes with DiskPressure condition",
       "fieldConfig": {
@@ -2181,7 +2255,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "expr": "sum(kube_node_status_condition{condition=\"DiskPressure\",status=\"true\"})",
@@ -2196,7 +2270,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "description": "The total number of nodes with MemPressure condition",
       "fieldConfig": {
@@ -2244,7 +2318,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "expr": "sum(kube_node_status_condition{condition=\"MemoryPressure\",status=\"true\"})",
@@ -2259,7 +2333,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P93B0DC4442ABD976"
+        "uid": "${datasource}"
       },
       "description": "The total number of nodes with PIDPressure condition",
       "fieldConfig": {
@@ -2307,7 +2381,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P93B0DC4442ABD976"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "expr": "sum(kube_node_status_condition{condition=\"PIDPressure\",status=\"true\"})",

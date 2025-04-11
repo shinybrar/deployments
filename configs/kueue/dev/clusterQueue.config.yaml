@@ -22,19 +22,26 @@ spec:
     - coveredResources: ["cpu", "memory", "ephemeral-storage"]
       flavors:
         - name: "default"
+          # Cluster Hardware Configuration
+          # Does not include
+          #   - skaha.opencadc.org/node-type=service-node (p-nodes)
+          #   - node-role.kubernetes.io/control-plane
+          # Compute Nodes: 2 x [16 cores, 59Gi memory, 500Gi ephemeral-storage]
+          # nominalQuota = count * size
+          # borrowing / lending = size * 40%
           resources:
             - name: "cpu"
-              nominalQuota:   20 #30% of keel-dev
+              nominalQuota:   32
               borrowingLimit: 12
               lendingLimit:   12
             - name: "memory"
-              nominalQuota:   52Gi #30% of keel-dev
-              borrowingLimit: 32Gi
-              lendingLimit:   32Gi
+              nominalQuota:   118Gi
+              borrowingLimit: 47Gi
+              lendingLimit:   47Gi
             - name: "ephemeral-storage"
-              nominalQuota:   1088Gi #100% of keel-dev
-              borrowingLimit: 200Gi
-              lendingLimit:   100Gi
+              nominalQuota:   1000Gi
+              borrowingLimit: 400Gi
+              lendingLimit:   400Gi
   preemption:
     reclaimWithinCohort: LowerPriority
     borrowWithinCohort:
