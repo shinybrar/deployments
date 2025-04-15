@@ -1,4 +1,8 @@
-# Storage User Interface Helm Chart (0.5.0)
+# Storage User Interface Helm Chart (0.5.1)
+
+## 2025.04.15 (0.5.1)
+- Add `tolerations` feature for `storage` UI.  Redis values can be added in the `redis` sub-chart stanza.
+  - See https://github.com/opencadc/deployments/issues/29
 
 ## January 13, 2025 (0.5.0)
 - Fixed issue with duplicate entries in paginated enabled backends

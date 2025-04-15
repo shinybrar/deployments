@@ -74,6 +74,10 @@ spec:
           name: etc-group
           subPath: group
         {{ template "skaha.session.commonVolumeMounts" . }}
+      {{- with .Values.deployment.skaha.sessions.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       volumes:
       - name: etc-group
         emptyDir: { }

@@ -49,6 +49,7 @@ The following table lists the configurable parameters for the Skaha Helm chart:
 |-----------|-------------|---------|
 | `kubernetesClusterDomain` | Kubernetes cluster domain used to find internal hosts | `cluster.local` |
 | `replicaCount` | Number of Skaha replicas to deploy | `1` |
+| `tolerations` | Array of tolerations to pass to Kubernetes for fine-grained Node targeting of the `skaha` API | `[]` |
 | `skaha.namespace` | Namespace where Skaha is deployed | `skaha-system` |
 | `skahaWorkload.namespace` | Namespace where Skaha Workload (User Sesssion space) is deployed | `skaha-workload` |
 | `deployment.hostname` | Hostname for the Skaha deployment | `""` |
@@ -80,6 +81,7 @@ The following table lists the configurable parameters for the Skaha Helm chart:
 | `deployment.skaha.sessions.extraVolumes` | List of extra `volume` and `volumeMount` to be mounted in User Sessions.  See the `values.yaml` file for examples. | `[]` |
 | `deployment.skaha.sessions.gpuEnabled` | Enable GPU support for User Sessions.  Defaults to `false` | `false` |
 | `deployment.skaha.sessions.nodeAffinity` | Kubernetes Node affinity for the Skaha User Session Pods | `{}` |
+| `deployment.skaha.sessions.tolerations` | Array of tolerations to pass to Kubernetes for fine-grained Node targeting of the `skaha` User Sessions | `[]` |
 | `deployment.skaha.extraEnv` | List of extra environment variables to be set in the Skaha service.  See the `values.yaml` file for examples. | `[]` |
 | `deployment.skaha.resources` | Resource requests and limits for the Skaha API | `{}` |
 | `deployment.skaha.extraPorts` | List of extra ports to expose in the Skaha service.  See the `values.yaml` file for examples. | `[]` |
@@ -91,6 +93,10 @@ The following table lists the configurable parameters for the Skaha Helm chart:
 | `secrets` | List of secrets to be mounted in the Skaha API defined as objects (i.e `secretName: {cert.pem: xxx}`) | `[]` |
 | `storage.service.spec` | Storage class specification for the Skaha API.  Can be `persistentVolumeClaim` or a dynamic instantiation like `hostPath`.  See [Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/). | `{}` |
 | `redis` | [Redis sub-chart configuration](https://github.com/bitnami/charts/tree/main/bitnami/redis) for Skaha's caching of Harbor Docker image metadata. | See [values.yaml](https://github.com/at88mph/deployments/blob/kueue-queue-discovery/helm/applications/skaha/values.yaml#L229) default. |
+
+#### Notes on tolerations and nodeAffinity
+
+Ensure that `tolerations` and `nodeAffinity` are at the expected indentation!  These are YAML configurations passed directly to Kubernetes, and the base `.tolerations` and `.deployment.skaha.nodeAffinity` values apply to the `skaha` API **only**, whereas the `.deployment.skaha.sessions.tolerations` and `.deployment.skaha.sessions.nodeAffinity` apply to _all_ User Session Pods.
 
 ### Integration with Kueue
 Skaha leverages Kueue for efficient job queueing and management. Ensure that Kueue is properly installed and configured in your cluster. For detailed information on Kueue's features and setup, refer to the [Kueue documentation](https://kueue.sigs.k8s.io/docs/).
