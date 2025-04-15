@@ -130,6 +130,10 @@ spec:
             - {{ $extraHost.hostname }}
 {{- end }}
 {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       priorityClassName: {{ .Values.deployment.skaha.priorityClassName }}
       serviceAccountName: {{ .Values.deployment.skaha.serviceAccountName }}
       volumes:

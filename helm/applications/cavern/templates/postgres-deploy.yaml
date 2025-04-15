@@ -1,49 +1,55 @@
-{{- with required "PostgreSQL Database configuration is required." .Values.postgresql }}
+{{ $releaseName := .Release.Name }}
+{{- with required "UWS Database configuration is required." .Values.deployment.cavern.uws.db }}
 {{- if .install }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: posix-mapper-postgres
+  name: {{ $releaseName }}-uws-postgres
   namespace: {{ $.Values.skaha.namespace }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: posix-mapper-postgres
+      app: {{ $releaseName }}-uws-postgres
   template:
     metadata:
       labels:
-        app: posix-mapper-postgres
+        app: {{ $releaseName }}-uws-postgres
     spec:
       securityContext:
+        runAsUser: {{ .runUID | required ".runUID is required for PostgreSQL" }}
         seccompProfile:
           type: RuntimeDefault
       containers:
         - name: postgres
-          image: postgres:13
+          image: postgres:15
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5432  # Exposes container port
           envFrom:
             - configMapRef:
-                name: posix-mapper-postgres-config
+                name: {{ $releaseName }}-uws-postgres-config
           volumeMounts:
             - mountPath: /docker-entrypoint-initdb.d
               name: postgresinit
+            {{- if .storage }}
             - mountPath: /var/lib/postgresql/data
               name: postgresdb
+            {{- end }}
           securityContext:
             allowPrivilegeEscalation: false
-      # Maintain the same tolerations as the "parent" POSIX Mapper API.
+      # Maintain the same tolerations as the "parent" Cavern API.
       {{- with $.Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
+        {{- if .storage }}
         - name: postgresdb
           {{- toYaml .storage.spec | nindent 10 }}
+        {{- end }}
         - name: postgresinit
           configMap:
-            name: posix-mapper-postgres-init
+            name: {{ $releaseName }}-uws-postgres-init
 {{- end }}
 {{- end }}

@@ -1,4 +1,8 @@
-# CHANGELOG for Science Portal UI (Chart 0.5.0)
+# CHANGELOG for Science Portal UI (Chart 0.5.1)
+
+## 2025.04.15 (0.5.1)
+- Add `tolerations` feature for `science-portal` UI.  Redis values can be added in the `redis` sub-chart stanza.
+  - See https://github.com/opencadc/deployments/issues/29
 
 ## 2024.12.11 (0.5.0)
 - Added support for `securityContext`

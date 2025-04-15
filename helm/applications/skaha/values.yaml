@@ -12,12 +12,12 @@ skaha:
   namespace: skaha-system
 skahaWorkload:
   namespace: skaha-workload
-
+ 
 # Skaha web service deployment
 deployment:
   hostname: myhost.example.com  # Change this!
   skaha:
-    image: images.opencadc.org/platform/skaha:0.27.9
+    image: images.opencadc.org/platform/skaha:0.27.8
     imagePullPolicy: IfNotPresent
 
     # Cron string for the image caching cron job schedule. Defaults to every half hour.
@@ -117,6 +117,19 @@ deployment:
       #        priorityClass: "user-sessions-med"
       queue: {}
 
+      # This is a list of tolerations that will be added to the Pod spec of the User Sessions.
+      # @see https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+      # @see ./README.md#notes-on-tolerations-and-nodeaffinity
+      # 
+      # Example:
+      # tolerations:
+      # - key: "key1"
+      #   operator: "Equal"
+      #   value: "value1"
+      #   effect: "NoSchedule"
+      # 
+      tolerations: []
+
       # Optionally setup a separate host for User Sessions for Skaha to redirect to.  The HTTPS scheme is assumed.  Defaults to the Skaha hostname.
       # Example:
       #   hostname: myhost.example.org
@@ -211,6 +224,19 @@ deployment:
   #     hostname: myhost.example.org
   # extraHosts: []
 
+# This is a list of tolerations that will be added to the Pod spec of the Skaha API.
+# @see https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+# @see ./README.md#notes-on-tolerations-and-nodeaffinity
+# 
+# Example:
+# tolerations:
+# - key: "key1"
+#   operator: "Equal"
+#   value: "value1"
+#   effect: "NoSchedule"
+# 
+tolerations: []
+
 secrets:
   # Uncomment to enable local or self-signed CA certificates for your domain to be trusted.
   # skaha-cacert-secret:
@@ -223,7 +249,7 @@ storage:
       # YAML for service mounted storage.
       # Example is the persistentVolumeClaim below.
       # persistentVolumeClaim:
-      #   claimName: skaha-pvc
+      #   claimName: skaha-pvc\
 
 # For caching images from the Image Repository and for the writing the POSIX Users and Groups to be shared with Job files
 redis:
