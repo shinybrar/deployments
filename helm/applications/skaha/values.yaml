@@ -119,6 +119,7 @@ deployment:
 
       # This is a list of tolerations that will be added to the Pod spec of the User Sessions.
       # @see https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+      # @see ./README.md#notes-on-tolerations-and-nodeaffinity
       # 
       # Example:
       # tolerations:
@@ -225,6 +226,7 @@ deployment:
 
 # This is a list of tolerations that will be added to the Pod spec of the Skaha API.
 # @see https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+# @see ./README.md#notes-on-tolerations-and-nodeaffinity
 # 
 # Example:
 # tolerations:
