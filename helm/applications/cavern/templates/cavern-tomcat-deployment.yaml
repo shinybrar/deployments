@@ -1,3 +1,4 @@
+{{ $containerPort := 8080 }}
 {{ $storageSpecYAML := required "A valid .Values.storage.service.spec is required!" .Values.storage.service.spec }}
 apiVersion: apps/v1
 kind: Deployment
@@ -45,7 +46,7 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
         ports:
-        - containerPort: 8080
+        - containerPort: {{ $containerPort }}
           protocol: TCP
         {{- with .Values.deployment.cavern.extraPorts }}
         {{- toYaml . | nindent 8 }}
@@ -58,6 +59,18 @@ spec:
         {{- with .Values.deployment.cavern.extraVolumeMounts }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
+        readinessProbe:
+          httpGet:
+            path: {{ printf "%s/%s" .Values.deployment.cavern.endpoint "availability" }}
+            port: {{ $containerPort }}
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: {{ printf "%s/%s" .Values.deployment.cavern.endpoint "availability" }}
+            port: {{ $containerPort }}
+          initialDelaySeconds: 25
+          periodSeconds: 20
 {{- with .Values.deployment.extraHosts }}
       hostAliases:
 {{- range $extraHost := . }}
