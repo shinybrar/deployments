@@ -1,3 +1,4 @@
+{{ $storageSpecYAML := required "A valid .Values.storage.service.spec is required!" .Values.storage.service.spec }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,7 +23,7 @@ spec:
 {{ . | toYaml | indent 10 }}
 {{- end }}
       securityContext:
-        fsGroup: {{ .Values.deployment.cavern.filesystem.rootOwner.gid }}
+        fsGroup: {{ .Values.deployment.cavern.filesystem.rootOwner.gid | required ".deployment.cavern.filesystem.rootOwner.gid is required" }}
         runAsUser: 0
         seccompProfile:
           type: RuntimeDefault
@@ -52,7 +53,7 @@ spec:
         volumeMounts:
         - mountPath: "/config"
           name: config-volume
-        - mountPath: "{{ .Values.deployment.cavern.filesystem.dataDir }}"
+        - mountPath: '{{ .Values.deployment.cavern.filesystem.dataDir | required ".deployment.cavern.filesystem.dataDir is required" }}'
           name: cavern-volume
         {{- with .Values.deployment.cavern.extraVolumeMounts }}
         {{- toYaml . | nindent 8 }}
@@ -75,8 +76,10 @@ spec:
       - name: config-volume
         configMap:
           name: {{ .Release.Name }}-config
+      {{- if $storageSpecYAML }}
       - name: cavern-volume
-        {{- toYaml .Values.storage.service.spec | nindent 8 }}
+        {{- toYaml $storageSpecYAML | nindent 8 }}
+      {{- end }}
       {{- with .Values.deployment.cavern.extraVolumes }}
       {{- toYaml . | nindent 6 }}
       {{- end }}

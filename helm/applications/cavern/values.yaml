@@ -46,9 +46,9 @@ deployment:
     # quotaPlugin: {NoQuotaPlugin | CephFSQuotaPlug}
 
     # The /home and /projects folders will be automatically created if not present.
-    # filesystem:
+    filesystem:
       # persistent data directory in container
-      # dataDir: "/data"
+      dataDir: ""
 
       # RELATIVE path to the node/file content that could be mounted in other containers
       # This will be used in a `dataDir`/`subPath` manner to remove shared data from the root folder.
@@ -56,11 +56,11 @@ deployment:
 
       # The adminUsername is required to be set whomever has admin access over the
       # filesystem.dataDir above.
-      # rootOwner:
+      rootOwner:
         # adminUsername: "root"
-        # username: "root"
-        # uid: 1000
-        # gid: 1000
+        username: ""
+        uid:
+        gid:
 
       # (optional) base directory exposed for sshfs mounts
       # sshfs:
