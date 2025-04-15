@@ -117,6 +117,18 @@ deployment:
     # - canfar  (CANFAR)
     themeName:
 
+# This is a list of tolerations that will be added to the Pod spec of the Storage UI.
+# @see https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+# 
+# Example:
+# tolerations:
+# - key: "key1"
+#   operator: "Equal"
+#   value: "value1"
+#   effect: "NoSchedule"
+# 
+tolerations: []
+
 # secrets:
   # Uncomment to enable local or self-signed CA certificates for your domain to be trusted.
   # storage-ui-cacert-secret:

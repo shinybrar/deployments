@@ -64,6 +64,10 @@ spec:
             - {{ $extraHost.hostname }}
 {{- end }}
 {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       volumes:
       - name: config-volume
         configMap:

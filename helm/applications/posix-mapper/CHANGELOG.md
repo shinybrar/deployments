@@ -1,4 +1,8 @@
-# CHANGELOG for POSIX Mapper (0.4.0)
+# CHANGELOG for POSIX Mapper (0.4.1)
+
+## 2025.04.15 (0.4.1)
+- Add `tolerations` feature for `posix-mapper` API and supprting PostgreSQL deployment.
+  - See https://github.com/opencadc/deployments/issues/29
 
 ## 2025.02.11 (0.4.0)
 - Rework fix of memory leak by properly closing the Hibernate SessionFactory

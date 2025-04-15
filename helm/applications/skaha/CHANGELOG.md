@@ -1,4 +1,8 @@
-# CHANGELOG for Skaha User Session API (Chart 0.11.3)
+# CHANGELOG for Skaha User Session API (Chart 0.11.4)
+
+## 2025.04.15 (0.11.4)
+- Add `tolerations` feature for `skaha` API and User Sessions.
+  - See https://github.com/opencadc/deployments/issues/29
 
 ## 2025.04.10 (0.11.3)
 - Fix for multiple Harbor repository hosts (`registryHosts` variable)
