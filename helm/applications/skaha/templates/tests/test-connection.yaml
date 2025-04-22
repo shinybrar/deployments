@@ -9,7 +9,7 @@ metadata:
 spec:
   containers:
     - name: wget
-      image: busybox
+      image: images.opencadc.org/platform/dependencies/busybox:1.37.0
       command: ['wget']
       args: ['{{ include "skaha.fullname" . }}:8080']
   restartPolicy: Never

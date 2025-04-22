@@ -26,7 +26,7 @@ spec:
           type: RuntimeDefault
       initContainers:
       - name: init-skaha-service
-        image: busybox
+        image: images.opencadc.org/platform/dependencies/busybox:1.37.0
         imagePullPolicy: IfNotPresent
         command: ['sh', '-c', 'mkdir -p ${SKAHA_TLD}/home && mkdir -p ${SKAHA_TLD}/projects']  # Expected to have /arc mounted
         volumeMounts:
