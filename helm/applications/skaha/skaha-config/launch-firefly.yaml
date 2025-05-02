@@ -1,0 +1,164 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    canfar-net-sessionID: "${skaha.sessionid}"
+    canfar-net-sessionName: "${skaha.sessionname}"
+    canfar-net-sessionType: "${skaha.sessiontype}"
+    canfar-net-userid: "${skaha.userid}"
+  name: "${skaha.jobname}"
+spec:
+  parallelism: 1
+  completions: 1
+  activeDeadlineSeconds: ${skaha.sessionexpiry}
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        canfar-net-sessionID: "${skaha.sessionid}"
+        canfar-net-sessionName: "${skaha.sessionname}"
+        canfar-net-sessionType: "${skaha.sessiontype}"
+        canfar-net-userid: "${skaha.userid}"
+        job-name: "${skaha.jobname}"
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      restartPolicy: OnFailure
+      {{ template "skaha.job.nodeAffinity" . }}
+      securityContext:
+        {{ template "skaha.job.securityContext" . }}
+      priorityClassName: uber-user-preempt-medium
+      hostname: "${software.hostname}"
+      initContainers:
+      {{ template "skaha.job.initContainers" . }}
+      containers:
+      - name: "${skaha.jobname}"
+        env:
+        - name: skaha_hostname
+          value: "${skaha.hostname}"
+        - name: skaha_username
+          value: "${skaha.userid}"
+        - name: skaha_sessionid
+          value: "${skaha.sessionid}"
+        - name: JUPYTER_TOKEN
+          value: "${skaha.sessionid}"
+        - name: HOME
+          value: "${SKAHA_TLD}/home/${skaha.userid}"
+        - name: PWD
+          value: "${SKAHA_TLD}/home/${skaha.userid}"
+        - name: XDG_CACHE_HOME
+          value: "${SKAHA_TLD}/home/${skaha.userid}"
+        - name: JULIA_NUM_THREADS
+          value: "${software.requests.cores}"
+        - name: OPENBLAS_NUM_THREADS
+          value: "${software.requests.cores}"
+        - name: MKL_NUM_THREADS
+          value: "${software.requests.cores}"
+        - name: OMP_NUM_THREADS
+          value: "${software.requests.cores}"
+        - name: DEBUG
+          value: "FALSE"
+        - name: PROPS_sso__framework__adapter
+          value: "org.opencadc.security.sso.TokenRelay"
+        - name: CADC_SSO_COOKIE_NAME
+          value: "CADC_SSO"
+        - name: CADC_SSO_COOKIE_DOMAIN
+          value: ".canfar.net"
+        - name: CADC_ALLOWED_DOMAIN
+          value: ".canfar.net"
+        - name: baseURL
+          value: "/session/firefly/${skaha.sessionid}/"
+        - name: "PROPS_FIREFLY_OPTIONS"
+          value: >-
+            {"tap":
+                {"additional":
+                  {"services":[
+                    {
+                      "label": "CADC YouCAT",
+                      "value": "https://ws-uv.canfar.net/youcat",
+                      "centerWP": "62;-37;EQ_J2000",
+                      "fovDeg": 10
+                    }]
+                }
+              }
+            }
+        - name:
+        image: ${software.imageid}
+        # command: ["/skaha-system/start-jupyterlab.sh"]
+        # args:
+        # - ${skaha.sessionid}
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "0.1"
+            ephemeral-storage: "{{ .Values.deployment.skaha.sessions.minEphemeralStorage }}"
+          limits:
+            memory: "4Gi"
+            cpu: "1"
+            ephemeral-storage: "{{ .Values.deployment.skaha.sessions.maxEphemeralStorage }}"
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+          name: firefly-port
+        # Probe duration: initialDelaySeconds + periodSeconds*failureThreshold
+        startupProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 5
+        readinessProbe:
+          exec:
+            command:
+            - curl
+            - "-I"
+            - "HEAD"
+            - "http://localhost:8080/session/firefly/${skaha.sessionid}/firefly/"
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 5
+        livenessProbe:
+            exec:
+              command:
+              - curl
+              - "-I"
+              - "HEAD"
+              - "http://localhost:8080/session/firefly/${skaha.sessionid}/firefly/"
+            initialDelaySeconds: 30
+            periodSeconds: 60
+            failureThreshold: 5
+
+        volumeMounts:
+        - mountPath: "/etc/passwd"
+          name: etc-passwd
+          subPath: passwd
+        - mountPath: "/etc/group"
+          name: etc-group
+          subPath: group
+        {{ template "skaha.session.commonVolumeMounts" . }}
+        securityContext:
+          privileged: false
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+      {{- with .Values.deployment.skaha.sessions.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: etc-group
+        emptyDir: { }
+      - name: etc-passwd
+        emptyDir: { }
+      - name: start-jupyterlab
+        configMap:
+          name: launch-scripts
+          defaultMode: 0777
+      - name: init-users-groups
+        configMap:
+          name: init-users-groups-config
+          defaultMode: 0777
+      {{ template "skaha.session.commonVolumes" . }}
