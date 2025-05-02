@@ -83,7 +83,6 @@ spec:
                 }
               }
             }
-        - name:
         image: ${software.imageid}
         # command: ["/skaha-system/start-jupyterlab.sh"]
         # args:
