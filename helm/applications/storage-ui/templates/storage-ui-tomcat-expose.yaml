@@ -11,10 +11,8 @@ spec:
     name: http-connection
     protocol: TCP
   {{ with .Values.service }}
-    {{ with .reg }}
-      {{ with .extraPorts }}
+    {{ with .extraPorts }}
   {{- toYaml . | nindent 2 }}
-      {{- end }}
     {{- end }}
   {{- end }}
   selector:

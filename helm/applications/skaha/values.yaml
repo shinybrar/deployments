@@ -33,6 +33,12 @@ deployment:
     # Space delimited list of allowed Image Registry hosts.  These hosts should match the hosts in the User Session images.
     registryHosts: "images.canfar.net"
 
+    init:
+      # The image to use for the init container.  Unless you have a reason to change this, leave it alone.
+      # This image is used to create the /home and /projects directories, in case Cavern is not already running.
+      image: busybox:1.37.0
+      imagePullPolicy: IfNotPresent
+
     # The IVOA GMS Group URI to verify users against for permission to use the Science Platform.
     # See https://www.ivoa.net/documents/GMS/20220222/REC-GMS-1.0.html#tth_sEc3.2
     # usersGroup: "ivo://example.org/gms?prototyping-groups/mini-src/platform-users"
