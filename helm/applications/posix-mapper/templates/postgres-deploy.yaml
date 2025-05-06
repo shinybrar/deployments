@@ -20,7 +20,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: postgres
-          image: images.opencadc.org/platform/dependencies/postgres:13.20
+          image: {{ .image | default "postgres:13.20" }}
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5432  # Exposes container port

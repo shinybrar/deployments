@@ -111,6 +111,7 @@ secrets:
 # It's usually safe to leave these as-is, but make sure they match the values in catalina.properties.
 postgresql:
   install: true
+  image: postgres:13.20
   maxActive: 8
   auth:
     username: posixmapper

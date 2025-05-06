@@ -85,7 +85,7 @@ The init containers for the launch scripts.
             drop:
               - ALL
       - name: init-users-groups
-        image: images.opencadc.org/platform/dependencies/redis:7.4.2-alpine3.21
+        image: {{ $.Values.redis.image | default "redis:7.4.2-alpine3.21" }}
         command: ["/init-users-groups/init-users-groups.sh"]
         env:
         - name: HOME

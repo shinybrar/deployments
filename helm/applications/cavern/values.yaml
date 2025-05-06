@@ -73,6 +73,7 @@ deployment:
     uws:
       db:
         install: true # Whether to deploy a local PostgreSQL database.  Set to false to use your own.
+        image: postgres:15.12  # PostgreSQL image to use.
         runUID: 999  # Postgres User default in the postgres:15 image if install: true
         # url: "jdbc:postgresql://<host>:<port>/<database>" # if install: false, then set this to where it should point to
         database: "uws"  # if install: true, otherwise it's ignored
