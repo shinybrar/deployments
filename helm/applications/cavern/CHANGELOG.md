@@ -1,4 +1,8 @@
-# CHANGELOG for Cavern User Storage (Chart 0.6.1)
+# CHANGELOG for Cavern User Storage (Chart 0.6.4)
+
+## 2025.05.07 (0.6.4)
+- Update to `cavern` 0.8.1 image.
+- Added `deployment.cavern.uws.db.image` to specify PostgreSQL image.
 
 ## 2025.04.15 (0.6.1)
 - Add `tolerations` feature for `cavern` API and supprting PostgreSQL deployment.
