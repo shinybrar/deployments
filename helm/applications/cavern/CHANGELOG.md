@@ -1,6 +1,6 @@
 # CHANGELOG for Cavern User Storage (Chart 0.6.4)
 
-## 2025.05.07j (0.6.4)
+## 2025.05.07 (0.6.4)
 - Update to `cavern` 0.8.1 image.
 - Added `deployment.cavern.uws.db.image` to specify PostgreSQL image.
 
