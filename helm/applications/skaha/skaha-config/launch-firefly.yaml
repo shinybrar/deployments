@@ -84,8 +84,10 @@ spec:
         image: ${software.imageid}
         imagePullPolicy: IfNotPresent
         resources:
+          # https://docs.cloudbees.com/docs/cloudbees-ci-kb/latest/best-practices/jvm-memory-settings-best-practice
+          # memory limits / requests are equal and use -XX:InitialRAMPercentage / -XX:MaxRAMPercentage
           requests:
-            memory: "256Mi"
+            memory: "4Gi"
             cpu: "0.1"
             ephemeral-storage: "{{ .Values.deployment.skaha.sessions.minEphemeralStorage }}"
           limits:
