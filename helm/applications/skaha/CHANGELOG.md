@@ -1,4 +1,7 @@
-# CHANGELOG for Skaha User Session API (Chart 0.11.8)
+# CHANGELOG for Skaha User Session API (Chart 0.11.9)
+
+## 2025.05.08 (0.11.9)
+- Update image version to reflect Firefly changes
 
 ## 2025.05.08 (0.11.8)
 - Add Firefly backend type to Skaha API
