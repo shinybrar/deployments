@@ -1,4 +1,7 @@
-# CHANGELOG for Skaha User Session API (Chart 0.11.7)
+# CHANGELOG for Skaha User Session API (Chart 0.11.8)
+
+## 2025.05.08 (0.11.8)
+- Add Firefly backend type to Skaha API
 
 ## 2025.05.08 (0.11.7)
 - Fix for Redis image setting for initContainers.
