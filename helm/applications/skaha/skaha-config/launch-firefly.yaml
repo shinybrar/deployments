@@ -41,8 +41,6 @@ spec:
           value: "${skaha.userid}"
         - name: skaha_sessionid
           value: "${skaha.sessionid}"
-        - name: JUPYTER_TOKEN
-          value: "${skaha.sessionid}"
         - name: HOME
           value: "${SKAHA_TLD}/home/${skaha.userid}"
         - name: PWD
@@ -84,9 +82,6 @@ spec:
               }
             }
         image: ${software.imageid}
-        # command: ["/skaha-system/start-jupyterlab.sh"]
-        # args:
-        # - ${skaha.sessionid}
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -152,10 +147,6 @@ spec:
         emptyDir: { }
       - name: etc-passwd
         emptyDir: { }
-      - name: start-jupyterlab
-        configMap:
-          name: launch-scripts
-          defaultMode: 0777
       - name: init-users-groups
         configMap:
           name: init-users-groups-config
