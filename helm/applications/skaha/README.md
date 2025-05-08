@@ -73,6 +73,7 @@ The following table lists the configurable parameters for the Skaha Helm chart:
 | `deployment.skaha.sessions.maxCount` | Maximum number of interactive sessions per user.  Defaults to three (3). | `"3"` |
 | `deployment.skaha.sessions.minEphemeralStorage` | Minimum ephemeral storage, in [Kubernetes quantity](https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/quantity/), for interactive sessions.  Defaults to 20Gi. | `"20Gi"` |
 | `deployment.skaha.sessions.maxEphemeralStorage` | Maximum ephemeral storage, in [Kubernetes quantity](https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/quantity/), for interactive sessions.  Defaults to 200Gi. | `"200Gi"` |
+| `deployment.skaha.sessions.initContainerImage` | Init container image for Skaha User Sessions. | `redis-7.4.2-alpine3.21` |
 | `deployment.skaha.sessions.queue.default.queueName` | Name of the default `LocalQueue` instance from Kueue for all types | `""` |
 | `deployment.skaha.sessions.queue.default.priorityClass` | Name of the `priorityClass` for the all types to allow some pre-emption | `""` |
 | `deployment.skaha.sessions.queue.<typename>.queueName` | Name of the `LocalQueue` instance from Kueue for the given type | `""` |

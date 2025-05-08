@@ -1,4 +1,7 @@
-# CHANGELOG for Skaha User Session API (Chart 0.11.4)
+# CHANGELOG for Skaha User Session API (Chart 0.11.7)
+
+## 2025.05.08 (0.11.7)
+- Fix for Redis image setting for initContainers.
 
 ## 2025.04.15 (0.11.4)
 - Add `tolerations` feature for `skaha` API and User Sessions.

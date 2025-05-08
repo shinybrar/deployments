@@ -90,6 +90,12 @@ deployment:
       minEphemeralStorage: "20Gi"   # The initial requested amount of ephemeral (local) storage.  Does NOT apply to Desktop sessions.
       maxEphemeralStorage: "200Gi"  # The maximum amount of ephemeral (local) storage to allow a Session to extend to.  Does NOT apply to Desktop sessions.
 
+      # Optionally configure the initContainer image for Redis.  Useful for those not able to reach docker.io
+      # Defaults to redis-7.4.2-alpine3.21.
+      # Example:
+      #   initContainerImage: "private-image-repo/project/my-own-redis:1.0"
+      # initContainerImage:
+
       # Optionally configure the Kueue system to handle large workloads.  Configurable per session type (e.g. desktop, notebook, etc.).
       # Leaving this empty will default to submitting Jobs to the base Kubernetes system.
       # Provide a default configuration for all session types, or omit and only configure specific session types.
