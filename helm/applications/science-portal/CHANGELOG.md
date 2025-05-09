@@ -1,4 +1,8 @@
-# CHANGELOG for Science Portal UI (Chart 0.5.1)
+# CHANGELOG for Science Portal UI (Chart 0.6.0)
+
+## 2025.05.09 (0.6.0)
+- Add support for Firefly sessions
+- Drop suport for JDK 1.8.
 
 ## 2025.04.15 (0.5.1)
 - Add `tolerations` feature for `science-portal` UI.  Redis values can be added in the `redis` sub-chart stanza.
