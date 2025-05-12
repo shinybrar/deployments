@@ -130,5 +130,5 @@ ${user.runtime.volumemounts}
         configMap:
           name: init-users-datasets-symlink-config
           defaultMode: 0777
-  ${user.runtime.volumes}
+${user.runtime.volumes}
       {{ template "skaha.session.commonVolumes" . }}
