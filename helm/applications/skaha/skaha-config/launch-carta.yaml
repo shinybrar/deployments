@@ -57,7 +57,7 @@ spec:
         image: ${software.imageid}
         command: ["/bin/sh", "-c"]
         args:
-        - /skaha-system/skaha-carta.sh ${SKAHA_TLD} ${SKAHA_TLD}/projects
+        - /skaha-system/skaha-carta.sh ${SKAHA_TLD} ${SKAHA_TLD}/projects "${skaha.sessionurlpath}"
         imagePullPolicy: IfNotPresent
         resources:
           requests:
