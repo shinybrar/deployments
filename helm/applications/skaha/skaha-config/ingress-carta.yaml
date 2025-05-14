@@ -19,7 +19,7 @@ spec:
     - websecure
   routes:
   - kind: Rule
-    match: Host(`${skaha.sessions.hostname}`) && PathPrefix(`/session/carta/http/${skaha.sessionid}`)
+    match: Host(`${skaha.sessions.hostname}`) && PathPrefix(`/session/carta/${skaha.sessionid}`)
     services:
     - kind: Service
       name: skaha-carta-svc-${skaha.sessionid}
@@ -27,10 +27,3 @@ spec:
       scheme: http
     middlewares:
       - name: workload-enable-compression
-  - kind: Rule
-    match: Host(`${skaha.sessions.hostname}`) && PathPrefix(`/session/carta/ws/${skaha.sessionid}`)
-    services:
-    - kind: Service
-      name: skaha-carta-svc-${skaha.sessionid}
-      port: 5901
-      scheme: http
