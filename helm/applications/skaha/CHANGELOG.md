@@ -1,4 +1,7 @@
-# CHANGELOG for Skaha User Session API (Chart 0.11.9)
+# CHANGELOG for Skaha User Session API (Chart 0.12.0)
+
+## 2025.05.15 (0.12.0)
+- Switch to CARTA 5.0 Beta (non-backward compatible)
 
 ## 2025.05.08 (0.11.9)
 - Update image version to reflect Firefly changes
