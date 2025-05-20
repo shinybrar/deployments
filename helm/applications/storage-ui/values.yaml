@@ -22,7 +22,7 @@ skaha:
 deployment:
   hostname: example.host.com    # Change this!
   storageUI:
-    image: images.opencadc.org/client/storage-ui:1.3.0
+    image: images.opencadc.org/client/storage-ui:1.4.0
     imagePullPolicy: Always
 
     # Optionally set the DEBUG port.
@@ -40,10 +40,10 @@ deployment:
     # Resources provided to the Storage UI service.
     resources:
       requests:
-        memory: "500M"
+        memory: "500Mi"
         cpu: "500m"
       limits:
-        memory: "500M"
+        memory: "850Mi"
         cpu: "500m"
 
     # Groups that can alter logging.  Empty array means nobody can alter it.
@@ -58,6 +58,10 @@ deployment:
     #       resourceID: "ivo://cadc.nrc.ca/arc"
     #       nodeURIPrefix: "vos://cadc.nrc.ca~arc"
     #       userHomeDir: "/home"
+    #
+    #       # URL to a UI to manage groups.  Used to display in the "Manage Groups" link in the UI.
+    #       groupManagementURI: "https://ska-aim.stfc.ac.uk/"
+    #
     #       features:
     #         batchDownload: false
     #         batchUpload: false
