@@ -1,6 +1,6 @@
 # Kueue on Science Platform
 
-_The documentation and design consideration are based on kueue v0.10.2._
+_The documentation and design consideration are based on kueue v0.11+_
 
 ## Overview
 
@@ -38,10 +38,20 @@ kubectl apply -f localQueue.config.yaml    #Does not require admin access
 ```
 
 The default configurations are based on the following assumptions:
-1. Hardware is homogenous across the cluster.
-2. User workloads are launched in `skaha-workload` or `canfar-b-workload` namespaces. Set via `ClusterQueue.spec.namespaceSelector.matchExpressions.values`
-3. Only `cpu`, `memory`, and `ephermeral-storage` resources are used in the cluster. Set via `ClusterQueue.spec.resourceGroups.coveredResources`
-4. There are three priority classes defined in the cluster, `high`, `medium`, and `low`. Set via `WorkloadPriorityClass` objects.
+1. Homogenous infrastructure across the cluster.
+2. Worker nodes are labelled as `skaha.opencadc.org/node-type=worker-node`. To label the nodes, run the following command:
+   ```bash
+   kubectl label nodes <node-name> skaha.opencadc.org/node-type=worker-node
+   ```
+   Set via `ResourceFlavor.spec.nodeLabels`
+3. User workloads are launched in `skaha-workload` namespace.
+    - Set via `ClusterQueue.spec.namespaceSelector.matchExpressions.values`
+4. Supports resources set via `ClusterQueue.spec.resourceGroups.coveredResources`,
+   - `cpu`
+   - `memory`
+   - `ephermeral-storage`
+   - `nvidia.com/gpu`
+5. There are three priority classes defined in the cluster, `high`, `medium`, and `low` described via `WorkloadPriorityClass` objects.
 
 See detailed configuration guide below for more information on how to configure kueue for your cluster. We highly recommend customizing the configurations to suit your cluster environment and workload requirements.
 
@@ -126,11 +136,11 @@ The kueue controller configuration is defined under the `managerConfig.controlle
 - In order to copy labels from the `batch/job` to the `kueue` workload, you can set the `labelKeysToCopy` to the labels you want to copy. This is useful for tracking and managing workloads in the cluster.
   ```yaml
     labelKeysToCopy:
-  - canfar-net-sessionID
-  - canfar-net-sessionName
-  - canfar-net-sessionType
-  - canfar-net-userid
-  - batch.kubernetes.io/job-name
+      - canfar-net-sessionID
+      - canfar-net-sessionName
+      - canfar-net-sessionType
+      - canfar-net-userid
+      - batch.kubernetes.io/job-name
   ```
 
 ## Configuration Guide
