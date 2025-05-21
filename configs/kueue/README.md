@@ -314,7 +314,7 @@ description: "low priority"
 
 ### 5. Science Platform Integration
 
-In order to integrate kueue with the Science Platform's `Skaha` service, the following environment variables must be set for the `skaha` service pods,
+In order to integrate kueue with the Science Platform's `Skaha` backend service, the following environment variables must be set for the `skaha` service pods,
 
 
 ```yaml
@@ -325,13 +325,13 @@ Where `KUEUE_ENABLED` is a boolean value that blanket enables or disables kueue 
 ```yaml
 KUEUE_CONFIG: {}
 ```
-`KUEUE_CONFIG` is a dictionary where the key values are name of the possible kinds of workloads that can be submitted to the science platform, which are currently either `interactive` or `headless`, where `notebook`, `carta`, `desktop`, `contributed` are considered as a subset of `interative` jobs.Both of these keys need an object defining the `localQueue` and `priorityClass` for the workload type.
+`KUEUE_CONFIG` is a dictionary where the key values are name of the possible kinds of workloads that can be submitted to the science platform, which currently are `headless`, `notebook`, `carta`, `desktop`, `contributed`, `firefly` or `default`. Both of these keys need an object defining the `localQueue` and `priorityClass` for the workload type.
 
 For example, shown below is a `KUEUE_CONFIG` object that defines the `queueName` and `priorityClass` in the `KUEUE_CONFIG` object,
 
 ```yaml
 KUEUE_CONFIG:
-  interative:
+  default:
     queueName: "skaha-workload-local-queue"
     priorityClass: "high"
   headless:
