@@ -1,10 +1,5 @@
 #!/bin/sh
 
-if [ -z "$USER_DATASETS_ROOT_PATH" ]; then
-  echo "USER_DATASETS_ROOT_PATH is not set."
-  exit 1
-fi
-
 if [ -d "$USER_DATASETS_ROOT_PATH" ]; then
   for DATASET in $(find "$USER_DATASETS_ROOT_PATH" -maxdepth 1); do
     ln -sf "$DATASET" "$HOME"
