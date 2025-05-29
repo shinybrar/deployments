@@ -14,7 +14,7 @@ The Science Portal is a Single Page Application (SPA) with a rich Javascript cli
 
 ### Minimum Helm configuration
 
-See the full set of options in the [values.yaml](https://github.com/opencadc/science-platform/blob/SP-3544/deployment/helm/storage-ui/values.yaml).  The deployed Redirect URI (`redirect_uri`) is `/storage-ui/oidc-callback`, which handles
+See the full set of options in the [values.yaml](./values.yaml).  The deployed Redirect URI (`redirect_uri`) is `/storage-ui/oidc-callback`, which handles
 receiving the `code` as part of the authorization code flow, and obtaining a token to put into a cookie.
 
 `my-storage-ui-local-values-file.yaml`
@@ -67,6 +67,10 @@ deployment:
           resourceID: "ivo://example.org/cavern"
           nodeURIPrefix: "vos://example.org~cavern" # How VOSpace URIs will be prefixed
           userHomeDir: "/home"
+
+          # Link to Manage Groups link
+          groupManagementURI: "https://example.org/groups"
+
           # Some VOSpace services support these features.  Cavern does not, but it needs to be explicitly declared here.
           features:
             batchDownload: false
