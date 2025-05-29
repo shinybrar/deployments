@@ -112,6 +112,8 @@ The init containers for the launch scripts.
         env:
         - name: HOME
           value: "${SKAHA_TLD}/home/${skaha.userid}"
+        - name: USER_DATASETS_ROOT_PATH
+          value: "{{ .Values.deployment.skaha.sessions.prepareData.userDatasetsRootPath | default "/datasets" }}"
         volumeMounts:
         - mountPath: "/init-users-datasets-symlink"
           name: init-users-datasets-symlink
