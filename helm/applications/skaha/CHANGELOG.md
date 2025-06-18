@@ -1,4 +1,7 @@
-# CHANGELOG for Skaha User Session API (Chart 0.11.9)
+# CHANGELOG for Skaha User Session API (Chart 0.11.10)
+
+## 2025.06.10 (0.11.10)
+- Fix: Do not assume separate Namespaces for the User Sessions and Skaha API.  The Workload Namespace defaults to `skaha-workload`, but will use the same as the Skaha API if empty.
 
 ## 2025.05.08 (0.11.9)
 - Update image version to reflect Firefly changes
