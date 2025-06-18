@@ -30,7 +30,7 @@ spec:
           #   - skaha.opencadc.org/node-type=service-node (p-nodes)
           #   - node-role.kubernetes.io/control-plane
           # Compute Nodes: 40 x [64 cores, 241Gi memory, 2048Gi ephemeral-storage]
-          # GPU Nodes A: 3 x [8 cores, 40Gi memory, 140Gi ephemeral-storage, GRID-V100D-16C] 
+          # GPU Nodes A: 3 x [8 cores, 40Gi memory, 140Gi ephemeral-storage, GRID-V100D-16C]
           # GPU Nodes B: 6 x [4 cores, 20Gi memory, 80Gi ephemeral-storage, GRID-V100D-8C]
           # nominalQuota = count * size - 2% overhead
           # borrowing / lending = size * 40%
