@@ -26,8 +26,7 @@ controllerManager:
   # Kueue Deployment Configuration
   manager:
     image:
-      repository: us-central1-docker.pkg.dev/k8s-staging-images/kueue/kueue
-      # This should be set to 'IfNotPresent' for released version
+      tag: v0.11.6
       pullPolicy: Always
     podAnnotations: {}
     resources:
