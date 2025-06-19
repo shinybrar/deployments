@@ -1,5 +1,8 @@
 # Helm Values for K8s Kueue Dev
 
+# Enable prometheus metrics for the kueue controller.
+enablePrometheus: true
+
 # Kueue Controller Configuration
 controllerManager:
   # Kueue Feature Gates, deprecated features excluded
@@ -30,7 +33,7 @@ managerConfig:
     metrics:
       # Bind to for serving prometheus metrics, set to 0 to disable
       # Maps to metricsService.ClusterIP
-      bindAddress: :8080
+      bindAddress: :8443
       # Report the cluster queue resource usage and quotas metrics
       enableClusterQueueResources: true
 
