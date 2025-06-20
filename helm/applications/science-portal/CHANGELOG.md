@@ -1,4 +1,7 @@
-# CHANGELOG for Science Portal UI (Chart 0.6.4)
+# CHANGELOG for Science Portal UI (Chart 0.6.5)
+
+## 2025.06.20 (0.6.5)
+- Small fix to enable experimental features in the `values.yaml` file.
 
 ## 2025.06.17 (0.6.4)
 - Small fix for deploying with an existing secret for the client.
