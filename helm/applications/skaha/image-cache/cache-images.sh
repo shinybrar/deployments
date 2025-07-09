@@ -16,7 +16,7 @@ echo "$harborHosts" | while read -r harborHost; do
     URL="https://$harborHost/api/v2.0/projects?page_size=100"
     PROJECT_URL="https://$harborHost/api/v2.0/projects"
 
-    echo "fetching the images host: $URL"
+    echo "Fetching images from ${URL}..."
     response=$(curl -k $URL)
 
     # Parse the response and iterate over the list
@@ -48,7 +48,6 @@ echo "$harborHosts" | while read -r harborHost; do
 
                 # check if labels are empty
                 if [ -z "$labelArray" ] || [ "$labelArray" == "null" ]; then
-                    echo "No labels found for $image_id"
                     continue
                 fi
 
