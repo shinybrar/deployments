@@ -1,4 +1,7 @@
-# CHANGELOG for Skaha User Session API (Chart 0.11.12)
+# CHANGELOG for Skaha User Session API (Chart 0.11.13)
+
+## 2025.07.10 (0.11.13)
+- Feature: Add support for TLS in User Sessions IngressRoute.
 
 ## 2025.07.09 (0.11.12)
 - Fix: Remove unnecessary missing label messager from image caching script.
