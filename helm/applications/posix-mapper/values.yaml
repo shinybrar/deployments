@@ -107,16 +107,13 @@ secrets:
   # posix-manager-cacert-secret:
   #   ca.crt: <base64 encoded ca crt>
 
-# These values are preset in the catalina.properties, and this default database only exists beside this service.
-# It's usually safe to leave these as-is, but make sure they match the values in catalina.properties.
-postgresql:
-  install: true
-  image: postgres:13.20
-  maxActive: 8
-  auth:
-    username: posixmapper
-    password: posixmapperpwd
-    database: mapping
-    schema: mapping
-  storage:
-    spec:
+# Required.  Database connection information to contain the UID/GID mappings.
+# Example:
+# postgresql:
+#   maxActive: 8
+#   url: jdbc:postgresql://psql.example.org:5432/posixmapper
+#   schema: posixmapper
+#   auth:
+#     username: posixmapperuser
+#     password: posixmapperpwd
+# postgresql: {}
