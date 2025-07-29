@@ -71,16 +71,9 @@ Ultimately, it will be up to the deployment to ensure that the PVC is bound to a
 ```bash
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
-helm install posix-mapper-postgres bitnami/postgresql \
-  --namespace skaha-system \
-  --set auth.username=posixmapperuser \
-  --set auth.password=posixmapperpwd \
-  --set auth.database=posixmapper \
-  --set primary.persistence.enabled=true \
-  --set primary.persistence.existingClaim=posix-mapper-postgres-pvc
 ```
 
-Or use a Helm Values file to customize the installation.
+Use a Helm Values file to customize the installation.  This will initialize the database schema and set up the required user credentials.  The schema should match what the POSIX Mapper expects in its configuration.
 Create a file named `my-postgresql-values.yaml` with the following content:
 ```yaml
 auth:
@@ -88,6 +81,10 @@ auth:
   password: posixmapperpwd
   database: posixmapper
 primary:
+  initdb:
+    scripts:
+      init_schema.sql: |
+          create schema mapping;
   persistence:
     enabled: true
     existingClaim: posix-mapper-postgres-pvc
@@ -135,6 +132,7 @@ See the [values.yaml](values.yaml) file for a complete list of configuration opt
 | `replicaCount` | Number of POSIX Mapper replicas to deploy | `1` |
 | `tolerations` | Array of tolerations to pass to Kubernetes for fine-grained Node targeting of the `posix-mapper` API | `[]` |
 | `deployment.hostname` | Hostname for the POSIX Mapper deployment | `""` |
+| `deployment.posixMapper.loggingGroups` | List of groups permitted to adjust logging levels for the POSIX Mapper service. | `[]` |
 | `deployment.posixMapper.image` | POSIX Mapper Docker image | `images.opencadc.org/platform/posix-mapper:<current release version>` |
 | `deployment.posixMapper.imagePullPolicy` | Image pull policy for the POSIX Mapper container | `IfNotPresent` |
 | `deployment.posixMapper.resourceID` | Resource ID (URI) for this POSIX Mapper service | `""` |
