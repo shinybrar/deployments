@@ -9,9 +9,9 @@ This Helm chart deploys the POSIX Mapper application, which is designed to map P
 - Deployed PostgreSQL database for application data storage
 
 ### PostgreSQL Database
-The POSIX Mapper requires a PostgreSQL database to store UID/GID mappings.  As this is a critical component, ensure that your database is properly configured and accessible from the POSIX Mapper application.
+The POSIX Mapper requires a PostgreSQL database to store UID/GID mappings.  As this is a critical component, ensure that your database is properly configured and accessible from the POSIX Mapper application.  Use some persistent storage solution (like a Persistent Volume Claim) to ensure that the database data is not lost if deploying PostgreSQL in Kubernetes, or install a dedicated instance outside of the cluster.
 
-#### Sample PostgreSQL Installation
+#### Sample PostgreSQL Installation (in Kubernetes)
 You can deploy a PostgreSQL database using the following Helm chart, with a PVC to ensure data persistence (Using `skaha-system` namespace as an example):
 
 ##### Persistent Volume Claim (PVC)
