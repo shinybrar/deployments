@@ -36,22 +36,22 @@ spec:
           # borrowing / lending = size * 40%
           resources:
             - name: "cpu"
-              nominalQuota:   2555
-              borrowingLimit: 1022
-              lendingLimit:   1022
+              nominalQuota:   "2555"
+              borrowingLimit: "1022"
+              lendingLimit:   "1022"
             - name: "memory"
-              nominalQuota:   9682Gi
-              borrowingLimit: 3873Gi
-              lendingLimit:   3873Gi
+              nominalQuota:   "9682Gi"
+              borrowingLimit: "3873Gi"
+              lendingLimit:   "3873Gi"
               # 40 nodes * 2048Gi = 81920Gi
             - name: "ephemeral-storage"
-              nominalQuota:   81164Gi
-              borrowingLimit: 32465Gi
-              lendingLimit:   32465Gi
+              nominalQuota:   "81164Gi"
+              borrowingLimit: "32465Gi"
+              lendingLimit:   "32465Gi"
             - name: "nvidia.com/gpu"
-              nominalQuota: 9
-              borrowingLimit: 3
-              lendingLimit: 3
+              nominalQuota: "9"
+              borrowingLimit: "3"
+              lendingLimit: "3"
   preemption:
     reclaimWithinCohort: LowerPriority
     borrowWithinCohort:

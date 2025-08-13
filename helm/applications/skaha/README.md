@@ -70,6 +70,7 @@ The following table lists the configurable parameters for the Skaha Helm chart:
 | `deployment.skaha.registryURL` | URL for the IVOA registry containing service locations | `""` |
 | `deployment.skaha.nodeAffinity` | Kubernetes Node affinity for the Skaha API Pod | `{}` |
 | `deployment.skaha.sessions.expirySeconds` | Expiry time, in seconds, for interactive sessions.  Defaults to four (4) days. | `"345600"` |
+| `deployment.skaha.sessions.imagePullPolicy` | Image pull policy for all User Sessions. | `"Always"` |
 | `deployment.skaha.sessions.maxCount` | Maximum number of interactive sessions per user.  Defaults to three (3). | `"3"` |
 | `deployment.skaha.sessions.minEphemeralStorage` | Minimum ephemeral storage, in [Kubernetes quantity](https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/quantity/), for interactive sessions.  Defaults to 20Gi. | `"20Gi"` |
 | `deployment.skaha.sessions.maxEphemeralStorage` | Maximum ephemeral storage, in [Kubernetes quantity](https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/quantity/), for interactive sessions.  Defaults to 200Gi. | `"200Gi"` |
@@ -79,6 +80,7 @@ The following table lists the configurable parameters for the Skaha Helm chart:
 | `deployment.skaha.sessions.queue.<typename>.queueName` | Name of the `LocalQueue` instance from Kueue for the given type | `""` |
 | `deployment.skaha.sessions.queue.<typename>.priorityClass` | Name of the `priorityClass` for the given type to allow some pre-emption | `""` |
 | `deployment.skaha.sessions.hostname` | Hostname to access user sessions on.  Defaults to `deployment.hostname` | `deployment.hostname` |
+| `deployment.skaha.sessions.tls` | TLS configuration for the User Sessions IngressRoute. | `{}` |
 | `deployment.skaha.sessions.extraVolumes` | List of extra `volume` and `volumeMount` to be mounted in User Sessions.  See the `values.yaml` file for examples. | `[]` |
 | `deployment.skaha.sessions.gpuEnabled` | Enable GPU support for User Sessions.  Defaults to `false` | `false` |
 | `deployment.skaha.sessions.nodeAffinity` | Kubernetes Node affinity for the Skaha User Session Pods | `{}` |
