@@ -1,6 +1,6 @@
-# CHANGELOG for Skaha User Session API (Chart 0.12.0)
+# CHANGELOG for Skaha User Session API (Chart 1.0.0)
 
-## 2025.05.15 (0.12.0)
+## 2025.05.15 (1.0.0)
 - Add CARTA 5.0
 
 ## 2025.08.01 (0.11.16)
