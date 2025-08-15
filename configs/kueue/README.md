@@ -12,28 +12,26 @@ In short, **kueue intercepts the workload, and releases it when the cluster is r
 
 ## Installation Guide
 
-We strongly recommend using the helm chart provided by the kubernetes-sigs/kueue project to install the system in your cluster, found [here](https://github.com/kubernetes-sigs/kueue/tree/main/charts/kueue).
+We recommend using the Helm chart published by the kubernetes-sigs/kueue project to install the system in your cluster from OCI Artifact Registry.
 
-The helm install requires a `values.yaml` file to be provided during installation with deployment specific configurations. You can find example configs provided with this codebase which are used in production and development environments at Canadian Astronomy Data Centre (CADC) by the Science Platform Team.
- -  `configs/kueue/dev/values.yaml`
- -  `configs/kueue/prod/values.yaml`
+### Install from OCI Container Registry (Recommended)
 
-### Installation Steps
-
-To install kueue in your cluster with the development configuration, follow the steps below:
+This is the simplest method that doesn't require cloning the Kueue repository:
 
 ```bash
-git clone https://github.com/kubernetes-sigs/kueue.git
-git clone https://github.com/opencadc/deployments.git
-cd kueue/charts/kueue
-helm install kueue . -f ../../../deployments/configs/kueue/dev/values.yaml -n kueue-system
+
+# Install Kueue using the OCI registry
+cd configs/kueue/dev
+helm install kueue oci://registry.k8s.io/kueue/charts/kueue:0.11.6 --values values.yaml --namespace kueue-system --create-namespace
 ```
 
-Once Kueue is installed, you need to configure the system to manage workloads in the cluster. This is done by creating `ResourceFlavors`, `ClusterQueues`, `LocalQueues`, and `WorkloadPriorityClass` objects in the cluster. Sample configurations for these objects are provided in the `configs/kueue/dev/` and `configs/kueue/prod/` directories. To install them, you can use the following commands;
+Once Kueue is installed, you need to configure the system to manage workloads in the cluster. This is done by creating `ResourceFlavors`, `ClusterQueues`, `LocalQueues`, and `WorkloadPriorityClass` objects in the cluster. Sample configurations for these objects are provided in the `configs/kueue/dev/` and `configs/kueue/prod/` directories. To install them, you can use the following commands:
 
 ```bash
 cd deployments/configs/kueue/dev/
 kubectl apply -f clusterQueue.config.yaml  #Requires Cluster Admin Access
+kubectl create namespace skaha-workload
+kubectl create namespace canfar-b-workload
 kubectl apply -f localQueue.config.yaml    #Does not require admin access
 ```
 
@@ -314,7 +312,7 @@ description: "low priority"
 
 ### 5. Science Platform Integration
 
-In order to integrate kueue with the Science Platform's `Skaha` service, the following environment variables must be set for the `skaha` service pods,
+In order to integrate kueue with the Science Platform's `Skaha` backend service, the following environment variables must be set for the `skaha` service pods,
 
 
 ```yaml
@@ -325,13 +323,13 @@ Where `KUEUE_ENABLED` is a boolean value that blanket enables or disables kueue 
 ```yaml
 KUEUE_CONFIG: {}
 ```
-`KUEUE_CONFIG` is a dictionary where the key values are name of the possible kinds of workloads that can be submitted to the science platform, which are currently either `interactive` or `headless`, where `notebook`, `carta`, `desktop`, `contributed` are considered as a subset of `interative` jobs.Both of these keys need an object defining the `localQueue` and `priorityClass` for the workload type.
+`KUEUE_CONFIG` is a dictionary where the key values are name of the possible kinds of workloads that can be submitted to the science platform, which currently are `headless`, `notebook`, `carta`, `desktop`, `contributed`, `firefly` or `default`. Both of these keys need an object defining the `localQueue` and `priorityClass` for the workload type.
 
 For example, shown below is a `KUEUE_CONFIG` object that defines the `queueName` and `priorityClass` in the `KUEUE_CONFIG` object,
 
 ```yaml
 KUEUE_CONFIG:
-  interative:
+  default:
     queueName: "skaha-workload-local-queue"
     priorityClass: "high"
   headless:
