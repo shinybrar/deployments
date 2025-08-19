@@ -48,7 +48,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   namespace: {{ .Values.skaha.namespace }}
-  name: image-caching-job
+  name: {{ .Release.Name }}-image-caching-job
 spec:
   template:
     spec:
