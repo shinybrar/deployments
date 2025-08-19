@@ -4,6 +4,9 @@
 - Add CARTA 5.0
 - Support for Kueue
 
+## 2025.08.19 (0.11.22)
+- Feature: API version configurable (Revert Ingress)
+
 ## 2025.08.19 (0.11.21)
 - Feature: Add release name to make unique object names
 
