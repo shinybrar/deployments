@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   namespace: {{ .Values.skaha.namespace }}
-  name: image-caching-cronjob
+  name: {{ .Release.Name }}-image-caching-cronjob
 spec:
   schedule: {{ .Values.deployment.skaha.imageCache.refreshSchedule | toString | quote }}
   jobTemplate:
