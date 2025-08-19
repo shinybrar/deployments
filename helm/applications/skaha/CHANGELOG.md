@@ -1,7 +1,10 @@
 # CHANGELOG for Skaha User Session API (Chart 1.0.0)
 
-## 2025.05.15 (1.0.0)
+## 2025.08.19 (1.0.0)
 - Add CARTA 5.0
+
+## 2025.08.19 (0.11.17)
+- Feature: Add support for configuring API versioning.
 
 ## 2025.08.01 (0.11.16)
 - Fix: Connection leaks detected from repeated Redis access.  Blocked those up.
