@@ -111,7 +111,7 @@ spec:
         - mountPath: "/config"
           name: config-volume
         - mountPath: "/add-user-config"
-          name: {{ .Release.Name }}-add-user-config
+          name: add-user-config
         - mountPath: "{{ .Values.deployment.skaha.skahaTld }}"
           name: cavern-volume
           # This subpath needs to match the subpath in Cavern's deployment.  If that one is configurable, so must this one be!
