@@ -1,4 +1,7 @@
-# CHANGELOG for Skaha User Session API (Chart 0.11.16)
+# CHANGELOG for Skaha User Session API (Chart 0.11.17)
+
+## 2025.08.19 (0.11.17)
+- Feature: Add support for configuring API versioning.
 
 ## 2025.08.01 (0.11.16)
 - Fix: Connection leaks detected from repeated Redis access.  Blocked those up.
