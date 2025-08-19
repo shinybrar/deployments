@@ -10,7 +10,7 @@ spec:
   - host: {{ .Values.deployment.hostname }}
     http:
       paths:
-      - path: /skaha/{{ .Values.deployment.skaha.apiVersion }}
+      - path: /skaha
         pathType: Prefix
         backend:
           service:
