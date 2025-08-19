@@ -1,4 +1,7 @@
-# CHANGELOG for Skaha User Session API (Chart 0.11.17)
+# CHANGELOG for Skaha User Session API (Chart 0.11.18)
+
+## 2025.08.19 (0.11.18)
+- Feature: Add release name to make unique object names
 
 ## 2025.08.19 (0.11.17)
 - Feature: Add support for configuring API versioning.
