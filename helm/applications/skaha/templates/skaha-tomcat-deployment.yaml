@@ -2,19 +2,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    run: skaha-tomcat
-  name: skaha-tomcat
+    run: {{ .Release.Name }}-skaha-tomcat
+  name: {{ .Release.Name }}-skaha-tomcat
   namespace: {{ .Values.skaha.namespace }}
 spec:
   replicas: {{ default 1 .Values.replicaCount }}
   selector:
     matchLabels:
-      run: skaha-tomcat
+      run: {{ .Release.Name }}-skaha-tomcat
   template:
     metadata:
       creationTimestamp: null
       labels:
-        run: skaha-tomcat
+        run: {{ .Release.Name }}-skaha-tomcat
     spec:
 {{- with .Values.deployment.skaha.nodeAffinity }}
       affinity:
@@ -93,7 +93,7 @@ spec:
         {{- end }}
         image: {{ .Values.deployment.skaha.image }}
         imagePullPolicy: {{ .Values.deployment.skaha.imagePullPolicy }}
-        name: skaha-tomcat
+        name: {{ .Release.Name }}-skaha-tomcat
         resources:
           requests:
             memory: {{ .Values.deployment.skaha.resources.requests.memory }}
