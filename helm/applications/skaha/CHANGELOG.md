@@ -1,7 +1,11 @@
 # CHANGELOG for Skaha User Session API (Chart 1.0.0)
 
-## 2025.08.19 (1.0.0)
+## 2025.09.04 (1.0.0)
 - Add CARTA 5.0
+- Support for Kueue
+
+## 2025.08.19 (0.11.21)
+- Feature: Add release name to make unique object names
 
 ## 2025.08.19 (0.11.17)
 - Feature: Add support for configuring API versioning.
