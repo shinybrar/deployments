@@ -5,5 +5,8 @@ dependencies:
 - name: utils
   repository: file://../utils
   version: 0.1.0
-digest: sha256:fd98d2ca0917e2d209018020b126ffd197f8dfe1a6a1a9d4c5455b5da8539cb6
-generated: "2024-09-24T13:43:42.233971349-07:00"
+- name: kueue
+  repository: oci://registry.k8s.io/kueue/charts
+  version: 0.13.2
+digest: sha256:3e0a91f486516825bbe8e919a89b6e721ac47915d77e51b5f6a119d2e33f9db8
+generated: "2025-08-20T10:26:02.754617-07:00"

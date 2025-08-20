@@ -1,0 +1,68 @@
+{{- if eq .Values.kueue.install true }}
+---
+# Resource Flavors
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: ResourceFlavor
+metadata:
+  name: {{ .Release.Name }}-default
+---
+# ClusterQueue
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: ClusterQueue
+metadata:
+  name: {{ .Release.Name }}-cluster-queue
+spec:
+  namespaceSelector:
+    matchExpressions:
+      - key: kubernetes.io/metadata.name
+        operator: In
+        values: [ {{ .Values.skahaWorkload.namespace }} ]
+  queueingStrategy: BestEffortFIFO
+  cohort: {{ .Release.Name }}-cohort
+  resourceGroups:
+    - coveredResources: ["cpu", "memory", "ephemeral-storage", "nvidia.com/gpu"]
+      flavors:
+        - name: "{{ .Release.Name }}-default"
+          # Cluster Hardware Configuration
+          # Does not include
+          #   - skaha.opencadc.org/node-type=service-node (p-nodes)
+          #   - node-role.kubernetes.io/control-plane
+          # Compute Nodes: 40 x [64 cores, 241Gi memory, 2048Gi ephemeral-storage]
+          # GPU Nodes A: 3 x [8 cores, 40Gi memory, 140Gi ephemeral-storage, GRID-V100D-16C]
+          # GPU Nodes B: 6 x [4 cores, 20Gi memory, 80Gi ephemeral-storage, GRID-V100D-8C]
+          # nominalQuota = count * size - 2% overhead
+          # borrowing / lending = size * 25%
+          resources:
+{{ .Values.kueue.clusterQueueResources | toYaml | indent 10 }}
+  preemption:
+    reclaimWithinCohort: LowerPriority
+    borrowWithinCohort:
+      policy: LowerPriority
+      maxPriorityThreshold: 10000
+    withinClusterQueue: LowerPriority
+  stopPolicy: None
+---
+# WorkloadPriorityClass
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: WorkloadPriorityClass
+metadata:
+  name: low
+value: 10000
+description: "Low Priority"
+---
+# WorkloadPriorityClass
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: WorkloadPriorityClass
+metadata:
+  name: medium
+value: 100000
+description: "Medium Priority"
+---
+# WorkloadPriorityClass
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: WorkloadPriorityClass
+metadata:
+  name: high
+value: 1000000
+description: "High Priority"
+{{- end }}
