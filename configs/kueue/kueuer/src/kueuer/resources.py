@@ -324,7 +324,7 @@ def resources(
         result = total(patterns or None, field=field)
         console.print(result, width=120)
         if percent != 1.0:
-            console.print(f"Scaling by {percent}...")
+            console.print(f"Scaling by {scale * 100}%...")
             for k, v in result.items():
                 # Limit to Decimal precision to 3 decimal places
                 v["value"] = str(Decimal(v["value"]) * Decimal(scale))
