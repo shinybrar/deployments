@@ -267,6 +267,15 @@ deployment:
 # 
 tolerations: []
 
+# Port to expose from the service.  This will ultimately serve port 8080 (default Tomcat port), but will
+# be exposed as per the port below.  Useful for running multiple deployments side-by-side.
+# Defaults to 8080.
+# Example:
+#   service:
+#     port: 8081. # To map port 8081 to port 8080.
+service:
+  port: 8080
+
 secrets:
   # Uncomment to enable local or self-signed CA certificates for your domain to be trusted.
   # skaha-cacert-secret:

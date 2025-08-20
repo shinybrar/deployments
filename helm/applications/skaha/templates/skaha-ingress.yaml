@@ -16,4 +16,4 @@ spec:
           service:
             name: {{ .Release.Name }}-skaha-tomcat-svc
             port:
-              number: 8080
+              number: {{ .Values.service.port | default "8080" }}
