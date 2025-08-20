@@ -103,6 +103,7 @@ deployment:
       # Optionally configure the Kueue system to handle large workloads.  Configurable per session type (e.g. desktop, notebook, etc.).
       # Leaving this empty will default to submitting Jobs to the base Kubernetes system.
       # Provide a default configuration for all session types, or omit and only configure specific session types.
+      # Provided PriorityClass names are "high", "medium", and "low".
       # @see https://kueue.sigs.k8s.io/docs/
       # @see https://github.com/opencadc/deployments/tree/main/configs/kueue
       # Example 1:
@@ -110,27 +111,27 @@ deployment:
       #   queue:
       #     notebook:
       #       queueName: "notebook-queue"
-      #       priorityClass: "notebook-med"
+      #       priorityClass: "medium"
       #     desktop:
       #       queueName: "desktop-queue"
-      #       priorityClass: "desktop-high"
+      #       priorityClass: "low"
       #     default:
       #       queueName: "default-queue"
-      #       priorityClass: "user-session-med"
+      #       priorityClass: "medium"
       #
       # Example 2:
       #    # Configure contributed session types.  All else will use the bare Kubernetes system.
       #    queue:
       #      contributed:
       #        queueName: "contributed-queue"
-      #        priorityClass: "contributed-high"
+      #        priorityClass: "high"
       #
       # Example 3:
       #    # Configure Kueue for all user session types.
       #    queue:
       #      default:
       #        queueName: "all-user-sessions-local-queue"
-      #        priorityClass: "user-sessions-med"
+      #        priorityClass: "medium"
       queue: {}
 
       # This is a list of tolerations that will be added to the Pod spec of the User Sessions.
