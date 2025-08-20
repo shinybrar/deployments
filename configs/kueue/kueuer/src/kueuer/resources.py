@@ -306,11 +306,11 @@ def resources(
             help='Resource field to sum on each node: "capacity" or "allocatable".',
         ),
     ] = "capacity",
-    percent: Annotated[
+    scale: Annotated[
         float,
         typer.Option(
-            "-p",
-            "--percent",
+            "-s",
+            "--scale",
             help="Scale resources by this percentage.",
         ),
     ] = 1.0,
@@ -319,7 +319,7 @@ def resources(
     Sum resources across nodes matching any of the provided regex patterns.
     """
     assert field in ["capacity", "allocatable"]
-    assert percent > 0.0 and percent <= 1.0, "Percentage must be in (0, 1]"
+    assert scale > 0.0 and scale <= 1.0, "Percentage must be in (0, 1]"
     try:
         result = total(patterns or None, field=field)
         console.print(result, width=120)
@@ -327,7 +327,7 @@ def resources(
             console.print(f"Scaling by {percent}...")
             for k, v in result.items():
                 # Limit to Decimal precision to 3 decimal places
-                v["value"] = str(Decimal(v["value"]) * Decimal(percent))
+                v["value"] = str(Decimal(v["value"]) * Decimal(scale))
             console.print(result, width=120)
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
