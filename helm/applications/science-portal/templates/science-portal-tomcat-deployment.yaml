@@ -49,8 +49,10 @@ spec:
         {{- with .Values.deployment.sciencePortal.extraVolumeMounts }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
+        {{- with .Values.podSecurityContext }}
         securityContext:
-          allowPrivilegeEscalation: false
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
         {{- if .Values.deployment.sciencePortal.extraEnv }}
         env:
         {{- with .Values.deployment.sciencePortal.extraEnv }}
