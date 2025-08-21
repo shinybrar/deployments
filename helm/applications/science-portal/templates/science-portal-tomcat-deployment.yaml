@@ -51,7 +51,7 @@ spec:
         {{- end }}
         {{- with .Values.podSecurityContext }}
         securityContext:
-        {{- toYaml . | nindent 8 }}
+        {{- toYaml . | nindent 10 }}
         {{- end }}
         {{- if .Values.deployment.sciencePortal.extraEnv }}
         env:
