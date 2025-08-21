@@ -276,6 +276,11 @@ tolerations: []
 service:
   port: 8080
 
+# Selectively disable ingress if desired.  This is enabled by default.
+ingress:
+  enabled: true
+  path: /skaha
+
 secrets:
   # Uncomment to enable local or self-signed CA certificates for your domain to be trusted.
   # skaha-cacert-secret:

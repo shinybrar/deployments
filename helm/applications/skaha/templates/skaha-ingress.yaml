@@ -1,3 +1,4 @@
+{{- if .Values.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -10,10 +11,11 @@ spec:
   - host: {{ .Values.deployment.hostname }}
     http:
       paths:
-      - path: /skaha
+      - path: {{ .Values.ingress.path | default "/skaha"}}
         pathType: Prefix
         backend:
           service:
             name: {{ .Release.Name }}-skaha-tomcat-svc
             port:
               number: {{ .Values.service.port | default "8080" }}
+{{- end }}
