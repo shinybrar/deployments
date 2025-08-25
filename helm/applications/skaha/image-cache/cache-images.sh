@@ -4,9 +4,11 @@ URL="https://$harborHost/api/v2.0/projects?page_size=100"
 PROJECT_URL="https:/$harborHost/api/v2.0/projects"
 
 # checking if redis instance available or not
-if ! redis-cli -h $REDIS_HOST -p $REDIS_PORT ping > /dev/null 2>&1; then
+if [ -z "$HARBOR_HOST" ]; then
     echo "Redis server is not running. Please start the Redis server and try again."
     exit 1
+else
+    echo "Writing to ${REDIS_HOST}:${REDIS_PORT}"
 fi
 
 temp_key=$(date +%s)
