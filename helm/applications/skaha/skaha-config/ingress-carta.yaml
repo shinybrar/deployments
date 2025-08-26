@@ -27,4 +27,4 @@ spec:
       port: 6901
       scheme: http
     middlewares:
-      - name: workload-enable-compression
+      - name: {{ .Release.Name }}-workload-enable-compression
