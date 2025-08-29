@@ -21,7 +21,7 @@ Kueue:
   - none configured; Jobs will run without Kueue unless annotated by Skaha.
 {{- end }}
 {{- else }}
-- Installed by \this release: no
+- Installed by this release: no
 - Expect Kueue CRDs and controllers to be present if you set session queues.
 {{- end }}
 
