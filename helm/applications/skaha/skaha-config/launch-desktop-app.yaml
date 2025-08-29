@@ -11,7 +11,7 @@ metadata:
   ownerReferences:
   - apiVersion: batch/v1
     blockOwnerDeletion: true
-    controller: true
+    controller: false
     kind: Job
     # The name of the Desktop Job that owns this Job.
     name: "${skaha.jobname}"
