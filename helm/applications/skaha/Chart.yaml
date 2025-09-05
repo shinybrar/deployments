@@ -31,6 +31,5 @@ dependencies:
     version: "^0.1.0"
     repository: "file://../utils"
   - name: "kueue"
-    version: "0.13.2"
+    version: "0.13.3"
     repository: "oci://registry.k8s.io/kueue/charts"
-    condition: "kueue.install"

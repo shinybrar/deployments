@@ -9,7 +9,7 @@ Skaha workload namespace: {{ .Values.skahaWorkload.namespace | default "skaha-wo
 
 Kueue:
 {{- if .Values.kueue.install }}
-- Installed by this release: yes (chart {{ (index .Chart.Dependencies 2).name | default "kueue" }})
+- Installed by this release: yes (chart {{ "kueue" }})
 - ClusterQueue: {{ .Release.Name }}-cluster-queue
 - LocalQueues (in {{ .Values.skahaWorkload.namespace }}):
 {{- $queues := (default dict .Values.deployment.skaha.sessions.queue) }}
