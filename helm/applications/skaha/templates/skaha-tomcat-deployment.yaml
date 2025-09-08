@@ -4,7 +4,7 @@ metadata:
   labels:
     run: {{ .Release.Name }}-skaha-tomcat
   name: {{ .Release.Name }}-skaha-tomcat
-  namespace: {{ .Values.skaha.namespace }}
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ default 1 .Values.replicaCount }}
   selector:
@@ -85,7 +85,7 @@ spec:
         - name: skaha.posixmapper.resourceid
           value: "{{ .Values.deployment.skaha.posixMapperResourceID }}"
         - name: REDIS_HOST
-          value: "{{ .Release.Name }}-redis-master.{{ .Values.skaha.namespace }}.svc.{{ .Values.kubernetesClusterDomain }}"
+          value: "{{ .Release.Name }}-redis-master.{{ .Release.Namespace }}.svc.{{ .Values.kubernetesClusterDomain }}"
         - name: REDIS_PORT
           value: "6379"
         {{- with .Values.deployment.skaha.extraEnv }}

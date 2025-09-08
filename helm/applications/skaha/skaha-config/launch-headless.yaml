@@ -7,7 +7,6 @@ metadata:
     canfar-net-sessionName: "${skaha.sessionname}"
     canfar-net-sessionType: "${skaha.sessiontype}"
     canfar-net-userid: "${skaha.userid}"
-    
   name: "${skaha.jobname}"
 spec:
   parallelism: 1
@@ -66,7 +65,6 @@ spec:
           limits:
             memory: "${software.limits.ram}"
             cpu: "${software.limits.cores}"
-            ${software.limits.gpus}
             ephemeral-storage: "{{ .Values.deployment.skaha.sessions.maxEphemeralStorage }}"
         volumeMounts:
         - mountPath: "/etc/passwd"
