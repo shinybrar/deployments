@@ -1,4 +1,7 @@
-# CHANGELOG for Science Portal UI (Chart 0.7.1)
+# CHANGELOG for Science Portal UI (Chart 1.0.0)
+
+## 2025.09.09 (1.0.0)
+- Official release
 
 ## 2025.08.21 (0.7.1)
 - Fix: New documentation links

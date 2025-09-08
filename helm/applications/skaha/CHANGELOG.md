@@ -1,6 +1,7 @@
 # CHANGELOG for Skaha User Session API (Chart 1.0.0)
 
-## 2025.09.04 (1.0.0)
+## 2025.09.09 (1.0.0)
+- Official release
 - Add CARTA 5.0
 - Support for Kueue
 
