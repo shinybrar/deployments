@@ -107,7 +107,11 @@ $ curl https://myhost.example.com/cavern/availability
 | `storage.service.spec` | Storage specification for the Cavern service | `{}` |
 
 ## User Allocations with special access
-Cavern typically accepts user allocation requests from the Administrative user, but it can be configured to allow other users to request allocations as well. This is done by adding the user's API key to the `deployment.cavern.allocations.apiKeys` configuration:
+
+### **Note**
+The `admin-api-key` has admin level permissions.  Rotate them regularly, or keep the values file safe.
+
+Cavern typically accepts user allocation requests from the Administrative user, but it can be configured to allow other users to request allocations as well. This is done by adding the user's API key to the `deployment.cavern.adminAPIKeys` configuration:
 ```yaml
 deployment:
   cavern:
@@ -116,9 +120,9 @@ deployment:
       prepareData: "preparedatasecretkey1234567890"
 ```
 
-With this configuration, listed clients can request new user allocations using the `api-key` challenge type in the `Authorization` header.  This `api-key` represents a trusted client application to act on behalf of the Administrative user:
+With this configuration, listed clients can request new user allocations using the `admin-api-key` challenge type in the `Authorization` header.  This `admin-api-key` represents a trusted client application to act on behalf of the Administrative user:
 ```sh
-$ curl -Lv --header "Authorization: api-key prepareData:preparedatasecretkey1234567890" --header "content-type: text/xml" --upload-file user-alloc-upload-jwt.xml https://example.org/cavern/nodes/home/new-user
+$ curl -Lv --header "Authorization: admin-api-key prepareData:preparedatasecretkey1234567890" --header "content-type: text/xml" --upload-file user-alloc-upload-jwt.xml https://example.org/cavern/nodes/home/new-user
 ```
 
 Where the upload XML file would look like this:
