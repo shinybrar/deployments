@@ -2,6 +2,8 @@
 
 ## 2025.09.09 (1.0.0)
 - Official release
+- Add Cavern portal information
+- Fixed vs flex sessions
 
 ## 2025.08.21 (0.7.1)
 - Fix: New documentation links
