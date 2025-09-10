@@ -1,4 +1,7 @@
-# CHANGELOG for Skaha User Session API (Chart 1.0.1)
+# CHANGELOG for Skaha User Session API (Chart 1.0.2)
+
+## 2025.09.10 (1.0.2)
+- Remove Firefly `readinessProbe` to investigate timeouts
 
 ## 2025.09.10 (1.0.1)
 - Fix NPE when launching Desktop App
