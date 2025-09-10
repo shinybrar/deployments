@@ -1,4 +1,8 @@
-# CHANGELOG for Skaha User Session API (Chart 1.0.0)
+# CHANGELOG for Skaha User Session API (Chart 1.0.1)
+
+## 2025.09.10 (1.0.1)
+- Fix NPE when launching Desktop App
+- Fix for Job listing omitting Jobs with a failed Pod, but Active Pods are still greater than zero (0)
 
 ## 2025.09.09 (1.0.0)
 - Official release
