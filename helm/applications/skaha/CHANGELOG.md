@@ -1,4 +1,7 @@
-# CHANGELOG for Skaha User Session API (Chart 1.0.2)
+# CHANGELOG for Skaha User Session API (Chart 1.0.3)
+
+## 2025.09.10 (1.0.3)
+- Fix to display GPU Cores
 
 ## 2025.09.10 (1.0.2)
 - Remove Firefly `readinessProbe` to investigate timeouts
