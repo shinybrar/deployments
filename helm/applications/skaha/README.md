@@ -9,7 +9,7 @@ Before deploying the Skaha Helm chart, ensure that the following conditions are 
 
 - **Kubernetes Cluster**: A running Kubernetes cluster, version 1.27 or higher.
 - **Helm**: Helm package manager, version 3, installed on your machine. Refer to the [official Helm documentation](https://helm.sh/docs/) for installation instructions.
-- **Kueue**: Kueue must be installed in your cluster, as Skaha integrates with Kueue for job queueing. Follow the [Kueue installation guide](https://kueue.sigs.k8s.io/docs/) to set it up.
+- **Kueue**: Kueue is recommended to be installed in your cluster, as Skaha optionally integrates with Kueue for job queueing. Follow the [Kueue installation guide](https://kueue.sigs.k8s.io/docs/) to set it up.
 
 ## Installation
 To deploy the Skaha application using the Helm chart, follow these steps:
@@ -69,6 +69,15 @@ The following table lists the configurable parameters for the Skaha Helm chart:
 | `deployment.skaha.gmsID` | Resource ID (URI) for the IVOA Group Management Service | `""` |
 | `deployment.skaha.registryURL` | URL for the IVOA registry containing service locations | `""` |
 | `deployment.skaha.nodeAffinity` | Kubernetes Node affinity for the Skaha API Pod | `{}` |
+| `deployment.skaha.extraEnv` | List of extra environment variables to be set in the Skaha service.  See the `values.yaml` file for examples. | `[]` |
+| `deployment.skaha.resources` | Resource requests and limits for the Skaha API | `{}` |
+| `deployment.skaha.extraPorts` | List of extra ports to expose in the Skaha service.  See the `values.yaml` file for examples. | `[]` |
+| `deployment.skaha.extraVolumeMounts` | List of extra volume mounts to be mounted in the Skaha deployment.  See the `values.yaml` file for examples. | `[]` |
+| `deployment.skaha.extraVolumes` | List of extra volumes to be mounted in the Skaha deployment.  See the `values.yaml` file for examples. | `[]` |
+| `deployment.skaha.priorityClassName` | Name of the `priorityClass` for the Skaha API Pod used for pre-emption | `""` |
+| `deployment.skaha.serviceAccountName` | Name of the Service Account for the Skaha API Pod | `"skaha"` |
+| `deployment.skaha.identityManagerClass` | Java Class name for the [IdentityManager](https://github.com/opencadc/core/blob/main/cadc-util/src/main/java/ca/nrc/cadc/auth/IdentityManager.java) to use.  Defaults to [`org.opencadc.auth.StandardIdentityManager`](https://github.com/opencadc/ac/blob/main/cadc-gms/src/main/java/org/opencadc/auth/StandardIdentityManager.java) for use with bearer tokens (OIDC) | `"org.opencadc.auth.StandardIdentityManager"` |
+| `deployment.skaha.apiVersion` | API version used to match the Ingress path (e.g. `/skaha/v0`) | `"v0"` |
 | `deployment.skaha.sessions.expirySeconds` | Expiry time, in seconds, for interactive sessions.  Defaults to four (4) days. | `"345600"` |
 | `deployment.skaha.sessions.imagePullPolicy` | Image pull policy for all User Sessions. | `"Always"` |
 | `deployment.skaha.sessions.maxCount` | Maximum number of interactive sessions per user.  Defaults to three (3). | `"3"` |
@@ -85,24 +94,75 @@ The following table lists the configurable parameters for the Skaha Helm chart:
 | `deployment.skaha.sessions.gpuEnabled` | Enable GPU support for User Sessions.  Defaults to `false` | `false` |
 | `deployment.skaha.sessions.nodeAffinity` | Kubernetes Node affinity for the Skaha User Session Pods | `{}` |
 | `deployment.skaha.sessions.tolerations` | Array of tolerations to pass to Kubernetes for fine-grained Node targeting of the `skaha` User Sessions | `[]` |
-| `deployment.skaha.extraEnv` | List of extra environment variables to be set in the Skaha service.  See the `values.yaml` file for examples. | `[]` |
-| `deployment.skaha.resources` | Resource requests and limits for the Skaha API | `{}` |
-| `deployment.skaha.extraPorts` | List of extra ports to expose in the Skaha service.  See the `values.yaml` file for examples. | `[]` |
-| `deployment.skaha.extraVolumeMounts` | List of extra volume mounts to be mounted in the Skaha deployment.  See the `values.yaml` file for examples. | `[]` |
-| `deployment.skaha.extraVolumes` | List of extra volumes to be mounted in the Skaha deployment.  See the `values.yaml` file for examples. | `[]` |
-| `deployment.skaha.priorityClassName` | Name of the `priorityClass` for the Skaha API Pod used for pre-emption | `""` |
-| `deployment.skaha.serviceAccountName` | Name of the Service Account for the Skaha API Pod | `"skaha"` |
-| `deployment.skaha.identityManagerClass` | Java Class name for the [IdentityManager](https://github.com/opencadc/core/blob/main/cadc-util/src/main/java/ca/nrc/cadc/auth/IdentityManager.java) to use.  Defaults to [`org.opencadc.auth.StandardIdentityManager`](https://github.com/opencadc/ac/blob/main/cadc-gms/src/main/java/org/opencadc/auth/StandardIdentityManager.java) for use with bearer tokens (OIDC) | `"org.opencadc.auth.StandardIdentityManager"` |
 | `secrets` | List of secrets to be mounted in the Skaha API defined as objects (i.e `secretName: {cert.pem: xxx}`) | `[]` |
 | `storage.service.spec` | Storage class specification for the Skaha API.  Can be `persistentVolumeClaim` or a dynamic instantiation like `hostPath`.  See [Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/). | `{}` |
-| `redis` | [Redis sub-chart configuration](https://github.com/bitnami/charts/tree/main/bitnami/redis) for Skaha's caching of Harbor Docker image metadata. | See [values.yaml](https://github.com/at88mph/deployments/blob/kueue-queue-discovery/helm/applications/skaha/values.yaml#L229) default. |
+| `redis` | [Redis sub-chart configuration](https://github.com/bitnami/charts/tree/main/bitnami/redis) for Skaha's caching of Harbor Docker image metadata. | See [`values.yaml`](https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml) for available configuration values. |
+| `kueue` | [Kueue sub-chart configuration](https://github.com/kubernetes-sigs/kueue/tree/main/charts/kueue) for Skaha's Kueue integration | See [`values.yaml`](https://github.com/kubernetes-sigs/kueue/tree/main/charts/kueue/values.yaml) for available configuration values. |
 
 #### Notes on tolerations and nodeAffinity
 
 Ensure that `tolerations` and `nodeAffinity` are at the expected indentation!  These are YAML configurations passed directly to Kubernetes, and the base `.tolerations` and `.deployment.skaha.nodeAffinity` values apply to the `skaha` API **only**, whereas the `.deployment.skaha.sessions.tolerations` and `.deployment.skaha.sessions.nodeAffinity` apply to _all_ User Session Pods.
 
-### Integration with Kueue
-Skaha leverages Kueue for efficient job queueing and management. Ensure that Kueue is properly installed and configured in your cluster. For detailed information on Kueue's features and setup, refer to the [Kueue documentation](https://kueue.sigs.k8s.io/docs/).
+## Kueue
+Skaha leverages Kueue for efficient job queueing and management when properly installed and configured in your cluster. For detailed information on Kueue's features and setup, refer to the [Kueue documentation](https://kueue.sigs.k8s.io/docs/).
+
+Choosing to install Kueue:
+`values.yaml`
+```yaml
+kueue:
+  # Set to false by default
+  install: true
+```
+
+Will install the Kueue Chart, with a default `ClusterQueue`, and whatever defined `LocalQueues` were declared in the `deployment.skaha.sessions.queue` section:
+```yaml
+deployment:
+  skaha:
+    sessions:
+      queue:
+        notebook:
+          queueName: some-local-queue
+          priorityClass: med
+```
+
+In which case Helm would ensure the `some-local-queue` `LocalQueue` is installed.
+
+Kueue will also need to know about the Kubernetes Cluster configuration.  Setting the values to 60% to 80% of the cluster resources is recommended for optimal performance.
+```yaml
+kueue:
+  install: true
+  # 60% of cluster resources
+  clusterQueueResources:
+    - name: "cpu"
+      nominalQuota:   "28"
+      borrowingLimit: "0"
+      lendingLimit:   "0"
+    - name: "memory"
+      nominalQuota:   "100Gi"
+      borrowingLimit: "0Gi"
+      lendingLimit:   "0Gi"
+    - name: "ephemeral-storage"
+      nominalQuota:   "500Gi"
+      borrowingLimit: "0Gi"
+      lendingLimit:   "0Gi"
+```
+
+To determine your cluster's allocatable resources, checkout a small Python utility (requires [`uv`](https://github.com/astral-sh/uv?tab=readme-ov-file#installation)):
+https://github.com/opencadc/deployments/tree/main/configs/kueue/kueuer
+
+Then run:
+```bash
+git clone https://github.com/opencadc/deployments/tree/main/configs/kueue/kueuer
+cd kueuer
+# if not using the default ~/.kube/config
+export KUBECONFIG=/home/user/.kube/my-config
+
+# 60% of cluster resources
+uv run kr cluster resources -f allocatable -s 0.6
+
+# 80% of cluster resources
+uv run kr cluster resources -f allocatable -s 0.8
+```
 
 ## Uninstallation
 To remove the Skaha application from your cluster:

@@ -1,0 +1,68 @@
+{{- if eq .Values.kueue.install true }}
+# Grant the service account from the Released and Workload namespaces access to the Kueue resources
+#
+# Workload Namespace RBAC
+#
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Release.Name }}-kueue-role
+  namespace: {{ .Values.skahaWorkload.namespace }}
+rules:
+- apiGroups:
+  - "kueue.x-k8s.io"
+  resources:
+  - localqueues
+  verbs:
+  - get
+  - list
+  - status
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Release.Name }}-read-kueue
+  namespace: {{ .Values.skahaWorkload.namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ .Release.Name }}-kueue-role
+subjects:
+- kind: ServiceAccount
+  name: {{ .Values.deployment.skaha.serviceAccountName }}
+  namespace: {{ .Release.Namespace }}
+
+#
+# Released Namespace RBAC
+#
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Release.Name }}-kueue-role
+  namespace: {{ .Release.Namespace }}
+rules:
+- apiGroups:
+  - "kueue.x-k8s.io"
+  resources:
+  - localqueues
+  verbs:
+  - get
+  - list
+  - status
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Release.Name }}-read-kueue
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ .Release.Name }}-kueue-role
+subjects:
+- kind: ServiceAccount
+  name: {{ .Values.deployment.skaha.serviceAccountName }}
+  namespace: {{ .Release.Namespace }}
+{{- end }}

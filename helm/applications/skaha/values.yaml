@@ -7,9 +7,7 @@ kubernetesClusterDomain: cluster.local
 # Tell Kubernetes to spin up multiple instances.  Defaults to 1.
 replicaCount: 1
 
-# It's best to keep these set as such, unless you're willing to change these in several places.
-skaha:
-  namespace: skaha-system
+# It's best to keep this set as such, unless you're willing to change these in several places.
 skahaWorkload:
   namespace: skaha-workload
  
@@ -17,8 +15,8 @@ skahaWorkload:
 deployment:
   hostname: myhost.example.com  # Change this!
   skaha:
-    image: images.opencadc.org/platform/skaha:0.29.2
-    imagePullPolicy: IfNotPresent
+    image: images.opencadc.org/platform/skaha:1.0.2
+    imagePullPolicy: Always
 
     # Cron string for the image caching cron job schedule. Defaults to every half hour.
     imageCache:
@@ -90,6 +88,8 @@ deployment:
       minEphemeralStorage: "20Gi"   # The initial requested amount of ephemeral (local) storage.  Does NOT apply to Desktop sessions.
       maxEphemeralStorage: "200Gi"  # The maximum amount of ephemeral (local) storage to allow a Session to extend to.  Does NOT apply to Desktop sessions.
 
+      persistentVolumeClaimName: "skaha-workload-cavern-pvc"  # The PVC that is mounted into User Sessions at /home and /projects.
+
       # The image pull policy for User Sessions (applies to ALL types).  This is the default, but can be overridden.  Deafults to Always.
       # @see https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy
       # Example:
@@ -105,6 +105,7 @@ deployment:
       # Optionally configure the Kueue system to handle large workloads.  Configurable per session type (e.g. desktop, notebook, etc.).
       # Leaving this empty will default to submitting Jobs to the base Kubernetes system.
       # Provide a default configuration for all session types, or omit and only configure specific session types.
+      # Provided PriorityClass names are "high", "medium", and "low".
       # @see https://kueue.sigs.k8s.io/docs/
       # @see https://github.com/opencadc/deployments/tree/main/configs/kueue
       # Example 1:
@@ -112,27 +113,27 @@ deployment:
       #   queue:
       #     notebook:
       #       queueName: "notebook-queue"
-      #       priorityClass: "notebook-med"
+      #       priorityClass: "medium"
       #     desktop:
       #       queueName: "desktop-queue"
-      #       priorityClass: "desktop-high"
+      #       priorityClass: "low"
       #     default:
       #       queueName: "default-queue"
-      #       priorityClass: "user-session-med"
+      #       priorityClass: "medium"
       #
       # Example 2:
       #    # Configure contributed session types.  All else will use the bare Kubernetes system.
       #    queue:
       #      contributed:
       #        queueName: "contributed-queue"
-      #        priorityClass: "contributed-high"
+      #        priorityClass: "high"
       #
       # Example 3:
       #    # Configure Kueue for all user session types.
       #    queue:
       #      default:
       #        queueName: "all-user-sessions-local-queue"
-      #        priorityClass: "user-sessions-med"
+      #        priorityClass: "medium"
       queue: {}
 
       # This is a list of tolerations that will be added to the Pod spec of the User Sessions.
@@ -212,11 +213,11 @@ deployment:
     # For units of storage, see https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory.
     resources:
       requests:
-        memory: "1Gi"
-        cpu: "500m"
+        memory: "2Gi"
+        cpu: "1000m"
       limits:
-        memory: "1Gi"
-        cpu: "500m"
+        memory: "3Gi"
+        cpu: "2000m"
 
     # Uncomment to debug.  Requires options above as well as service port exposure below.
     # extraPorts:
@@ -242,6 +243,12 @@ deployment:
     #     defaultMode: 420
     #     secretName: skaha-cacert-secret
 
+    # API version that is currently in use for this deployment.  Leave this alone unless you know what you're doing.
+    # This the version that will show up in the path for the request (e.g. '/skaha/v0/session').
+    # Example:
+    #   apiVersion: 'v0'
+    apiVersion: 'v1'
+
   # Specify extra hostnames that will be added to the Pod's /etc/hosts file.  Note that this is in the
   # deployment object, not the skaha one.
   # extraHosts:
@@ -261,6 +268,20 @@ deployment:
 #   effect: "NoSchedule"
 # 
 tolerations: []
+
+# Port to expose from the service.  This will ultimately serve port 8080 (default Tomcat port), but will
+# be exposed as per the port below.  Useful for running multiple deployments side-by-side.
+# Defaults to 8080.
+# Example:
+#   service:
+#     port: 8081. # To map port 8081 to port 8080.
+service:
+  port: 8080
+
+# Selectively disable ingress if desired.  This is enabled by default.
+ingress:
+  enabled: true
+  path: /skaha
 
 secrets:
   # Uncomment to enable local or self-signed CA certificates for your domain to be trusted.
@@ -294,3 +315,118 @@ redis:
         type: RuntimeDefault
       capabilities:
         drop: ["ALL"]
+
+# Kueue configuration.  This will not install Kueue by default, due to its complexity many deployers may wish to install their own.
+kueue:
+  install: false
+  
+  # Set this here to ensure the created secret for the webhook certificates has a predictable name, rather than the Release.Name from the parent Chart (skaha).
+  fullnameOverride: "kueue"
+
+  # Enable prometheus metrics for the kueue controller.
+  enablePrometheus: true
+
+  enableCertManager: false
+
+  clusterQueueResources:
+    - name: "cpu"
+      nominalQuota:   "1680"
+      borrowingLimit: "420"
+      lendingLimit:   "420"
+    - name: "memory"
+      nominalQuota:   "6562Gi"
+      borrowingLimit: "1640Gi"
+      lendingLimit:   "1640Gi"
+      # 40 nodes * 2048Gi = 81920Gi
+    - name: "ephemeral-storage"
+      nominalQuota:   "52636Gi"
+      borrowingLimit: "13159Gi"
+      lendingLimit:   "13159Gi"
+    - name: "nvidia.com/gpu"
+      nominalQuota: "18"
+      borrowingLimit: "0"
+      lendingLimit: "0"
+
+  # Kueue Controller Configuration
+  controllerManager:
+    # Kueue Feature Gates, deprecated features excluded
+    # Based on v0.10.0 retrieved on 2025-01-01
+    # Source: https://kueue.sigs.k8s.io/docs/installation/
+    featureGates:
+      - name: LocalQueueMetrics
+        enabled: true
+    # Kueue Deployment Configuration
+    manager:
+      resources:
+        limits:
+          cpu: "2"
+          memory: 1536Mi
+        requests:
+          cpu: "1"
+          memory: 512Mi
+
+  # controller_manager_config.yaml. controllerManager utilizes this yaml via manager-config Configmap.
+  managerConfig:
+    controllerManagerConfigYaml: |-
+      apiVersion: config.kueue.x-k8s.io/v1beta1
+      kind: Configuration
+
+      health:
+        healthProbeBindAddress: :8081
+
+      metrics:
+        # Bind to for serving prometheus metrics, set to 0 to disable
+        # Maps to metricsService.ClusterIP
+        bindAddress: :8443
+        # Report the cluster queue resource usage and quotas metrics
+        enableClusterQueueResources: true
+
+      webhook:
+        port: 9443
+
+      leaderElection:
+        leaderElect: true
+        resourceName: c1f6bfd2.kueue.x-k8s.io
+
+      controller:
+        # Number of concurrent reconciliation allowed for a controller.
+        groupKindConcurrency:
+          Job.batch: 256
+          Pod: 4
+          Workload.kueue.x-k8s.io: 256
+          LocalQueue.kueue.x-k8s.io: 256
+          ClusterQueue.kueue.x-k8s.io: 256
+          ResourceFlavor.kueue.x-k8s.io: 4
+
+      # Client connection details for the k8s_apiserver
+      clientConnection:
+        # queries/second allowed for k8s_apiserver
+        qps: 64
+        # extra queries to accumulate when a client is exceeding its rate.
+        burst: 128
+
+      # Controls whether or not Kueue reconciles jobs that don't set the annotation kueue.x-k8s.io/queue-name.
+      # If set to true, then those jobs will be suspended and never started unless they are assigned a queue
+      # and eventually admitted. This also applies to jobs created before starting the kueue controller.
+      # Defaults to false; therefore, those jobs are not managed and if they are created unsuspended,
+      # they will start immediately.
+      manageJobsWithoutQueueName: false
+
+      managedJobsNamespaceSelector:
+        matchExpressions:
+              - key: kubernetes.io/metadata.name
+                operator: In
+                values:
+                  - skaha-workload
+
+      integrations:
+        # List of framewor to be integrated with Kueue.
+        frameworks:
+        - "batch/job"
+        labelKeysToCopy:
+        - canfar-net-sessionID
+        - canfar-net-appID
+        - canfar-net-sessionName
+        - canfar-net-sessionType
+        - canfar-net-userid
+        - batch.kubernetes.io/job-name

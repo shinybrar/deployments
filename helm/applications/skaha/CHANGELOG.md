@@ -1,4 +1,28 @@
-# CHANGELOG for Skaha User Session API (Chart 0.11.16)
+# CHANGELOG for Skaha User Session API (Chart 1.0.3)
+
+## 2025.09.10 (1.0.3)
+- Fix to display GPU Cores
+
+## 2025.09.10 (1.0.2)
+- Remove Firefly `readinessProbe` to investigate timeouts
+
+## 2025.09.10 (1.0.1)
+- Fix NPE when launching Desktop App
+- Fix for Job listing omitting Jobs with a failed Pod, but Active Pods are still greater than zero (0)
+
+## 2025.09.09 (1.0.0)
+- Official release
+- Add CARTA 5.0
+- Support for Kueue
+
+## 2025.08.19 (0.11.23)
+- Feature: API version configurable (Revert Ingress)
+
+## 2025.08.19 (0.11.21)
+- Feature: Add release name to make unique object names
+
+## 2025.08.19 (0.11.17)
+- Feature: Add support for configuring API versioning.
 
 ## 2025.08.01 (0.11.16)
 - Fix: Connection leaks detected from repeated Redis access.  Blocked those up.

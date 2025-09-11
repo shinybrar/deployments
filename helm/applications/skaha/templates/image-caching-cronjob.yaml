@@ -1,8 +1,8 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  namespace: {{ .Values.skaha.namespace }}
-  name: image-caching-cronjob
+  namespace: {{ .Release.Namespace }}
+  name: {{ .Release.Name }}-image-caching-cronjob
 spec:
   schedule: {{ .Values.deployment.skaha.imageCache.refreshSchedule | toString | quote }}
   jobTemplate:
@@ -27,7 +27,7 @@ spec:
                 - name: HARBOR_HOST
                   value: "{{ .Values.deployment.skaha.registryHosts }}"
                 - name: REDIS_HOST
-                  value: "{{ .Release.Name }}-redis-master.{{ .Values.skaha.namespace }}.svc.{{ .Values.kubernetesClusterDomain }}"
+                  value: "{{ .Release.Name }}-redis-master.{{ .Release.Namespace }}.svc.{{ .Values.kubernetesClusterDomain }}"
                 - name: REDIS_PORT
                   value: "6379"
               volumeMounts:
@@ -42,13 +42,13 @@ spec:
           volumes:
           - name: config-volume
             configMap:
-              name: skaha-config
+              name: {{ .Release.Name }}-skaha-config
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
-  namespace: {{ .Values.skaha.namespace }}
-  name: image-caching-job
+  namespace: {{ .Release.Namespace }}
+  name: {{ .Release.Name }}-image-caching-job
 spec:
   template:
     spec:
@@ -70,7 +70,7 @@ spec:
             - name: HARBOR_HOST
               value: "{{ .Values.deployment.skaha.registryHosts }}"
             - name: REDIS_HOST
-              value: "{{ .Release.Name }}-redis-master.{{ .Values.skaha.namespace }}.svc.{{ .Values.kubernetesClusterDomain }}"
+              value: "{{ .Release.Name }}-redis-master.{{ .Release.Namespace }}.svc.{{ .Values.kubernetesClusterDomain }}"
             - name: REDIS_PORT
               value: "6379"
           volumeMounts:
@@ -85,4 +85,4 @@ spec:
       volumes:
       - name: config-volume
         configMap:
-          name: skaha-config
+          name: {{ .Release.Name }}-skaha-config

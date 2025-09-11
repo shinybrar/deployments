@@ -52,7 +52,7 @@ spec:
         - name: MOZ_FORCE_DISABLE_E10S
           value: "1"
         - name: SKAHA_API_VERSION
-          value: "v0"  
+          value: "{{ .Values.deployment.skaha.apiVersion }}"
         - name: DESKTOP_SESSION_APP_TOKEN
           value: "${software.desktop.app.token}"
         securityContext:
@@ -102,14 +102,14 @@ spec:
         emptyDir: { }
       - name: start-desktop
         configMap:
-          name: launch-scripts
+          name: {{ .Release.Name }}-launch-scripts
           defaultMode: 0777
       - name: templates
         configMap:
-          name: templates
+          name: {{ .Release.Name }}-templates
           defaultMode: 0777
       - name: init-users-groups
         configMap:
-          name: init-users-groups-config
+          name: {{ .Release.Name }}-init-users-groups-config
           defaultMode: 0777
       {{ template "skaha.session.commonVolumes" . }}

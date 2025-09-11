@@ -22,7 +22,7 @@ spec:
   - kind: Rule
     match: Host(`${skaha.sessions.hostname}`) && PathPrefix(`/session/firefly/${skaha.sessionid}/`)
     middlewares:
-        - name: firefly-set-x-forwarded-proto
+      - name: {{ .Release.Name }}-firefly-set-x-forwarded-proto
     services:
     - kind: Service
       name: skaha-firefly-svc-${skaha.sessionid}

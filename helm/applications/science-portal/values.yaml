@@ -3,10 +3,6 @@ kubernetesClusterDomain: cluster.local
 # Tell Kubernetes to spin up multiple instances.  Defaults to 1.
 replicaCount: 1
 
-# It's best to keep these set as such, unless you're willing to change these in several places.
-skaha:
-  namespace: skaha-system
-
 # @param securityContext - Optional security context for the container.  This is a security feature to restrict system calls.
 # securityContext: {}
 #
@@ -14,6 +10,17 @@ skaha:
 # securityContext:
 #   seccompProfile:
 #     type: RuntimeDefault
+securityContext: {}
+
+# @param podSecurityContext - Optional pod security context for the deployment.
+# podSecurityContext: {}
+#
+# Example:
+# podSecurityContext:
+#   fsGroup: 1000
+#   runAsUser: 1000
+#   allowPrivilegeEscalation: false
+podSecurityContext: {}
 
 # @param applicationName - The name of the application.  This will rename the underlying WAR file, thus changing the endpoint.  Defaults to science-portal.
 # applicationName: science-portal
@@ -22,7 +29,7 @@ skaha:
 deployment:
   hostname: example.host.com    # Change this!
   sciencePortal:
-    image: images.opencadc.org/platform/science-portal:0.7.0
+    image: images.opencadc.org/platform/science-portal:1.0.1
     imagePullPolicy: Always
 
     tabLabels:

@@ -2,7 +2,7 @@
   "cores": {
     "default": 1,
     "defaultRequest": 1,
-    "defaultLimit": 16,
+    "defaultLimit": 8,
     "defaultHeadless": 1,
     "options": [
       1,
@@ -26,7 +26,7 @@
   "memoryGB": {
     "default": 1,
     "defaultRequest": 4,
-    "defaultLimit": 192,
+    "defaultLimit": 32,
     "defaultHeadless": 4,
     "options": [
       1,

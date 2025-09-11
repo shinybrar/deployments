@@ -2,19 +2,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    run: skaha-tomcat
-  name: skaha-tomcat
-  namespace: {{ .Values.skaha.namespace }}
+    run: {{ .Release.Name }}-skaha-tomcat
+  name: {{ .Release.Name }}-skaha-tomcat
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ default 1 .Values.replicaCount }}
   selector:
     matchLabels:
-      run: skaha-tomcat
+      run: {{ .Release.Name }}-skaha-tomcat
   template:
     metadata:
       creationTimestamp: null
       labels:
-        run: skaha-tomcat
+        run: {{ .Release.Name }}-skaha-tomcat
     spec:
 {{- with .Values.deployment.skaha.nodeAffinity }}
       affinity:
@@ -85,7 +85,7 @@ spec:
         - name: skaha.posixmapper.resourceid
           value: "{{ .Values.deployment.skaha.posixMapperResourceID }}"
         - name: REDIS_HOST
-          value: "{{ .Release.Name }}-redis-master.{{ .Values.skaha.namespace }}.svc.{{ .Values.kubernetesClusterDomain }}"
+          value: "{{ .Release.Name }}-redis-master.{{ .Release.Namespace }}.svc.{{ .Values.kubernetesClusterDomain }}"
         - name: REDIS_PORT
           value: "6379"
         {{- with .Values.deployment.skaha.extraEnv }}
@@ -93,7 +93,7 @@ spec:
         {{- end }}
         image: {{ .Values.deployment.skaha.image }}
         imagePullPolicy: {{ .Values.deployment.skaha.imagePullPolicy }}
-        name: skaha-tomcat
+        name: {{ .Release.Name }}-skaha-tomcat
         resources:
           requests:
             memory: {{ .Values.deployment.skaha.resources.requests.memory }}
@@ -139,10 +139,10 @@ spec:
       volumes:
       - name: config-volume
         configMap:
-          name: skaha-config
+          name: {{ .Release.Name }}-skaha-config
       - name: add-user-config
         configMap:
-          name: add-user-config
+          name: {{ .Release.Name }}-add-user-config
       - name: cavern-volume
         {{- toYaml .Values.storage.service.spec | nindent 8 }}
       {{- with .Values.deployment.skaha.extraVolumes }}

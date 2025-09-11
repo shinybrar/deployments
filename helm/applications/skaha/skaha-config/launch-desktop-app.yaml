@@ -7,8 +7,16 @@ metadata:
     canfar-net-sessionType: "${skaha.sessiontype}"
     canfar-net-appID: "${software.appid}"
     canfar-net-userid: "${skaha.userid}"
-    
   name: "${software.jobname}"
+  ownerReferences:
+  - apiVersion: batch/v1
+    blockOwnerDeletion: true
+    controller: false
+    kind: Job
+    # The name of the Desktop Job that owns this Job.
+    name: "${skaha.jobname}"
+    # The UID of the Desktop Job that owns this Job.
+    uid: "${skaha.jobuid}"
 spec:
   parallelism: 1
   completions: 1
@@ -96,10 +104,10 @@ spec:
         emptyDir: { }
       - name: start-desktop-software
         configMap:
-          name: launch-scripts
+          name: {{ .Release.Name }}-launch-scripts
           defaultMode: 0777
       - name: init-users-groups
         configMap:
-          name: init-users-groups-config
+          name: {{ .Release.Name }}-init-users-groups-config
           defaultMode: 0777
       {{ template "skaha.session.commonVolumes" . }}

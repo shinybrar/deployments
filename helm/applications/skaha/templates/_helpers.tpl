@@ -91,7 +91,7 @@ The init containers for the launch scripts.
         - name: HOME
           value: "${SKAHA_TLD}/home/${skaha.userid}"
         - name: REDIS_URL
-          value: "redis://{{ .Release.Name }}-redis-master.{{ .Values.skaha.namespace }}.svc.{{ .Values.kubernetesClusterDomain }}:6379"
+          value: "redis://{{ .Release.Name }}-redis-master.{{ .Release.Namespace }}.svc.{{ .Values.kubernetesClusterDomain }}:6379"
         volumeMounts:
         - mountPath: "/etc-passwd"
           name: etc-passwd

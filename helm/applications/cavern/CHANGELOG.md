@@ -1,4 +1,10 @@
-# CHANGELOG for Cavern User Storage (Chart 0.6.6)
+# CHANGELOG for Cavern User Storage (Chart 0.7.0)
+
+## 2025.09.09 (0.7.0)
+- Feature: Support `admin-api-key` (`.deployment.cavern.adminAPIKeys`) for trusted admin access.
+
+## 2025.08.21 (0.6.7)
+- Fix: Wee regression with the JWSK feature.
 
 ## 2025.07.29 (0.6.6)
 - Fix: `NullPointerException` in `cavern` service.
