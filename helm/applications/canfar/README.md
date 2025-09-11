@@ -234,10 +234,26 @@ A `ClusterQueue` is a global resource in Kueue that defines a set of resources a
 
 An example `ClusterQueue` has been added to the [Skaha Example Kueue ClusterQueue](../skaha/kueue/examples/clusterQueue.config.yaml) file.  Adjust as needed.
 
+Create the `ClusterQueue`, with the associated `ResourceFlavor` and `WorkloadPriorityClass` objects:
+```bash
+cp ../skaha/kueue/examples/clusterQueue.config.yaml ./
+# Edit as needed.
+
+kubectl apply -f ./clusterQueue.config.yaml
+```
+
 #### LocalQueue
 A `LocalQueue` is a namespace-specific resource in Kueue that allows for the management of workloads within a particular Kubernetes namespace. It provides a way to define how jobs are queued, prioritized, and scheduled based on the policies set in the associated `ClusterQueue`.
 
 An example `LocalQueue` has been added to the [Skaha Example Kueue LocalQueue](../skaha/kueue/examples/localQueue.config.yaml) file.  Adjust as needed, but it needs to exist in the workload namespace (`skaha-workload` by default).
+
+Create the `LocalQueue` in the `skaha-workload` namespace:
+```bash
+cp ../skaha/kueue/examples/localQueue.config.yaml ./
+# Edit as needed.
+
+kubectl apply -f ./localQueue.config.yaml
+```
 
 #### RBAC
 The Science Platform (`skaha`) requires certain RBAC permissions to operate correctly within the Kubernetes cluster. These permissions allow Kueue to manage resources, schedule jobs, and interact with other components in the cluster.
@@ -245,6 +261,12 @@ The Science Platform (`skaha`) requires certain RBAC permissions to operate corr
 An example `RBAC` configuration has been added to the [Skaha Example Kueue RBAC](../skaha/kueue/examples/rbac.yaml) file.  Adjust as needed.
 The example files contains rules to allow both the `skaha` system to query for the existence of any configured LocalQueues to ensure integrity, as well
 as permitting Jobs to be scheduled into it from the Workload Namespace.
+
+Create the `RBAC` objects in the `skaha-system` namespace:
+```bash
+cp ../skaha/kueue/examples/rbac.yaml ./
+kubectl apply -f ./rbac.yaml
+```
 
 ### Skaha install
 
@@ -373,7 +395,11 @@ deployment:
           mountPropagation: HostToContainer
 
       # Kueue configurations for User Sessions
-      kueue: {}
+      kueue: 
+        default:
+          # Ensure this name matches whatever was created as the LocalQueue in the workload namespace.
+          queueName: canfar-science-platform-local-queue
+          priorityClass: low
 
     # Optionally mount a custom CA certificate as an extra mount in Skaha (*not* user sessions)
     # extraVolumeMounts:
