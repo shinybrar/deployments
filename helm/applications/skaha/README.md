@@ -63,6 +63,7 @@ The following table lists the configurable parameters for the Skaha Helm chart:
 | `deployment.skaha.adminsGroup` | GMS style Group URI for Skaha admins to belong to | `""` |
 | `deployment.skaha.headlessGroup` | GMS style Group URI whose members can submit headless jobs | `""` |
 | `deployment.skaha.headlessPriorityGroup` | GMS style Group URI whose member's headless jobs can pre-empt other's.  Useful fortight deadlines in processing | `""` |
+| `deployment.skaha.headlessPriorityClass` | Name of the `priorityClass` for headless jobs to allow some pre-emption | `""` |
 | `deployment.skaha.loggingGroups` | List of GMS style Group URIs whose members can alter the log level.  See [cadc-log](https://github.com/opencadc/core/tree/main/cadc-log) regarding the `/logControl` endpoint. | `[]` |
 | `deployment.skaha.posixMapperResourceID` | Resource ID (URI) for the POSIX Mapper service containing the UIDs and GIDs | `""` |
 | `deployment.skaha.oidcURI` | URI (or URL) for the OIDC service | `""` |

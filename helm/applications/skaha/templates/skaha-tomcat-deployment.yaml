@@ -69,7 +69,7 @@ spec:
           value: "{{ . }}"
         {{- end }}
         {{- with .Values.deployment.skaha.headlessPriorityClass }}
-        - name: skaha.headlesspriortyclass
+        - name: SKAHA_HEADLESS_PRIORITY_CLASS
           value: "{{ . }}"
         {{- end }}
         {{- with .Values.deployment.skaha.sessions.kueue }}
