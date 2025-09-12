@@ -90,8 +90,6 @@ primary:
     existingClaim: posix-mapper-postgres-pvc
 ```
 ```bash
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm repo update
 helm install posix-mapper-postgres bitnami/postgresql \
   --namespace skaha-system \
   --values my-postgresql-values.yaml

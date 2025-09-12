@@ -105,12 +105,18 @@ secrets:
   #   ca.crt: <base64 encoded ca crt>
 
 # Required.  Database connection information to contain the UID/GID mappings.
+# @param postgresql.maxActive - Maximum number of active connections.  Defaults to 8.
+# @param postgresql.url - JDBC URL of the PostgreSQL database.  Required.
+# @param postgresql.schema - Database schema to use. Required.
+# @param postgresql.auth.username - Database username.  Required.
+# @param postgresql.auth.password - Database password.  Required.
+#
 # Example:
 # postgresql:
 #   maxActive: 8
-#   url: jdbc:postgresql://psql.example.org:5432/posixmapper
-#   schema: posixmapper
+#   url: jdbc:postgresql://psql.example.org:5432/mapping
+#   schema: mapping
 #   auth:
 #     username: posixmapperuser
 #     password: posixmapperpwd
-# postgresql: {}
+postgresql: {}
