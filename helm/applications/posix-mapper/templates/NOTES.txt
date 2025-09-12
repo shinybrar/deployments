@@ -1,0 +1,19 @@
+{{- /*
+Post-install notes for POSIX Mapper.
+*/ -}}
+
+POSIX Mapper release: {{ .Release.Name }}
+Namespace: {{ .Release.Namespace }}
+
+PostgreSQL config:
+- Connecting to host: {{ .Values.postgresql.url }}
+- Schema: {{ .Values.postgresql.schema }}
+{{- /*
+Checking auth here to pass linting.
+*/ -}}
+{{- if .Values.postgresql.auth }}
+- Connecting as: {{ .Values.postgresql.auth.username }}
+{{- end }}
+
+Quick checks:
+- kubectl -n {{ .Release.Namespace }} get deployment posix-mapper-tomcat

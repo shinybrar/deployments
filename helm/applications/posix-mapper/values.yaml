@@ -3,17 +3,14 @@ kubernetesClusterDomain: cluster.local
 # Tell Kubernetes to spin up multiple instances.  Defaults to 1.
 replicaCount: 1
 
-# It's best to keep these set as such, unless you're willing to change these in several places.
-skaha:
-  namespace: skaha-system
-
 # @param securityContext - Optional security context for the container.  This is a security feature to restrict system calls.
-# securityContext: {}
+# See https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
 #
 # Example:
 # securityContext:
 #   seccompProfile:
 #     type: RuntimeDefault
+# securityContext: {}
 
 # @param applicationName - The name of the application.  This will rename the underlying WAR file, thus changing the endpoint.  Defaults to posix-mapper.
 # applicationName: posix-mapper
@@ -107,16 +104,19 @@ secrets:
   # posix-manager-cacert-secret:
   #   ca.crt: <base64 encoded ca crt>
 
-# These values are preset in the catalina.properties, and this default database only exists beside this service.
-# It's usually safe to leave these as-is, but make sure they match the values in catalina.properties.
-postgresql:
-  install: true
-  image: postgres:13.20
-  maxActive: 8
-  auth:
-    username: posixmapper
-    password: posixmapperpwd
-    database: mapping
-    schema: mapping
-  storage:
-    spec:
+# Required.  Database connection information to contain the UID/GID mappings.
+# @param postgresql.maxActive - Maximum number of active connections.  Defaults to 8.
+# @param postgresql.url - JDBC URL of the PostgreSQL database.  Required.
+# @param postgresql.schema - Database schema to use. Required.
+# @param postgresql.auth.username - Database username.  Required.
+# @param postgresql.auth.password - Database password.  Required.
+#
+# Example:
+# postgresql:
+#   maxActive: 8
+#   url: jdbc:postgresql://psql.example.org:5432/mapping
+#   schema: mapping
+#   auth:
+#     username: posixmapperuser
+#     password: posixmapperpwd
+postgresql: {}
