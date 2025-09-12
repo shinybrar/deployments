@@ -91,15 +91,8 @@ folder in order to have shared content between the Cavern Service (`cavern`) and
 It is expected that the deployer, or an Administrator, will create the necessary Persistent Volumes (if needed), and the required Persistent Volume Claims at
 this point.  There are sample [Local Storage](https://kubernetes.io/docs/concepts/storage/volumes/#local) Persistent Volume examples in the `base/volumes` folder.
 
-
-#### Required Persistent Volume Claim
-
-It is expected that there is a Persistent Volume Claim with the name of the Skaha Workload namespace hyphenated with `cavern-pvc`.  This will provide the
-backing storage to the User Sessions.  Using the default values, this means:
-
-`skaha-workload-cavern-pvc`
-
-will exist as a Persistent Volume Claim in the `skaha-workload` namespace.
+Two (2) Persistent Volume Claims are required.  While both point to the same underlying storage, they are in different Namespaces.  This leads to somewhat duplicated effort, but it is necessary to ensure that both the `skaha-system` and `skaha-workload` namespaces have access to the required storage resources.
+See this [short explanation](https://youtu.be/NSO0HioWLiI) for more information.
 
 
 ### POSIX Mapper install
