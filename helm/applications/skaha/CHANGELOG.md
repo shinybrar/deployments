@@ -1,4 +1,10 @@
-# CHANGELOG for Skaha User Session API (Chart 1.0.3)
+# CHANGELOG for Skaha User Session API (Chart 1.0.4)
+
+## 2025.09.11 (1.0.4)
+- Provide Kueue examples with documentation
+- Fix typo in headless priority class name setting
+- Fix environment variable name to properly be uppercase for headless priority class
+- Bump Skaha API image to `1.0.3`
 
 ## 2025.09.10 (1.0.3)
 - Fix to display GPU Cores
