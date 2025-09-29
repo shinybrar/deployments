@@ -89,6 +89,10 @@ deployment:
   # Uncomment to enable local or self-signed CA certificates for your domain to be trusted.
   # science-portal-cacert-secret:
     # ca.crt: <base64 encoded ca.crt blob>
+
+experimentalFeatures: 
+  resourceSlider:
+    enabled: false
 ```
 
 ### Run with configured values

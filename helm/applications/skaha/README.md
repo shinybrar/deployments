@@ -95,6 +95,8 @@ The following table lists the configurable parameters for the Skaha Helm chart:
 | `deployment.skaha.sessions.gpuEnabled` | Enable GPU support for User Sessions.  Defaults to `false` | `false` |
 | `deployment.skaha.sessions.nodeAffinity` | Kubernetes Node affinity for the Skaha User Session Pods | `{}` |
 | `deployment.skaha.sessions.tolerations` | Array of tolerations to pass to Kubernetes for fine-grained Node targeting of the `skaha` User Sessions | `[]` |
+| `experimentalFeatures.enabled` | Enable experimental features in Skaha. | `false` |
+| `experimentalFeatures.sessionLimitRange` | Kubernete LimitRange for User Sessions to enforce minimum and maximum resource usage.  Only applied if `experimentalFeatures.enabled` and `sessionLimitRange.enabled` are `true`. | `{ enabled: false }` |
 | `secrets` | List of secrets to be mounted in the Skaha API defined as objects (i.e `secretName: {cert.pem: xxx}`) | `[]` |
 | `storage.service.spec` | Storage class specification for the Skaha API.  Can be `persistentVolumeClaim` or a dynamic instantiation like `hostPath`.  See [Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/). | `{}` |
 | `redis` | [Redis sub-chart configuration](https://github.com/bitnami/charts/tree/main/bitnami/redis) for Skaha's caching of Harbor Docker image metadata. | See [`values.yaml`](https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml) for available configuration values. |

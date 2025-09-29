@@ -88,6 +88,16 @@ spec:
           value: "{{ .Release.Name }}-redis-master.{{ .Release.Namespace }}.svc.{{ .Values.kubernetesClusterDomain }}"
         - name: REDIS_PORT
           value: "6379"
+        {{-  with .Values.experimentalFeatures }}
+        {{- if .enable }}
+        {{- with .sessionLimitRange }}
+        {{- if eq .enabled true }}
+        - name: SKAHA_EXPERIMENTAL_SESSION_LIMIT_RANGE_NAME
+          value: "{{ $.Release.Name }}-session-limit-range"
+        {{- end }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
         {{- with .Values.deployment.skaha.extraEnv }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
