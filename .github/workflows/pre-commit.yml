@@ -21,17 +21,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@v1
+        uses: astral-sh/setup-uv@v6
         with:
-          python-version: "3.13"
-
-      - name: Cache uv
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.UV_CACHE_DIR }}
-          key: ${{ runner.os }}-uv-${{ hashFiles('pyproject.toml', 'uv.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-uv-
+          version-file: "pyproject.toml"
+          python-version: 3.13
+          enable-cache: true
+          cache-dependency-glob: |
+            **/pyproject.toml
+            **/uv.lock
 
       - name: Cache pre-commit
         uses: actions/cache@v4
@@ -53,7 +50,7 @@ jobs:
         run: |
           latest="$(git log -1 --pretty=%B)"
           printf 'Checking latest commit message:\n%s\n' "$latest"
-          uv tool run commitizen check --message "$latest"
+          uv run cz check --message "$latest"
 
       - name: Share pre-commit guidance
         if: ${{ github.event_name == 'pull_request' && (steps.precommit.outcome == 'failure' || steps.commitizen.outcome == 'failure') }}
@@ -61,17 +58,18 @@ jobs:
         with:
           message: |
             ### ⚠️ Pre-commit checks failed
-            
+
             ${{ steps.precommit.outcome == 'failure' && '- Run `uv run pre-commit run -a` locally to reproduce the issues.' || '' }}
             ${{ steps.commitizen.outcome == 'failure' && '- Ensure your latest commit message follows the Commitizen format (e.g. `feat: add awesome thing`).' || '' }}
-            ${{ steps.commitizen.outcome == 'failure' && '  Validate it locally with `uv tool run commitizen check --message "<type>: <description>"`.' || '' }}
-            
+            ${{ steps.commitizen.outcome == 'failure' && '  Validate it locally with `uv run cz check --message "<type>: <description>"`.' || '' }}
+
             Fix the issues locally with:
-            
+
             ```bash
+            uv sync
             uv run pre-commit run -a
             ```
-            
+
             Need help? Run `uv run pre-commit install` once to enable these checks before every commit.
 
       - name: Celebrate spotless PR
@@ -80,7 +78,7 @@ jobs:
         with:
           message: |
             ### ✅ All pre-commit checks passed
-            
+
             Thanks for keeping the repo tidy! ✨
 
       - name: Fail if checks failed
