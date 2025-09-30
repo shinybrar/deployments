@@ -1,0 +1,59 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "packages": {
+    "helm/applications/base": {
+      "package-name": "base",
+      "release-type": "helm",
+      "changelog-path": "CHANGELOG.md",
+      "monorepo-tags": true
+    },
+    "helm/applications/cavern": {
+      "package-name": "cavern",
+      "release-type": "helm",
+      "changelog-path": "CHANGELOG.md",
+      "monorepo-tags": true
+    },
+    "helm/applications/posix-mapper": {
+      "package-name": "posixmapper",
+      "release-type": "helm",
+      "changelog-path": "CHANGELOG.md",
+      "monorepo-tags": true
+    },
+    "helm/applications/science-portal": {
+      "package-name": "scienceportal",
+      "release-type": "helm",
+      "changelog-path": "CHANGELOG.md",
+      "monorepo-tags": true
+    },
+    "helm/applications/skaha": {
+      "package-name": "skaha",
+      "release-type": "helm",
+      "changelog-path": "CHANGELOG.md",
+      "monorepo-tags": true
+    },
+    "helm/applications/sshd": {
+      "package-name": "sshd",
+      "release-type": "helm",
+      "changelog-path": "CHANGELOG.md",
+      "monorepo-tags": true
+    },
+    "helm/applications/storage-ui": {
+      "package-name": "storageui",
+      "release-type": "helm",
+      "changelog-path": "CHANGELOG.md",
+      "monorepo-tags": true
+    },
+    "helm/applications/utils": {
+      "package-name": "utils",
+      "release-type": "helm",
+      "changelog-path": "CHANGELOG.md",
+      "monorepo-tags": true
+    },
+    "helm/common": {
+      "package-name": "common",
+      "release-type": "helm",
+      "changelog-path": "CHANGELOG.md",
+      "monorepo-tags": true
+    }
+  }
+}
