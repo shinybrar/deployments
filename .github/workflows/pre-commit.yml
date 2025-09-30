@@ -27,8 +27,8 @@ jobs:
           python-version: 3.13
           enable-cache: true
           cache-dependency-glob: |
-            **/pyproject.toml
-            **/uv.lock
+            pyproject.toml
+            uv.lock
 
       - name: Cache pre-commit
         uses: actions/cache@v4
