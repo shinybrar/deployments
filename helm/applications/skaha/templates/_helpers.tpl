@@ -43,6 +43,41 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
+Obtain a comma-delimited string of Experimental Features and a flag to set if any are enabled.
+*/}}
+{{- define "skaha.experimentalFeatureGates" -}}
+{{- $features := "" -}}
+{{- $featureEnabled := false -}}
+{{- with .Values.experimentalFeatures }}
+{{- if .enabled }}
+{{- range $feature, $map := . }}
+
+{{- if eq $feature "enabled" -}}
+{{- continue -}}
+{{- end -}}
+
+{{- if ne $feature "" }}
+{{- $thisMap := $map | default dict }}
+
+{{- if or (not (hasKey $thisMap "enabled")) (not (kindIs "bool" $thisMap.enabled)) -}}
+{{- fail ( printf "Feature gate '%s' must have 'enabled' (false | true) key" $feature ) -}}
+{{- end }}
+
+{{- if eq $features "" -}}
+{{- $features = printf "%s=%t" $feature $thisMap.enabled -}}
+{{- else -}}
+{{- $features = printf "%s,%s=%t" $features $feature $thisMap.enabled -}}
+{{- end }}
+{{- end }}
+
+{{- end }}
+{{- end }}
+{{- end }}
+{{- printf "%s" $features -}}
+{{- end }}
+*/}}
+
+{{/*
 Selector labels
 */}}
 {{- define "skaha.selectorLabels" -}}

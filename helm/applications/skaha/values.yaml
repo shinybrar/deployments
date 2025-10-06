@@ -15,7 +15,7 @@ skahaWorkload:
 deployment:
   hostname: myhost.example.com  # Change this!
   skaha:
-    image: images.opencadc.org/platform/skaha:1.0.4
+    image: images.opencadc.org/platform/skaha:1.0.5
     imagePullPolicy: Always
 
     # Cron string for the image caching cron job schedule. Defaults to every half hour.
@@ -283,6 +283,37 @@ ingress:
   enabled: true
   path: /skaha
 
+# Experimental features that can be enabled.  These represent features that are not released and confined behind feature flags.
+experimentalFeatures:
+  enabled: false
+
+  # YAML to pass to a LimitRange object called "{{ .Release.Name }}-session-limit-range" in the workload Namespace to define the resource limits.
+  # These limits will be applied to Container objects (User Sessions).
+  # See https://kubernetes.io/docs/concepts/policy/limit-range/
+  #
+  # Example:
+  # sessionLimitRange:
+  #   enabled: true
+  #   limitSpec:
+  #     max:
+  #       memory: "96Gi"
+  #       cpu: "12"
+  #       "nvidia.com/gpu": "4"
+  #     min:
+  #       memory: "1Gi"
+  #       cpu: "1"
+  #       "nvidia.com/gpu": "0"
+  #     default:  # actually refers to default limit
+  #       memory: "32Gi"
+  #       cpu: "8"
+  #       "nvidia.com/gpu": "1"
+  #     defaultRequest:
+  #       memory: "4Gi"
+  #       cpu: "1"
+  sessionLimitRange:
+    enabled: false
+    limitSpec: {}
+
 secrets:
   # Uncomment to enable local or self-signed CA certificates for your domain to be trusted.
   # skaha-cacert-secret:
@@ -295,7 +326,7 @@ storage:
       # YAML for service mounted storage.
       # Example is the persistentVolumeClaim below.
       # persistentVolumeClaim:
-      #   claimName: skaha-pvc\
+      #   claimName: skaha-pvc
 
 # For caching images from the Image Repository and for the writing the POSIX Users and Groups to be shared with Job files
 redis:

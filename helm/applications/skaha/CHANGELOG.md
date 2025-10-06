@@ -1,4 +1,8 @@
-# CHANGELOG for Skaha User Session API (Chart 1.0.5)
+# CHANGELOG for Skaha User Session API (Chart 1.0.6)
+
+## 2025.09.29 (1.0.6)
+- Bump Skaha API image to `1.0.5`
+- Feature Gate to support `LimitRange` objects to enforce resource limits on User Sessions
 
 ## 2025.09.29 (1.0.5)
 - Fix for status reporting in User Sessions
