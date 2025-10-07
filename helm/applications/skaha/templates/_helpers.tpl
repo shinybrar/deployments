@@ -120,7 +120,7 @@ The init containers for the launch scripts.
             drop:
               - ALL
       - name: init-users-groups
-        image: {{ $.Values.deployment.skaha.sessions.initContainerImage | default "redis:7.4.2-alpine3.21" }}
+        image: {{ $.Values.deployment.skaha.sessions.initContainerImage | default "redis:8.2.2-bookworm" }}
         command: ["/init-users-groups/init-users-groups.sh"]
         env:
         - name: HOME
