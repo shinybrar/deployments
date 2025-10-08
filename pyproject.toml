@@ -9,6 +9,7 @@ authors = [
 requires-python = ">=3.13"
 dependencies = [
     "commitizen>=4.9.1",
+    "mkdocs-git-revision-date-localized-plugin>=1.4.7",
     "mkdocs-material>=9.6.20",
     "pre-commit>=4.3.0",
 ]
