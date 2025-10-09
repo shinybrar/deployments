@@ -5,10 +5,10 @@ keywords:
   - common
   - opencadc
 maintainers:
-  - name: Dustin Jenkins
-    email: djenkins.cadc@gmail.com
   - name: Shiny Brar
     email: shiny.brar@nrc-cnrc.gc.ca
+  - name: Dustin Jenkins
+    email: djenkins.cadc@gmail.com
 name: common
 sources:
   - https://github.com/opencadc/deployments/tree/main/helm/common
