@@ -19,7 +19,7 @@ Create a Persistent Volume Claim (PVC) for PostgreSQL:
 ```yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
-metadata:   
+metadata:
   name: posix-mapper-postgres-pvc
   namespace: skaha-system
 spec:
@@ -151,4 +151,3 @@ See the [values.yaml](values.yaml) file for a complete list of configuration opt
 | `postgresql.schema` | Required Database schema to use for the POSIX Mapper | `""` |
 | `postgresql.auth.username` | Username for the PostgreSQL database | `""` |
 | `postgresql.auth.password` | Password for the PostgreSQL database | `""` |
-
