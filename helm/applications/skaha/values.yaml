@@ -10,7 +10,7 @@ replicaCount: 1
 # It's best to keep this set as such, unless you're willing to change these in several places.
 skahaWorkload:
   namespace: skaha-workload
- 
+
 # Skaha web service deployment
 deployment:
   hostname: myhost.example.com  # Change this!
@@ -21,7 +21,7 @@ deployment:
     # Cron string for the image caching cron job schedule. Defaults to every half hour.
     imageCache:
       refreshSchedule: "*/30 * * * *"
-  
+
     # Set the top-level-directory name that gets mounted at the root.
     # skahaTld: "/cavern"
 
@@ -94,7 +94,7 @@ deployment:
       # @see https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy
       # Example:
       #   imagePullPolicy: IfNotPresent
-      imagePullPolicy: Always 
+      imagePullPolicy: Always
 
       # Optionally configure the initContainer image for Redis.  Useful for those not able to reach docker.io
       # Defaults to redis-7.4.2-alpine3.21.
@@ -139,14 +139,14 @@ deployment:
       # This is a list of tolerations that will be added to the Pod spec of the User Sessions.
       # @see https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
       # @see ./README.md#notes-on-tolerations-and-nodeaffinity
-      # 
+      #
       # Example:
       # tolerations:
       # - key: "key1"
       #   operator: "Equal"
       #   value: "value1"
       #   effect: "NoSchedule"
-      # 
+      #
       tolerations: []
 
       # Optionally setup a separate host for User Sessions for Skaha to redirect to.  The HTTPS scheme is assumed.  Defaults to the Skaha hostname.
@@ -197,7 +197,7 @@ deployment:
       # When set to 'true' this flag will enable GPU node scheduling.  Don't forget to declare any related GPU configurations, if appropriate, in the nodeAffinity below!
       # gpuEnabled: false
 
-      # Set the YAML that will go into the "affinity.nodeAffinity" stanza for Pod Spec in User Sessions.  This can be used to enable GPU scheduling, for example, 
+      # Set the YAML that will go into the "affinity.nodeAffinity" stanza for Pod Spec in User Sessions.  This can be used to enable GPU scheduling, for example,
       # or to control how and where User Session Pods are scheduled.  This can be potentially dangerous unless you know what you are doing.
       # See https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity
       # nodeAffinity: {}
@@ -259,14 +259,14 @@ deployment:
 # This is a list of tolerations that will be added to the Pod spec of the Skaha API.
 # @see https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
 # @see ./README.md#notes-on-tolerations-and-nodeaffinity
-# 
+#
 # Example:
 # tolerations:
 # - key: "key1"
 #   operator: "Equal"
 #   value: "value1"
 #   effect: "NoSchedule"
-# 
+#
 tolerations: []
 
 # Port to expose from the service.  This will ultimately serve port 8080 (default Tomcat port), but will

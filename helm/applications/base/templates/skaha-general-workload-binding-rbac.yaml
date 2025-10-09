@@ -17,4 +17,4 @@ subjects:
 - kind: ServiceAccount
   name: 'skaha'
   namespace: {{ required "Ensure the skaha.namespace is declared." .Values.skaha.namespace }}
-  
+

@@ -39,7 +39,7 @@ spec:
         securityContext:
           allowPrivilegeEscalation: false
       containers:
-      - env: 
+      - env:
         - name: SKAHA_SESSIONS_HOSTNAME
           value: "{{ .Values.deployment.skaha.sessions.hostname | default .Values.deployment.hostname }}"
         - name: SKAHA_HOSTNAME
@@ -101,7 +101,7 @@ spec:
           limits:
             memory: {{ .Values.deployment.skaha.resources.limits.memory }}
             cpu: {{ .Values.deployment.skaha.resources.limits.cpu }}
-        ports: 
+        ports:
         - containerPort: 8080
           protocol: TCP
         {{- with .Values.deployment.skaha.extraPorts }}
