@@ -8,7 +8,7 @@ This section is automatically generated. Do not edit manually.
 
 | Chart | Version | App Version | Owners | Dependencies |
 | --- | --- | --- | --- | --- |
-| [base](helm/applications/base) | 0.4.1 | 0.1.4 | Dustin Jenkins, Shiny Brar | traefik 26.1.0 |
+| [base](helm/applications/base) | 0.4.1 | 0.1.4 | Shiny Brar, Dustin Jenkins | traefik 26.1.0 |
 | [cavern](helm/applications/cavern) | 0.7.1 | 0.9.0 | Dustin Jenkins, Shiny Brar | utils ^0.1.0 |
 | [posixmapper](helm/applications/posix-mapper) | 0.5.0 | 0.3.2 | Dustin Jenkins, Shiny Brar | — |
 | [scienceportal](helm/applications/science-portal) | 1.0.0 | 1.0.1 | Dustin Jenkins, Shiny Brar | redis ^18.19.0, utils ^0.1.0 |

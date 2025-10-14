@@ -4,6 +4,13 @@
 
 A Helm chart to install base components of the CANFAR Science Platform
 
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| Shiny Brar | <shiny.brar@nrc-cnrc.gc.ca> |  |
+| Dustin Jenkins | <djenkins.cadc@gmail.com> |  |
+
 ## Requirements
 
 | Repository | Name | Version |

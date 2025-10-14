@@ -4,6 +4,13 @@
 
 A Helm chart to install the Skaha web service of the CANFAR Science Platform
 
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| Dustin Jenkins | <djenkins.cadc@gmail.com> |  |
+| Shiny Brar | <shiny.brar@nrc-cnrc.gc.ca> |  |
+
 ## Requirements
 
 | Repository | Name | Version |

@@ -4,6 +4,13 @@
 
 An SSHD service with SSSD to get users from LDAP
 
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| Dustin Jenkins | <djenkins.cadc@gmail.com> |  |
+| Shiny Brar | <shiny.brar@nrc-cnrc.gc.ca> |  |
+
 ## Requirements
 
 | Repository | Name | Version |
