@@ -9,7 +9,6 @@ A Helm chart to install the Science Portal UI
 | Name | Email | Url |
 | ---- | ------ | --- |
 | Dustin Jenkins | <djenkins.cadc@gmail.com> |  |
-| Shiny Brar | <shiny.brar@nrc-cnrc.gc.ca> |  |
 
 ## Requirements
 

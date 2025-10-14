@@ -9,7 +9,6 @@ A Helm chart to install the UID/GID POSIX Mapper
 | Name | Email | Url |
 | ---- | ------ | --- |
 | Dustin Jenkins | <djenkins.cadc@gmail.com> |  |
-| Shiny Brar | <shiny.brar@nrc-cnrc.gc.ca> |  |
 
 ## Values
 

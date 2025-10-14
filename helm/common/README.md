@@ -10,7 +10,8 @@ A Library Helm Chart for grouping common logic between charts. This chart is not
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| OpenCADC |  | <https://github.com/opencadc/deployments> |
+| Shiny Brar | <shiny.brar@nrc-cnrc.gc.ca> |  |
+| Dustin Jenkins | <djenkins.cadc@gmail.com> |  |
 
 ## Source Code
 
