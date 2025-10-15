@@ -53,9 +53,8 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         continue-on-error: true
         run: |
-          COMMIT_MESSAGE=$(git log -1 --pretty=format:%s ${{ github.event.pull_request.head.sha }})
-          echo "Latest commit message: ${COMMIT_MESSAGE}"
-          uv run cz check --message "$COMMIT_MESSAGE"
+          echo "Latest commit message: $(git show -s --format=%s)"
+          uv run cz check --message "$(git show -s --format=%s)"
 
       - name: Share pre-commit guidance
         if: ${{ github.event_name == 'pull_request' && (steps.precommit.outcome == 'failure' || steps.commitizen.outcome == 'failure') }}
