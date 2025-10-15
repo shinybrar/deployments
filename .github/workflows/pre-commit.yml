@@ -48,8 +48,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         continue-on-error: true
         run: |
-          COMMIT_SHA="${{ github.event.pull_request.head.sha }}"
-          COMMIT_MESSAGE=$(git log -1 --pretty=format:%s "${COMMIT_SHA}")
+          COMMIT_MESSAGE=$(git log -1 --pretty=format:%s ${{ github.event.pull_request.head.sha }})
           echo "Latest commit message: ${COMMIT_MESSAGE}"
           uv run cz check --message "$COMMIT_MESSAGE"
 
