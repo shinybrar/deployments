@@ -35,6 +35,8 @@ A Helm chart to install the User Storage UI
 | kubernetesClusterDomain | string | `"cluster.local"` |  |
 | redis.architecture | string | `"standalone"` |  |
 | redis.auth.enabled | bool | `false` |  |
+| redis.image.repository | string | `"redis"` |  |
+| redis.image.tag | string | `"8.2.2-bookworm"` |  |
 | redis.master.persistence.enabled | bool | `false` |  |
 | replicaCount | int | `1` |  |
 | skaha.namespace | string | `"skaha-system"` |  |

@@ -1,6 +1,6 @@
 # skaha
 
-![Version: 1.0.5](https://img.shields.io/badge/Version-1.0.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.4](https://img.shields.io/badge/AppVersion-1.0.4-informational?style=flat-square)
+![Version: 1.1.0](https://img.shields.io/badge/Version-1.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.1.0](https://img.shields.io/badge/AppVersion-1.1.0-informational?style=flat-square)
 
 A Helm chart to install the Skaha web service of the CANFAR Science Platform
 
@@ -9,6 +9,7 @@ A Helm chart to install the Skaha web service of the CANFAR Science Platform
 | Name | Email | Url |
 | ---- | ------ | --- |
 | Dustin Jenkins | <djenkins.cadc@gmail.com> |  |
+| Shiny Brar | <shiny.brar@nrc-cnrc.gc.ca> |  |
 
 ## Requirements
 
@@ -25,7 +26,7 @@ A Helm chart to install the Skaha web service of the CANFAR Science Platform
 | deployment.skaha.apiVersion | string | `"v1"` |  |
 | deployment.skaha.defaultQuotaGB | string | `"10"` |  |
 | deployment.skaha.identityManagerClass | string | `"org.opencadc.auth.StandardIdentityManager"` |  |
-| deployment.skaha.image | string | `"images.opencadc.org/platform/skaha:1.0.4"` |  |
+| deployment.skaha.image | string | `"images.opencadc.org/platform/skaha:1.1.0"` |  |
 | deployment.skaha.imageCache.refreshSchedule | string | `"*/30 * * * *"` |  |
 | deployment.skaha.imagePullPolicy | string | `"Always"` |  |
 | deployment.skaha.init.image | string | `"busybox:1.37.0"` |  |
@@ -39,6 +40,7 @@ A Helm chart to install the Skaha web service of the CANFAR Science Platform
 | deployment.skaha.serviceAccountName | string | `"skaha"` |  |
 | deployment.skaha.sessions.expirySeconds | string | `"345600"` |  |
 | deployment.skaha.sessions.imagePullPolicy | string | `"Always"` |  |
+| deployment.skaha.sessions.initContainerImage | string | `"redis:8.2.2-bookworm"` |  |
 | deployment.skaha.sessions.kueue | object | `{}` |  |
 | deployment.skaha.sessions.maxCount | string | `"3"` |  |
 | deployment.skaha.sessions.maxEphemeralStorage | string | `"200Gi"` |  |
@@ -46,11 +48,16 @@ A Helm chart to install the Skaha web service of the CANFAR Science Platform
 | deployment.skaha.sessions.persistentVolumeClaimName | string | `"skaha-workload-cavern-pvc"` |  |
 | deployment.skaha.sessions.tls | object | `{}` |  |
 | deployment.skaha.sessions.tolerations | list | `[]` |  |
+| experimentalFeatures.enabled | bool | `false` |  |
+| experimentalFeatures.sessionLimitRange.enabled | bool | `false` |  |
+| experimentalFeatures.sessionLimitRange.limitSpec | object | `{}` |  |
 | ingress.enabled | bool | `true` |  |
 | ingress.path | string | `"/skaha"` |  |
 | kubernetesClusterDomain | string | `"cluster.local"` |  |
 | redis.architecture | string | `"standalone"` |  |
 | redis.auth.enabled | bool | `false` |  |
+| redis.image.repository | string | `"redis"` |  |
+| redis.image.tag | string | `"8.2.2-bookworm"` |  |
 | redis.master.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
 | redis.master.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | redis.master.containerSecurityContext.readOnlyRootFilesystem | bool | `true` |  |
