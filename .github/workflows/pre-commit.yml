@@ -38,9 +38,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pre-commit-
 
-      - name: Install helm-docs
-        run: uv run helm-docs --version v1.14.2
-
       - name: Run pre-commit checks
         id: precommit
         continue-on-error: true
