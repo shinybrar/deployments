@@ -48,8 +48,8 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         continue-on-error: true
         run: |
-          latest="$(git log -1 --pretty=%B)"
-          printf 'Checking latest commit message:\n%s\n' "$latest"
+          latest=${{ github.event.head_commit.message }}"
+          echo "Latest commit message: $latest"
           uv run cz check --message "$latest"
 
       - name: Share pre-commit guidance
