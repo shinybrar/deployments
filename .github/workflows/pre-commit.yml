@@ -38,6 +38,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pre-commit-
 
+      - name: Install helm-docs
+        run: uv run helm-docs --version v1.14.2
+
       - name: Run pre-commit checks
         id: precommit
         continue-on-error: true
@@ -57,7 +60,7 @@ jobs:
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           message: |
-            ### ⚠️ Pre-commit checks failed
+            ### ⚠️ Pre-commit Checks Failed
 
             ${{ steps.precommit.outcome == 'failure' && '- Run `uv run pre-commit run -a` locally to reproduce the issues.' || '' }}
             ${{ steps.commitizen.outcome == 'failure' && '- Ensure your latest commit message follows the Commitizen format (e.g. `feat: add awesome thing`).' || '' }}
@@ -66,11 +69,12 @@ jobs:
             Fix the issues locally with:
 
             ```bash
-            uv sync
+            git clone ${{ github.event.pull_request.head.repo.clone_url }}
+            git checkout -b ${{ github.event.pull_request.head.ref  }}
             uv run pre-commit run -a
             ```
 
-            Need help? Run `uv run pre-commit install` once to enable these checks before every commit.
+            See the [`uv` documentation for installation instructions](https://docs.astral.sh/uv/getting-started/installation/)
 
       - name: Celebrate spotless PR
         if: ${{ github.event_name == 'pull_request' && steps.precommit.outcome == 'success' && steps.commitizen.outcome == 'success' }}
