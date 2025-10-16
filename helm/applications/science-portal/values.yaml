@@ -126,11 +126,6 @@ experimentalFeatures:
   # This feature allows users to dynamically adjust the resource limits of their jobs with a different User Interface experience.
   slider:
     enabled: false
-
-  # Enable the Resource Slider feature, which allows users to select the amount of resources (CPU and Memory) they want to 
-  # use for their jobs with a UI Slider Component.
-  resourceSlider:
-    enabled: false
     
 # This is a list of tolerations that will be added to the Pod spec of the Science Portal UI.
 # @see https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
