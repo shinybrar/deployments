@@ -91,7 +91,8 @@ deployment:
     # ca.crt: <base64 encoded ca.crt blob>
 
 experimentalFeatures: 
-  resourceSlider:
+  enabled: false
+  slider:
     enabled: false
 ```
 
