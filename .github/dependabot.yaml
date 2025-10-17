@@ -4,6 +4,8 @@ updates:
   - package-ecosystem: "helm"
     directories:
       - "helm/applications/skaha"
+    schedule:
+      interval: "daily"
     open-pull-requests-limit: 10
     pull-request-branch-name:
       separator: "-"
