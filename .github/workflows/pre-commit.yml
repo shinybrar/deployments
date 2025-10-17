@@ -20,6 +20,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Helm tool installer
+        uses: Azure/setup-helm@v4.3.1
+
+      - name: Helm Dependency Update
+        run: helm dependency update helm/applications/cavern
+
       - name: Set up uv
         uses: astral-sh/setup-uv@v6
         with:
