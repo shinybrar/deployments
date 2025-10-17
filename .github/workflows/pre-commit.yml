@@ -23,8 +23,9 @@ jobs:
       - name: Helm tool installer
         uses: Azure/setup-helm@v4.3.1
 
-      - name: Helm Dependency Update
-        run: helm dependency update helm/applications/cavern
+      - name: Helm Dependency Updates
+        run: |
+          for chart in helm/applications/*/; do helm dependency update "$chart" 2>/dev/null || true; done
 
       - name: Set up uv
         uses: astral-sh/setup-uv@v6
