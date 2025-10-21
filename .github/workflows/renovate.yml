@@ -24,6 +24,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Setup Cache for Docker Container
+        uses: actions/cache
+        with:
+          path: /usr/local/bin/docker
+          key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
+
       - name: Renovate Bot GitHub Action
         uses: renovatebot/github-action@v43.0.18
         with:

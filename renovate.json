@@ -24,7 +24,7 @@
       "matchManagers": ["uv"],
       "commitMessagePrefix": "py-renovate/chore(deps): ",
       "groupName": "python",
-      "rangeStrategy": "update-lockfile"
+      "rangeStrategy": "replace"
     },
     {
       "matchManagers": ["github-actions"],
@@ -41,12 +41,11 @@
       ],
       "prBodyColumns": [
         "Package",
-        "Change",
-        "Notes",
-        "Confidence",
-        "Age",
-        "Adoption",
-        "Passing"
+        "Update",
+        "Type",
+        "New value",
+        "Package file",
+        "References"
       ]
     }
   ]
