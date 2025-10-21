@@ -1,0 +1,37 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "includePaths": [
+    "helm/applications/**/Chart.yaml",
+    "pyproject.toml",
+    "uv.lock"
+  ],
+  "packageRules": [
+    {
+      "matchDatasources": ["helm"],
+      "commitMessagePrefix": "helm-renovate/chore(deps): "
+    },
+    {
+      "matchManagers": ["uv"],
+      "commitMessagePrefix": "py-renovate/chore(deps): "
+    },
+    {
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch"
+      ],
+      "prBodyColumns": [
+        "Package",
+        "Change",
+        "Notes",
+        "Confidence",
+        "Age",
+        "Adoption",
+        "Passing"
+      ]
+    }
+  ]
+}

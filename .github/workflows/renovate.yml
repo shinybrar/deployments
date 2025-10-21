@@ -1,0 +1,30 @@
+name: Renovate
+
+permissions:
+  contents: write
+  pull-requests: write
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * *' # Daily at midnight
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual renovate run'
+        required: true
+        type: string
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Renovate Bot GitHub Action
+        uses: renovatebot/github-action@v43.0.18
+        with:
+          configurationFile: renovate.json
