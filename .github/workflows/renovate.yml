@@ -33,8 +33,6 @@ jobs:
         uses: renovatebot/github-action@v43.0.18
         with:
           configurationFile: renovate.json
-          renovate-image: ghcr.io/renovatebot/renovate:41.157.0
-          renovate-version: 41.157.0
           docker-cmd-file: .github/renovate-entrypoint.sh
           mount-docker-socket: true
           token: ${{ secrets.RENOVATE_TOKEN }}
