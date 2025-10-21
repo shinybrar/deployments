@@ -10,9 +10,9 @@
   "semanticCommits": "enabled",
   "commitMessagePrefix": "renovate/chore(deps): ",
   "includePaths": [
-    "helm/applications/**/Chart.yaml",
+    "helm/*/**/Chart.yaml",
+    "helm/*/**/values.yaml",
     "pyproject.toml",
-    "uv.lock",
     ".github/workflows/**.yml"
   ],
   "packageRules": [
