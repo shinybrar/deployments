@@ -3,6 +3,8 @@
   "extends": [
     "config:recommended"
   ],
+  "prConcurrentLimit": 20,
+  "prHourlyLimit": 20,
   "repositories": ["shinybrar/deployments"],
   "platform": "github",
   "semanticCommits": "enabled",
