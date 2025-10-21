@@ -3,7 +3,7 @@
   "extends": [
     "config:recommended"
   ],
-  "repositories": ["opencadc/deployments"],
+  "repositories": ["shinybrar/deployments"],
   "platform": "github",
   "semanticCommits": "enabled",
   "commitMessagePrefix": "renovate/chore(deps): ",
