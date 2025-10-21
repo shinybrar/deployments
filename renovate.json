@@ -3,6 +3,10 @@
   "extends": [
     "config:recommended"
   ],
+  "repositories": ["opencadc/deployments"],
+  "platform": "github",
+  "semanticCommits": "enabled",
+  "commitMessagePrefix": "renovate/chore(deps): ",
   "includePaths": [
     "helm/applications/**/Chart.yaml",
     "pyproject.toml",
@@ -16,11 +20,13 @@
     },
     {
       "matchManagers": ["uv"],
-      "commitMessagePrefix": "py-renovate/chore(deps): "
+      "commitMessagePrefix": "py-renovate/chore(deps): ",
+      "groupName": "python"
     },
     {
       "matchManagers": ["github-actions"],
-      "commitMessagePrefix": "gha-renovate/chore(deps): "
+      "commitMessagePrefix": "gha-renovate/chore(deps): ",
+      "groupName": "github-actions"
     },
     {
       "matchUpdateTypes": [
