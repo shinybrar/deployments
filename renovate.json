@@ -47,6 +47,13 @@
         "Package file",
         "References"
       ]
+    },
+    {
+      "postUpgradeTasks": {
+        "commands": ["uv run pre-commit run -a"],
+        "fileFilters": [],
+        "executionMode": "update"
+      }
     }
   ]
 }
