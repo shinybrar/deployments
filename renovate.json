@@ -6,7 +6,8 @@
   "includePaths": [
     "helm/applications/**/Chart.yaml",
     "pyproject.toml",
-    "uv.lock"
+    "uv.lock",
+    ".github/workflows/**.yml"
   ],
   "packageRules": [
     {
@@ -18,10 +19,16 @@
       "commitMessagePrefix": "py-renovate/chore(deps): "
     },
     {
+      "matchManagers": ["github-actions"],
+      "commitMessagePrefix": "gha-renovate/chore(deps): "
+    },
+    {
       "matchUpdateTypes": [
         "major",
         "minor",
-        "patch"
+        "patch",
+        "pin",
+        "digest"
       ],
       "prBodyColumns": [
         "Package",
