@@ -1,5 +1,6 @@
-# deployments
-deployment templates for OpenCADC software components
+# OpenCADC Deployments
+
+This repository contains deployment automation tooling used to deploy services at the Canadian Astronomy Data Centre (CADC), including the CANFAR Science Platform.
 
 ## Chart Inventory
 

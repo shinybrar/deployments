@@ -23,7 +23,8 @@
     {
       "matchManagers": ["uv"],
       "commitMessagePrefix": "py-renovate/chore(deps): ",
-      "groupName": "python"
+      "groupName": "python",
+      "rangeStrategy": "update-lockfile"
     },
     {
       "matchManagers": ["github-actions"],
