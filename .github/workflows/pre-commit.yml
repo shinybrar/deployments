@@ -27,6 +27,14 @@ jobs:
         run: |
           for chart in helm/applications/*/; do helm dependency update "$chart" 2>/dev/null || true; done
 
+      - name: Setup Go
+        uses: actions/setup-go@v6.0.0
+        with:
+          go-version: 'stable'
+
+      - name: Install Helm Docs
+        run: go install github.com/norwoodj/helm-docs/cmd/helm-docs@latest
+
       - name: Set up uv
         uses: astral-sh/setup-uv@v7
         with:
