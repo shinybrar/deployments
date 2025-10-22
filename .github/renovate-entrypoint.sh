@@ -2,11 +2,13 @@
 
 echo "Running Renovate Entrypoint Script"
 
-# Install uv and sync dependencies
-curl -LsSf https://astral.sh/uv/install.sh | sh
+# uv comes pre-installed on the renovate:full image
+# Install Helm Docs
+echo "Installing Helm Docs"
+go install github.com/norwoodj/helm-docs/cmd/helm-docs@latest
+echo "Helm Docs Installed: $(which helm-docs): $(helm-docs --version)"
 
 # Run renovate
 renovate
 
-# Debugging
-find / | grep "deployments"
+echo "Renovate Run Complete"

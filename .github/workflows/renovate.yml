@@ -24,17 +24,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Cache Docker images.
-        uses: ScribeMD/docker-cache@0.5.0
-        with:
-          key: docker-${{ runner.os }}-${{ hashFiles('.github/workflows/renovate.yml') }}
-
       - name: Renovate Bot GitHub Action
         uses: renovatebot/github-action@v43.0.18
         with:
-          configurationFile: renovate.json
+          configurationFile: .github/renovate-config.json
           docker-cmd-file: .github/renovate-entrypoint.sh
-          mount-docker-socket: true
           token: ${{ secrets.RENOVATE_TOKEN }}
         env:
           LOG_LEVEL: debug

@@ -1,14 +1,5 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ],
-  "prConcurrentLimit": 20,
-  "prHourlyLimit": 20,
-  "repositories": ["shinybrar/deployments"],
-  "platform": "github",
-  "semanticCommits": "enabled",
-  "commitMessagePrefix": "renovate/chore(deps): ",
   "includePaths": [
     "helm/*/**/Chart.yaml",
     "helm/*/**/values.yaml",
@@ -18,7 +9,7 @@
   "packageRules": [
     {
       "matchDatasources": ["helm"],
-      "commitMessagePrefix": "helm-renovate/chore(deps): ",
+      "labels": ["helm"],
       "postUpgradeTasks": {
         "commands": ["uv run pre-commit run -a"],
         "executionMode": "update"
@@ -26,13 +17,13 @@
     },
     {
       "matchManagers": ["uv"],
-      "commitMessagePrefix": "py-renovate/chore(deps): ",
+      "labels": ["python"],
       "groupName": "python",
       "rangeStrategy": "replace"
     },
     {
       "matchManagers": ["github-actions"],
-      "commitMessagePrefix": "gha-renovate/chore(deps): ",
+      "labels": ["github-actions"],
       "groupName": "github-actions"
     },
     {
@@ -51,9 +42,6 @@
         "Package file",
         "References"
       ]
-    },
-    {
-        "allowedCommands": ["uv run pre-commit run -a"]
     }
   ]
 }
