@@ -30,5 +30,3 @@ jobs:
           configurationFile: .github/renovate-config.json
           docker-cmd-file: .github/renovate-entrypoint.sh
           token: ${{ secrets.RENOVATE_TOKEN }}
-        env:
-          LOG_LEVEL: debug

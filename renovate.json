@@ -5,7 +5,8 @@
     "helm/*/**/values.yaml",
     "pyproject.toml",
     "uv.lock",
-    ".github/workflows/**.yml"
+    ".github/workflows/**.yml",
+    ".pre-commit-config.yaml"
   ],
   "lockFileMaintenance": {
     "enabled": true
@@ -20,15 +21,20 @@
       }
     },
     {
-      "matchManagers": ["uv"],
+      "matchManagers": ["pep621"],
       "labels": ["python"],
       "groupName": "python",
-      "rangeStrategy": "auto"
+      "rangeStrategy": "bump"
     },
     {
       "matchManagers": ["github-actions"],
       "labels": ["github-actions"],
       "groupName": "github-actions"
+    },
+    {
+      "matchManagers": ["pre-commit"],
+      "labels": ["pre-commit"],
+      "groupName": "pre-commit"
     },
     {
       "matchUpdateTypes": [
