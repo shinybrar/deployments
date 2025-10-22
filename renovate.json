@@ -4,22 +4,26 @@
     "helm/*/**/Chart.yaml",
     "helm/*/**/values.yaml",
     "pyproject.toml",
+    "uv.lock",
     ".github/workflows/**.yml"
   ],
+  "lockFileMaintenance": {
+    "enabled": true
+  },
   "packageRules": [
     {
       "matchDatasources": ["helm"],
       "labels": ["helm"],
       "postUpgradeTasks": {
         "commands": ["uv run pre-commit run -a"],
-        "executionMode": "update"
+        "executionMode": "branch"
       }
     },
     {
       "matchManagers": ["uv"],
       "labels": ["python"],
       "groupName": "python",
-      "rangeStrategy": "replace"
+      "rangeStrategy": "auto"
     },
     {
       "matchManagers": ["github-actions"],
