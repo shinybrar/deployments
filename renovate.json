@@ -18,7 +18,11 @@
   "packageRules": [
     {
       "matchDatasources": ["helm"],
-      "commitMessagePrefix": "helm-renovate/chore(deps): "
+      "commitMessagePrefix": "helm-renovate/chore(deps): ",
+      "postUpgradeTasks": {
+        "commands": ["uv run pre-commit run -a"],
+        "executionMode": "update"
+      }
     },
     {
       "matchManagers": ["uv"],
@@ -49,11 +53,7 @@
       ]
     },
     {
-      "postUpgradeTasks": {
-        "commands": ["uv run pre-commit run -a"],
-        "fileFilters": [],
-        "executionMode": "update"
-      }
+        "allowedCommands": ["uv run pre-commit run -a"]
     }
   ]
 }
