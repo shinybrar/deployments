@@ -49,9 +49,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.PRE_COMMIT_HOME }}
-          key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pre-commit-
+          key: pre-commit-cache
+          restore-keys: pre-commit-cache
 
       - name: Run pre-commit checks
         id: precommit
@@ -100,3 +99,7 @@ jobs:
         if: ${{ steps.precommit.outcome == 'failure' }}
         run: |
           git diff --exit-code
+
+      - name: Cleanup pre-commit cache
+        run: |
+          uv run pre-commit gc
