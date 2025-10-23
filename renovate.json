@@ -27,7 +27,7 @@
       "matchManagers": ["pep621"],
       "labels": ["python"],
       "groupName": "python",
-      "rangeStrategy": "bump"
+      "rangeStrategy": "update-lockfile"
     },
     {
       "matchManagers": ["github-actions"],
