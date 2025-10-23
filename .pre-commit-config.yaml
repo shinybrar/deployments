@@ -71,7 +71,7 @@ repos:
     rev: v1.14.2
     hooks:
       - id: helm-docs
-        args: [--chart-search-root=./helm]
+        args: [--chart-search-root=./helm, --skip-version-footer]
   - repo: https://github.com/renovatebot/pre-commit-hooks
     rev: 41.157.1
     hooks:
