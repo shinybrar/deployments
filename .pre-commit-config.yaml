@@ -22,14 +22,14 @@ repos:
   # This configuration will add commitizen to your pre-commit hooks and will run it on commit-msg stage
   # of the git commit process.
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v3.31.0
+    rev: v4.9.1
     hooks:
       - id: commitizen
         stages: [commit-msg]
   # Pre-Commit Hooks Configuration
   # This configuration will add pre-commit hooks to your pre-commit hooks and will run it on pre-commit stage
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       # Prevent giant files from being committed.
       - id: check-added-large-files
