@@ -13,9 +13,6 @@ permissions:
 jobs:
   checks:
     runs-on: ubuntu-latest
-    env:
-      UV_CACHE_DIR: ~/.cache/uv
-      PRE_COMMIT_HOME: ~/.cache/pre-commit
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -40,17 +37,20 @@ jobs:
         with:
           version: "latest"
           python-version: 3.13
-          enable-cache: true
+          enable-cache: "auto"
           cache-dependency-glob: |
             pyproject.toml
             uv.lock
+          restore-cache: "true"
+          save-cache: "true"
 
       - name: Cache pre-commit
         uses: actions/cache@v4
         with:
-          path: ${{ env.PRE_COMMIT_HOME }}
-          key: pre-commit-cache
-          restore-keys: pre-commit-cache
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ runner.os }}-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: |
+            pre-commit-${{ runner.os }}-
 
       - name: Run pre-commit checks
         id: precommit
