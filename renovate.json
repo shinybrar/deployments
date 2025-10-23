@@ -9,7 +9,10 @@
     ".pre-commit-config.yaml"
   ],
   "lockFileMaintenance": {
-    "enabled": true
+    "enabled": true,
+    "schedule": [
+      "at any time"
+    ]
   },
   "pre-commit": {
     "enabled": true
