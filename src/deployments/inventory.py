@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Generate chart inventory metadata and update README."""
+
 from __future__ import annotations
 
 import argparse
@@ -108,7 +109,9 @@ def load_chart_metadata(chart_dir: Path) -> Dict[str, Any]:
     raw_data = parse_chart_yaml(chart_file)
     chart_name = str(raw_data.get("name", chart_dir.name))
     maintainers = raw_data.get("maintainers") or []
-    owners = [m.get("name") for m in maintainers if isinstance(m, dict) and m.get("name")]
+    owners = [
+        m.get("name") for m in maintainers if isinstance(m, dict) and m.get("name")
+    ]
     if not owners:
         owners = ["unassigned"]
 
@@ -139,7 +142,10 @@ def render_markdown_table(charts: List[Dict[str, Any]]) -> str:
     """Build the Markdown table section for the project README."""
 
     header = ["Chart", "Version", "App Version", "Owners"]
-    table_lines = ["| " + " | ".join(header) + " |", "| " + " | ".join(["---"] * len(header)) + " |"]
+    table_lines = [
+        "| " + " | ".join(header) + " |",
+        "| " + " | ".join(["---"] * len(header)) + " |",
+    ]
     for chart in charts:
         chart_link = f"[{chart['name']}]({chart['path']})"
         owners = ", ".join(chart["owners"]) if chart["owners"] else "unassigned"
@@ -181,7 +187,9 @@ def update_readme(readme_file: Path, table: str) -> None:
 def main() -> None:
     """CLI entry point for inventory generation."""
 
-    parser = argparse.ArgumentParser(description="Generate chart inventory metadata and README table.")
+    parser = argparse.ArgumentParser(
+        description="Generate chart inventory metadata and README table."
+    )
     parser.add_argument(
         "--catalog",
         type=Path,
