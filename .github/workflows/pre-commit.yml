@@ -80,6 +80,12 @@ jobs:
             uv run pre-commit install
             ```
 
+            #### Errors
+
+            ```
+            $(git diff --minimal)
+            ```
+
             #### Resources
             - [Documentation to install `uv`](https://docs.astral.sh/uv/getting-started/installation/)
             - [Conventional Commits](https://www.conventionalcommits.org/) standards for writing commit messages
