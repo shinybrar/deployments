@@ -8,5 +8,5 @@
     "platform": "github",
     "semanticCommits": "enabled",
     "commitMessagePrefix": "renovate/chore(deps): ",
-    "allowedPostUpgradeCommands": ["uv run pre-commit run -a"]
+    "allowedCommands": ["uv run pre-commit run -a"]
 }
