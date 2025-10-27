@@ -1,6 +1,6 @@
 # scienceportal
 
-![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.1](https://img.shields.io/badge/AppVersion-1.0.1-informational?style=flat-square)
+![Version: 1.0.2](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.1](https://img.shields.io/badge/AppVersion-1.0.1-informational?style=flat-square)
 
 A Helm chart to install the Science Portal UI
 
@@ -24,7 +24,7 @@ A Helm chart to install the Science Portal UI
 | deployment.hostname | string | `"example.host.com"` |  |
 | deployment.sciencePortal.gmsID | string | `nil` |  |
 | deployment.sciencePortal.identityManagerClass | string | `"org.opencadc.auth.StandardIdentityManager"` |  |
-| deployment.sciencePortal.image | string | `"images.opencadc.org/platform/science-portal:1.0.1"` |  |
+| deployment.sciencePortal.image | string | `"images.opencadc.org/platform/science-portal:1.0.2"` |  |
 | deployment.sciencePortal.imagePullPolicy | string | `"Always"` |  |
 | deployment.sciencePortal.resources.limits.cpu | string | `"500m"` |  |
 | deployment.sciencePortal.resources.limits.memory | string | `"500M"` |  |
