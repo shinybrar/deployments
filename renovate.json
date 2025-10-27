@@ -17,14 +17,15 @@
   "pre-commit": {
     "enabled": true
   },
+  "postUpgradeTasks": {
+    "commands": ["uv run pre-commit run -a"],
+    "fileFilters": ["**/*"],
+    "executionMode": "update"
+  },
   "packageRules": [
     {
       "matchDatasources": ["helm"],
-      "labels": ["helm"],
-      "postUpgradeTasks": {
-        "commands": ["uv run pre-commit run -a"],
-        "executionMode": "branch"
-      }
+      "labels": ["helm"]
     },
     {
       "matchManagers": ["pep621"],
