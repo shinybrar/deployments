@@ -16,6 +16,7 @@ jobs:
     environment: production  # Use deployment environment for secrets
     steps:
       - name: Print Incoming Payload
+        id: payload
         run: |
           echo "=== Repository Dispatch Payload ==="
           echo "Event Type: ${{ github.event.action }}"
@@ -29,6 +30,12 @@ jobs:
           echo ""
           echo "=== Full Payload (JSON) ==="
           echo '${{ toJson(github.event.client_payload) }}'
+          # Set outputs for future steps
+          echo "CHART_NAME=${{ github.event.client_payload.chart_name }}" >> $GITHUB_OUTPUT
+          echo "CHART_PATH=${{ github.event.client_payload.chart_path }}" >> $GITHUB_OUTPUT
+          echo "CHART_VERSION=${{ github.event.client_payload.chart_version }}" >> $GITHUB_OUTPUT
+          echo "CHART_TAG_NAME=${{ github.event.client_payload.tag_name }}" >> $GITHUB_OUTPUT
+          echo "CHART_SHA=${{ github.event.client_payload.sha }}" >> $GITHUB_OUTPUT
 
       - name: Checkout Code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
@@ -47,15 +54,15 @@ jobs:
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3
         with:
           registry: ${{ secrets.HELM_REGISTRY }}
-          username: ${{ secrets.HELM_REGISTRY_USERNAME }}
-          password: ${{ secrets.HELM_REGISTRY_PASSWORD }}
+          username: ${{ secrets.HELM_USERNAME }}
+          password: ${{ secrets.HELM_PASSWORD }}
 
       - name: Package Helm Chart
         id: package
         run: |
-          CHART_PATH="${{ github.event.client_payload.chart_path }}"
-          CHART_NAME="${{ github.event.client_payload.chart_name }}"
-          CHART_VERSION="${{ github.event.client_payload.chart_version }}"
+          CHART_PATH="${{ steps.payload.outputs.CHART_PATH }}"
+          CHART_NAME="${{ steps.payload.outputs.CHART_NAME }}"
+          CHART_VERSION="${{ steps.payload.outputs.CHART_VERSION }}"
 
           echo "Packaging Helm chart: $CHART_NAME v$CHART_VERSION"
 
@@ -69,17 +76,16 @@ jobs:
 
           # Get the package filename
           CHART_PACKAGE=$(ls helm-packages/*.tgz | head -1)
-          echo "CHART_PACKAGE=$CHART_PACKAGE" >> $GITHUB_ENV
-          echo "chart_package=$CHART_PACKAGE" >> $GITHUB_OUTPUT
+          echo "CHART_PACKAGE=$CHART_PACKAGE" >> $GITHUB_OUTPUT
 
-          echo "Chart packaged: $CHART_PACKAGE"
+          echo "Chart Packaged: $CHART_PACKAGE"
 
       - name: Push Chart to OCI Registry
         id: push
         run: |
-          CHART_NAME="${{ github.event.client_payload.chart_name }}"
-          CHART_VERSION="${{ github.event.client_payload.chart_version }}"
-          CHART_PACKAGE="${{ env.CHART_PACKAGE }}"
+          CHART_NAME="${{ steps.payload.outputs.CHART_NAME }}"
+          CHART_VERSION="${{ steps.payload.outputs.CHART_VERSION }}"
+          CHART_PACKAGE="${{ steps.package.outputs.CHART_PACKAGE }}"
           REGISTRY="${{ secrets.HELM_REGISTRY }}"
 
           echo "Pushing chart to OCI registry..."
@@ -93,37 +99,36 @@ jobs:
 
           # Construct the full OCI reference
           OCI_REFERENCE="${REGISTRY}/${CHART_NAME}:${CHART_VERSION}"
-          echo "OCI_REFERENCE=$OCI_REFERENCE" >> $GITHUB_ENV
-          echo "oci_reference=$OCI_REFERENCE" >> $GITHUB_OUTPUT
+          echo "OCI_REFERENCE=$OCI_REFERENCE" >> $GITHUB_OUTPUT
 
           if [ -n "$DIGEST" ]; then
             echo "digest=$DIGEST" >> $GITHUB_OUTPUT
-            echo "Chart digest: $DIGEST"
+            echo "Chart Digest: $DIGEST"
           fi
 
-          echo "Chart pushed to: $OCI_REFERENCE"
+          echo "Chart Pushed: $OCI_REFERENCE"
 
       - name: Sign Chart with Cosign (Keyless)
         id: sign
         env:
           COSIGN_EXPERIMENTAL: "1"
         run: |
-          OCI_REFERENCE="${{ env.OCI_REFERENCE }}"
+          OCI_REFERENCE="${{ steps.push.outputs.OCI_REFERENCE }}"
 
           echo "Signing chart with Sigstore/Cosign (keyless)..."
 
           # Sign the chart using keyless signing with OIDC
           cosign sign --yes "$OCI_REFERENCE"
 
-          echo "Chart signed successfully"
+          echo "Chart Signed: $OCI_REFERENCE"
 
       - name: Verify Chart Signature
         env:
           COSIGN_EXPERIMENTAL: "1"
         run: |
-          OCI_REFERENCE="${{ env.OCI_REFERENCE }}"
+          OCI_REFERENCE="${{ steps.push.outputs.OCI_REFERENCE }}"
 
-          echo "Verifying chart signature..."
+          echo "Verifying Chart Signature..."
 
           # Verify the signature using keyless verification
           # This verifies against the Sigstore transparency log
@@ -132,55 +137,59 @@ jobs:
             --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
             "$OCI_REFERENCE"
 
-          echo "Chart signature verified successfully"
+          echo "Chart Signature Verified: $OCI_REFERENCE"
 
       - name: Generate Attestation
         id: attest
         uses: actions/attest-build-provenance@1c608d11d69870c2092266b3f9a6f3abbf17002c # v1.4.3
         with:
-          subject-name: ${{ env.OCI_REFERENCE }}
+          subject-name: ${{ steps.push.outputs.OCI_REFERENCE }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
 
       - name: Create Release Notes
         run: |
-          CHART_NAME="${{ github.event.client_payload.chart_name }}"
-          CHART_VERSION="${{ github.event.client_payload.chart_version }}"
-          TAG_NAME="${{ github.event.client_payload.tag_name }}"
-          OCI_REFERENCE="${{ env.OCI_REFERENCE }}"
+          CHART_NAME="${{ steps.payload.outputs.CHART_NAME }}"
+          CHART_VERSION="${{ steps.payload.outputs.CHART_VERSION }}"
+          TAG_NAME="${{ steps.payload.outputs.CHART_TAG_NAME }}"
+          SHA="${{ steps.payload.outputs.CHART_SHA }}"
+          OCI_REFERENCE="${{ steps.push.outputs.OCI_REFERENCE }}"
           REGISTRY="${{ secrets.HELM_REGISTRY }}"
 
           cat > release-notes.md <<'EOF'
-          # Helm Chart Release: ${{ github.event.client_payload.chart_name }} v${{ github.event.client_payload.chart_version }}
+          # Helm Chart Release: #${CHART_NAME} v${CHART_VERSION}
 
-          **Release Tag:** ${{ github.event.client_payload.tag_name }}
-          **Commit SHA:** ${{ github.event.client_payload.sha }}
+          **Release Tag:** ${TAG_NAME}
+          **Commit SHA:** ${SHA}
 
           ## OCI Registry Location
 
           ```
-          ${{ env.OCI_REFERENCE }}
+          ${OCI_REFERENCE}
           ```
 
           ## Installation
 
-          Pull and install the chart:
+          Pull and install the chart using Helm:
 
           ```bash
           # Pull the chart
-          helm pull oci://${{ secrets.HELM_REGISTRY }}/${{ github.event.client_payload.chart_name }} --version ${{ github.event.client_payload.chart_version }}
+          helm pull oci://${REGISTRY}/${CHART_NAME} --version ${CHART_VERSION}
 
           # Install the chart
-          helm install ${{ github.event.client_payload.chart_name }} oci://${{ secrets.HELM_REGISTRY }}/${{ github.event.client_payload.chart_name }} --version ${{ github.event.client_payload.chart_version }}
+          helm install ${CHART_NAME} oci://${REGISTRY}/${CHART_NAME} --version ${CHART_VERSION}
           ```
 
           ## Security & Verification
 
           ### Keyless Signature Verification
 
-          This chart has been signed using **Sigstore/Cosign keyless signing**. Verify the signature:
+          This chart has been signed using **Sigstore/Cosign Keyless Signing**. Verify the signature:
 
           ```bash
+          # Install Cosign
+          brew install cosign
+
           # Set experimental mode for keyless verification
           export COSIGN_EXPERIMENTAL=1
 
@@ -188,7 +197,7 @@ jobs:
           cosign verify \
             --certificate-identity-regexp="https://github.com/${{ github.repository }}" \
             --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
-            ${{ env.OCI_REFERENCE }}
+            ${OCI_REFERENCE}
           ```
 
           ### GitHub Attestation
@@ -196,12 +205,12 @@ jobs:
           This chart includes a GitHub attestation for build provenance. You can verify it using:
 
           ```bash
-          gh attestation verify oci://${{ env.OCI_REFERENCE }} --owner ${{ github.repository_owner }}
+          gh attestation verify oci://${OCI_REFERENCE} --owner ${{ github.repository_owner }}
           ```
 
           ## What is Keyless Signing?
 
-          This chart uses **Sigstore's keyless signing** which:
+          This chart uses **Sigstore's Keyless Signing** which:
           - ✅ No private keys to manage or secure
           - ✅ Uses OpenID Connect (OIDC) for identity verification
           - ✅ Signatures are stored in a public transparency log (Rekor)
