@@ -3,7 +3,7 @@
   "include-component-in-tag": true,
   "separate-pull-requests": true,
   "include-v-in-tag": false,
-  "tag-separator": "/",
+  "tag-separator": "-",
   "packages": {
     "helm/applications/base": {
       "package-name": "base",

@@ -147,7 +147,7 @@ jobs:
         id: attest
         uses: actions/attest-build-provenance@1c608d11d69870c2092266b3f9a6f3abbf17002c # v1.4.3
         with:
-          subject-name: ${{ steps.push.outputs.OCI_REFERENCE }}
+          subject-name: ${{ secrets.HELM_REGISTRY }}/${{ steps.payload.outputs.CHART_NAME }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
 
