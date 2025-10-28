@@ -141,22 +141,20 @@ def write_catalog(charts: List[Dict[str, Any]], output_file: Path) -> None:
 def render_markdown_table(charts: List[Dict[str, Any]]) -> str:
     """Build the Markdown table section for the project README."""
 
-    header = ["Chart", "Version", "App Version", "Owners"]
+    header = ["Chart", "Description"]
     table_lines = [
         "| " + " | ".join(header) + " |",
         "| " + " | ".join(["---"] * len(header)) + " |",
     ]
     for chart in charts:
         chart_link = f"[{chart['name']}]({chart['path']})"
-        owners = ", ".join(chart["owners"]) if chart["owners"] else "unassigned"
+        description = chart["description"] or "—"
         table_lines.append(
             "| "
             + " | ".join(
                 [
                     chart_link,
-                    chart["version"] or "—",
-                    chart["appVersion"] or "—",
-                    owners,
+                    description,
                 ]
             )
             + " |"

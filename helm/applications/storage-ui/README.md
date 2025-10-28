@@ -1,15 +1,10 @@
 # storageui
 
-![Version: 0.7.0](https://img.shields.io/badge/Version-0.7.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.4.1](https://img.shields.io/badge/AppVersion-1.4.1-informational?style=flat-square)
-
 A Helm chart to install the User Storage UI
 
-## Maintainers
-
-| Name | Email | Url |
-| ---- | ------ | --- |
-| Dustin Jenkins | <djenkins.cadc@gmail.com> |  |
-| Shiny Brar | <shiny.brar@nrc-cnrc.gc.ca> |  |
+| Chart | AppVersion | Type |
+|:-----:|:----------:|:----:|
+|0.7.0<!-- x-release-please-version --> | 1.4.1 | application |
 
 ## Requirements
 

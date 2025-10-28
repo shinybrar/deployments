@@ -9,7 +9,7 @@ Examples:
 
     >>> import os
     >>> os.environ['PATHS_RELEASED'] = '["helm/applications/skaha"]'
-    >>> os.environ['RELEASE_PLEASE_OUTPUTS'] = '{"helm--applications--skaha--version": "1.0.0"}'
+    >>> os.environ['RELEASE_PLEASE_OUTPUTS'] = '{"helm/applications/skaha--version": "1.0.0"}'
     >>> matrix = build_release_matrix()
     >>> len(matrix)
     1
@@ -20,11 +20,12 @@ Examples:
 
         deploy release-matrix build \\
             --paths-released '["helm/applications/skaha"]' \\
-            --outputs '{"helm--applications--skaha--version": "1.0.0", ...}'
+            --outputs '{"helm/applications/skaha--version": "1.0.0", ...}'
 
 Notes:
     - The script reads release-please-config.json from the repository root
-    - Path outputs use '--' as separator (e.g., 'helm--applications--skaha')
+    - Release-please outputs use path with '--' separator for fields
+      (e.g., 'helm/applications/skaha--version')
     - The matrix includes chart name, path, version, tag, and SHA for each release
 """
 
@@ -85,21 +86,27 @@ def load_release_please_config() -> dict[str, Any]:
 def normalize_path_to_output_key(path: str) -> str:
     """Convert a path to the output key format used by release-please.
 
-    Release-please converts forward slashes to double dashes in output keys.
+    Release-please uses the path as-is in output keys (with forward slashes).
 
     Args:
         path: The chart path (e.g., 'helm/applications/skaha')
 
     Returns:
-        str: The normalized output key (e.g., 'helm--applications--skaha')
+        str: The output key prefix (same as input path)
 
     Examples:
         >>> normalize_path_to_output_key('helm/applications/skaha')
-        'helm--applications--skaha'
+        'helm/applications/skaha'
         >>> normalize_path_to_output_key('helm/common')
-        'helm--common'
+        'helm/common'
+
+    Notes:
+        Release-please output format uses the path directly, e.g.:
+        - 'helm/applications/skaha--version'
+        - 'helm/applications/skaha--tag_name'
+        - 'helm/applications/skaha--sha'
     """
-    return path.replace("/", "--")
+    return path
 
 
 def build_release_matrix(
@@ -130,15 +137,20 @@ def build_release_matrix(
     Examples:
         >>> paths = ["helm/applications/skaha"]
         >>> outputs = {
-        ...     "helm--applications--skaha--version": "1.0.0",
-        ...     "helm--applications--skaha--tag_name": "skaha-1.0.0",
-        ...     "helm--applications--skaha--sha": "abc123"
+        ...     "helm/applications/skaha--version": "1.0.0",
+        ...     "helm/applications/skaha--tag_name": "skaha-1.0.0",
+        ...     "helm/applications/skaha--sha": "abc123"
         ... }
         >>> matrix = build_release_matrix(paths, outputs)
         >>> matrix[0]['chart_name']
         'skaha'
         >>> matrix[0]['chart_version']
         '1.0.0'
+
+    Notes:
+        Release-please output format uses the path directly with '--' separator
+        for field names, e.g., 'helm/applications/skaha--version' not
+        'helm--applications--skaha--version'.
     """
     # Load inputs from environment if not provided
     if paths_released is None:
@@ -241,14 +253,14 @@ def build_matrix_cli(
 
             deploy release-matrix build \\
                 --paths-released '["helm/applications/skaha"]' \\
-                --outputs '{"helm--applications--skaha--version": "1.0.0"}'
+                --outputs '{"helm/applications/skaha--version": "1.0.0"}'
 
         GitHub Actions usage:
 
         .. code-block:: bash
 
             export PATHS_RELEASED='["helm/applications/skaha"]'
-            export RELEASE_PLEASE_OUTPUTS='{"helm--applications--skaha--version": "1.0.0"}'
+            export RELEASE_PLEASE_OUTPUTS='{"helm/applications/skaha--version": "1.0.0"}'
             deploy release-matrix build
     """
     # Parse inputs

@@ -4,13 +4,6 @@ exclude: ^deployment/
 repos:
   - repo: local
     hooks:
-      - id: helm-maintainers
-        name: update helm maintainers
-        entry: uv run python -m deployments.maintainers
-        language: system
-        pass_filenames: false
-        stages: [pre-commit, post-commit]
-        always_run: true
       - id: helm-inventory
         name: update helm inventory
         entry: uv run python -m deployments.inventory

@@ -37,14 +37,18 @@ def sample_release_outputs() -> dict[str, str]:
 
     Returns:
         Dictionary of release-please outputs with version, tag, and SHA info.
+
+    Notes:
+        Release-please uses the path directly with '--' separator for fields,
+        e.g., 'helm/applications/skaha--version' not 'helm--applications--skaha--version'.
     """
     return {
-        "helm--applications--skaha--version": "1.2.3",
-        "helm--applications--skaha--tag_name": "skaha-1.2.3",
-        "helm--applications--skaha--sha": "abc123def456",
-        "helm--common--version": "2.0.0",
-        "helm--common--tag_name": "common-2.0.0",
-        "helm--common--sha": "def456abc123",
+        "helm/applications/skaha--version": "1.2.3",
+        "helm/applications/skaha--tag_name": "skaha-1.2.3",
+        "helm/applications/skaha--sha": "abc123def456",
+        "helm/common--version": "2.0.0",
+        "helm/common--tag_name": "common-2.0.0",
+        "helm/common--sha": "def456abc123",
     }
 
 
@@ -54,6 +58,10 @@ def expected_matrix() -> list[dict[str, str]]:
 
     Returns:
         Expected release matrix structure.
+
+    Notes:
+        The output_key is the same as the chart_path (release-please uses
+        the path directly, not a normalized version).
     """
     return [
         {
@@ -62,7 +70,7 @@ def expected_matrix() -> list[dict[str, str]]:
             "chart_version": "1.2.3",
             "tag_name": "skaha-1.2.3",
             "sha": "abc123def456",
-            "output_key": "helm--applications--skaha",
+            "output_key": "helm/applications/skaha", #gitleaks:allow
         },
         {
             "chart_name": "common",
@@ -70,7 +78,7 @@ def expected_matrix() -> list[dict[str, str]]:
             "chart_version": "2.0.0",
             "tag_name": "common-2.0.0",
             "sha": "def456abc123",
-            "output_key": "helm--common",
+            "output_key": "helm/common", #gitleaks:allow
         },
     ]
 
@@ -136,15 +144,19 @@ def test_cli_build_command_with_arguments() -> None:
 
     This integration test verifies that the Typer CLI correctly processes
     command-line arguments and produces the expected JSON output.
+
+    Notes:
+        Uses the actual release-please output format with path containing
+        forward slashes, e.g., 'helm/applications/skaha--version'.
     """
     # Arrange
     runner = CliRunner()
     paths = '["helm/applications/skaha"]'
     outputs = json.dumps(
         {
-            "helm--applications--skaha--version": "1.0.0",
-            "helm--applications--skaha--tag_name": "skaha-1.0.0",
-            "helm--applications--skaha--sha": "abc123",
+            "helm/applications/skaha--version": "1.0.0",
+            "helm/applications/skaha--tag_name": "skaha-1.0.0",
+            "helm/applications/skaha--sha": "abc123",
         }
     )
 
@@ -177,6 +189,10 @@ def test_cli_build_command_with_output_file(tmp_path: Path) -> None:
 
     Args:
         tmp_path: Pytest fixture providing temporary directory.
+
+    Notes:
+        Uses the actual release-please output format with path containing
+        forward slashes, e.g., 'helm/common--version'.
     """
     # Arrange
     runner = CliRunner()
@@ -184,9 +200,9 @@ def test_cli_build_command_with_output_file(tmp_path: Path) -> None:
     paths = '["helm/common"]'
     outputs = json.dumps(
         {
-            "helm--common--version": "2.0.0",
-            "helm--common--tag_name": "common-2.0.0",
-            "helm--common--sha": "def456",
+            "helm/common--version": "2.0.0",
+            "helm/common--tag_name": "common-2.0.0",
+            "helm/common--sha": "def456",
         }
     )
 

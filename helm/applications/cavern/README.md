@@ -1,14 +1,10 @@
 # cavern
 
-![Version: 0.7.1](https://img.shields.io/badge/Version-0.7.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.9.0](https://img.shields.io/badge/AppVersion-0.9.0-informational?style=flat-square)
-
 A Helm chart to install the VOSpace User Storage API (Cavern)
 
-## Maintainers
-
-| Name | Email | Url |
-| ---- | ------ | --- |
-| Dustin Jenkins | <djenkins.cadc@gmail.com> |  |
+| Chart | AppVersion | Type |
+|:-----:|:----------:|:----:|
+|0.7.1<!-- x-release-please-version --> | 0.9.0 | application |
 
 ## Requirements
 

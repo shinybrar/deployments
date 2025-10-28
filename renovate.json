@@ -22,6 +22,17 @@
     "fileFilters": ["**/*"],
     "executionMode": "update"
   },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update appVersion in Chart.yaml when container image version changes",
+      "fileMatch": ["^helm/.*/Chart\\.yaml$"],
+      "matchStrings": [
+        "#\\s*renovate: image=(?<depName>.*?)\\s+appVersion:\\s*[\"']?(?<currentValue>[\\w+\\.\\-]*)"
+      ],
+      "datasourceTemplate": "docker"
+    }
+  ],
   "packageRules": [
     {
       "matchDatasources": ["helm"],
