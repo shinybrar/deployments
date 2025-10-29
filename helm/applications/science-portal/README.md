@@ -26,6 +26,7 @@ A Helm chart to install the Science Portal UI
 | deployment.sciencePortal.identityManagerClass | string | `"org.opencadc.auth.StandardIdentityManager"` |  |
 | deployment.sciencePortal.image | string | `"images.opencadc.org/platform/science-portal:1.0.2"` |  |
 | deployment.sciencePortal.imagePullPolicy | string | `"Always"` |  |
+| deployment.sciencePortal.registryURL | (list OR string) | `[]` | IVOA Registry array of IVOA Registry locations or single IVOA Registry location |
 | deployment.sciencePortal.resources.limits.cpu | string | `"500m"` |  |
 | deployment.sciencePortal.resources.limits.memory | string | `"500M"` |  |
 | deployment.sciencePortal.resources.requests.cpu | string | `"500m"` |  |
