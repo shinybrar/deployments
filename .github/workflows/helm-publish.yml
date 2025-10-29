@@ -160,54 +160,54 @@ jobs:
           OCI_REFERENCE="${{ steps.push.outputs.OCI_REFERENCE }}"
           REGISTRY="${{ secrets.HELM_REGISTRY }}"
 
-          cat > release-notes.md <<EOF
-
-          ### OCI Registry Location
-
-          ```
-          ${OCI_REFERENCE}
-          ```
-
-          ### Installation
-
-          Pull and install the chart using Helm:
-
-          ```bash
-          # Pull the chart
-          helm pull oci://${REGISTRY}/${CHART_NAME} --version ${CHART_VERSION}
-
-          # Install the chart
-          helm install ${CHART_NAME} oci://${REGISTRY}/${CHART_NAME} --version ${CHART_VERSION}
-          ```
-
-          ### Security & Verification
-
-          #### Keyless Signature Verification
-
-          This chart has been signed using **Sigstore/Cosign Keyless Signing**. Verify the signature:
-
-          ```bash
-          # Install Cosign
-          brew install cosign
-
-          # Set experimental mode for keyless verification
-          export COSIGN_EXPERIMENTAL=1
-
-          # Verify the signature
-          cosign verify \
-            --certificate-identity-regexp="https://github.com/${{ github.repository }}" \
-            --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
-            ${OCI_REFERENCE}
-          ```
-
-          #### GitHub Attestation
-
-          This chart includes a GitHub attestation for build provenance. You can verify it using:
-
-          ```bash
-          gh attestation verify oci://${OCI_REFERENCE} --owner ${{ github.repository_owner }}
-          ```
-          EOF
+          {
+            echo ""
+            echo "### OCI Registry Location"
+            echo ""
+            echo '```'
+            echo "${OCI_REFERENCE}"
+            echo '```'
+            echo ""
+            echo "### Installation"
+            echo ""
+            echo "Pull and install the chart using Helm:"
+            echo ""
+            echo '```bash'
+            echo "# Pull the chart"
+            echo "helm pull oci://${REGISTRY}/${CHART_NAME} --version ${CHART_VERSION}"
+            echo ""
+            echo "# Install the chart"
+            echo "helm install ${CHART_NAME} oci://${REGISTRY}/${CHART_NAME} --version ${CHART_VERSION}"
+            echo '```'
+            echo ""
+            echo "### Security & Verification"
+            echo ""
+            echo "#### Keyless Signature Verification"
+            echo ""
+            echo "This chart has been signed using **Sigstore/Cosign Keyless Signing**. Verify the signature:"
+            echo ""
+            echo '```bash'
+            echo "# Install Cosign"
+            echo "brew install cosign"
+            echo ""
+            echo "# Set experimental mode for keyless verification"
+            echo "export COSIGN_EXPERIMENTAL=1"
+            echo ""
+            echo "# Verify the signature"
+            echo "cosign verify \\"
+            echo "  --certificate-identity-regexp=\"https://github.com/${{ github.repository }}\" \\"
+            echo "  --certificate-oidc-issuer=\"https://token.actions.githubusercontent.com\" \\"
+            echo "  ${OCI_REFERENCE}"
+            echo '```'
+            echo ""
+            echo "#### GitHub Attestation"
+            echo ""
+            echo "This chart includes a GitHub attestation for build provenance. You can verify it using:"
+            echo ""
+            echo '```bash'
+            echo "gh attestation verify oci://${OCI_REFERENCE} --owner ${{ github.repository_owner }}"
+            echo '```'
+          } > release-notes.md
 
           echo "Release notes created"
 
