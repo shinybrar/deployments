@@ -33,6 +33,7 @@ A Helm chart to install the Skaha web service of the CANFAR Science Platform
 | deployment.skaha.init.imagePullPolicy | string | `"IfNotPresent"` |  |
 | deployment.skaha.priorityClassName | string | `"uber-user-preempt-high"` |  |
 | deployment.skaha.registryHosts | string | `"images.canfar.net"` |  |
+| deployment.skaha.registryURL | (list OR string) | `[]` | IVOA Registry array of IVOA Registry locations or single IVOA Registry location |
 | deployment.skaha.resources.limits.cpu | string | `"2000m"` |  |
 | deployment.skaha.resources.limits.memory | string | `"3Gi"` |  |
 | deployment.skaha.resources.requests.cpu | string | `"1000m"` |  |
