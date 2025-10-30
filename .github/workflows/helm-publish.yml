@@ -40,13 +40,6 @@ jobs:
           username: ${{ secrets.HELM_USERNAME }}
           password: ${{ secrets.HELM_PASSWORD }}
 
-      - name: Import GPG Key
-        id: import-gpg-key
-        uses: crazy-max/ghaction-import-gpg@v6
-        with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.GPG_PASSPHRASE }}
-
       - name: Package Helm Chart
         id: package
         run: |
@@ -62,10 +55,7 @@ jobs:
           # Package and sign the chart with GPG key
           helm package ${{ github.event.client_payload.chart_path }} \
             --destination helm-packages \
-            --version ${{ github.event.client_payload.chart_version }} \
-            --sign \
-            --key ${{ steps.import-gpg-key.outputs.keyid }} \
-            --keyring "/home/runner/.gnupg/pubring.kbx"
+            --version ${{ github.event.client_payload.chart_version }}
 
           # Get the package filename
           CHART_PACKAGE=$(ls helm-packages/*.tgz | head -1)
