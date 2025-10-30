@@ -4,7 +4,7 @@ An SSHD service with SSSD to get users from LDAP
 
 | Chart | AppVersion | Type |
 |:-----:|:----------:|:----:|
-|1.0.1<!-- x-release-please-version --> | 1.0.0 | application |
+|1.1.0<!-- x-release-please-version --> | 1.0.0 | application |
 
 ## Requirements
 
