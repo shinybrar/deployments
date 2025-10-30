@@ -10,7 +10,7 @@ A Helm chart to install base components of the CANFAR Science Platform
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://traefik.github.io/charts | traefik | 26.1.0 |
+| https://traefik.github.io/charts | traefik | 37.2.0 |
 
 ## Values
 
