@@ -40,6 +40,13 @@ jobs:
           username: ${{ secrets.HELM_USERNAME }}
           password: ${{ secrets.HELM_PASSWORD }}
 
+      - name: Import GPG Key
+        id: import-gpg-key
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
       - name: Package Helm Chart
         id: package
         run: |
@@ -52,10 +59,13 @@ jobs:
           echo "Running Helm Dependency Update"
           helm dependency update ${{ github.event.client_payload.chart_path }}
 
-          # Package the chart
+          # Package and sign the chart with GPG key
           helm package ${{ github.event.client_payload.chart_path }} \
             --destination helm-packages \
-            --version ${{ github.event.client_payload.chart_version }}
+            --version ${{ github.event.client_payload.chart_version }} \
+            --sign \
+            --key ${{ steps.import-gpg-key.outputs.keyid }} \
+            --keyring "/home/runner/.gnupg/pubring.kbx"
 
           # Get the package filename
           CHART_PACKAGE=$(ls helm-packages/*.tgz | head -1)
@@ -116,17 +126,6 @@ jobs:
           gh auth login --with-token <<< '${{ secrets.GITHUB_TOKEN }}'
           gh attestation verify oci://${{ steps.oci-push.outputs.OCI_REFERENCE }} --owner ${{ github.repository_owner }}
           echo "Attestation Verified"
-
-      - name: Import GPG Key
-        id: import-gpg-key
-        uses: crazy-max/ghaction-import-gpg@v6
-        with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.GPG_PASSPHRASE }}
-
-      - name: List GPG Keys
-        run: |
-          gpg --list-keys
 
       - name: Helm Chart Mueseum Push
         id: chartrepo-push
