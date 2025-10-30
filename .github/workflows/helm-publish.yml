@@ -114,10 +114,11 @@ jobs:
         run: |
           echo "Verifying Attestation..."
           gh auth login --with-token <<< '${{ secrets.GITHUB_TOKEN }}'
-          gh attestation verify ${{ steps.oci-push.outputs.OCI_REFERENCE }} --owner ${{ github.repository_owner }}
+          gh attestation verify oci://${{ steps.oci-push.outputs.OCI_REFERENCE }} --owner ${{ github.repository_owner }}
           echo "Attestation Verified"
 
       - name: Import GPG Key
+        id: import-gpg-key
         uses: crazy-max/ghaction-import-gpg@v6
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
