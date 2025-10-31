@@ -1,4 +1,7 @@
-# CHANGELOG for Science Portal UI (Chart 1.0.0)
+# CHANGELOG for Science Portal UI (Chart 1.0.2)
+
+## 2025.10.27 (1.0.2)
+- Add configuration for default project to pre-select in the pull-down menu.
 
 ## 2025.09.09 (1.0.0)
 - Official release
