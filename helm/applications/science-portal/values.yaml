@@ -29,12 +29,27 @@ podSecurityContext: {}
 deployment:
   hostname: example.host.com    # Change this!
   sciencePortal:
-    image: images.opencadc.org/platform/science-portal:1.0.1
+    image: images.opencadc.org/platform/science-portal:1.2.0
     imagePullPolicy: Always
 
+    # org.opencadc.science-portal.tabLabels
+    # The tab labels to show in the Science Portal UI.
+    # This must be a list of exactly two labels.
+    # Example:
+    #   tabLabels:
+    #     - "Public"
+    #     - "Private"
     tabLabels:
       - "Standard"
       - "Advanced"
+
+    # org.opencadc.science-portal.defaultProjectName
+    # The default project name to use when creating new User Sessions.
+    # This will be expected to be in the project pull-down menu, and will be pre-selected on page load.
+    # Defaults to "skaha".
+    # Example:
+    #   defaultProjectName: "skaha"
+    defaultProjectName: "skaha"
 
     # Optionally set the DEBUG port.
     # extraEnv:
@@ -51,11 +66,11 @@ deployment:
     # Resources provided to the Science Portal Kubernetes Pod.
     resources:
       requests:
-        memory: "500M"
+        memory: "750Mi"
         cpu: "500m"
       limits:
-        memory: "500M"
-        cpu: "500m"
+        memory: "1000Mi"
+        cpu: "1"
 
     # The Resource ID of the Service that contains the URL of the Skaha service in the IVOA Registry
     # Example:
