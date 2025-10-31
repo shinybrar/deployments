@@ -27,7 +27,7 @@ version: 0.7.1
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 # renovate: image=images.opencadc.org/client/storage-ui
-appVersion: "1.4.1"
+appVersion: "1.4.2"
 
 dependencies:
   - name: "redis"
