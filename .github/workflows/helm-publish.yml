@@ -23,7 +23,7 @@ jobs:
           echo "=== End Payload ==="
 
       - name: Checkout Code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
         with:
           ref: ${{ github.event.client_payload.sha }}
 
@@ -31,7 +31,7 @@ jobs:
         uses: Azure/setup-helm@v4.3.1
 
       - name: Install Cosign
-        uses: sigstore/cosign-installer@dc72c7d5c4d10cd6bcb8cf6e3fd625a9e5e537da # v3.7.0
+        uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
 
       - name: Log in to OCI Registry
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3
@@ -103,7 +103,7 @@ jobs:
 
       - name: Generate Attestation
         id: attest
-        uses: actions/attest-build-provenance@1c608d11d69870c2092266b3f9a6f3abbf17002c # v1.4.3
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3.0.0
         with:
           subject-name: ${{ secrets.HELM_REGISTRY }}/${{ secrets.HELM_REPOSITORY }}/${{ github.event.client_payload.chart_name }}
           subject-digest: ${{ steps.oci-push.outputs.DIGEST }}
