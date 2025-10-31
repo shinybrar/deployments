@@ -1,4 +1,4 @@
-# CHANGELOG for Science Portal UI (Chart 1.0.0)
+# CHANGELOG for CANFAR Science Portal UI Helm Chart
 
 ## 2025.09.09 (1.0.0)
 - Official release

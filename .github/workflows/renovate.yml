@@ -28,7 +28,6 @@ jobs:
         run: |
           echo "=== Renovation Dispatch Event ==="
           echo "Event: ${{ github.event_name }}"
-          echo "Payload: ${{ toJson(github.event) }}"
           echo "=== End Payload ==="
 
       - name: Checkout
