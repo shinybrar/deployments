@@ -1,4 +1,4 @@
-name: Helm Publish
+name: Publish Helm Charts
 
 on:
   repository_dispatch:
@@ -95,7 +95,6 @@ jobs:
           COSIGN_EXPERIMENTAL: "1"
         run: |
           echo "Verifying Chart Signature..."
-          # Verify the signature using keyless verification with Sigstore Transparency Log
           cosign verify \
             --certificate-identity-regexp="https://github.com/${{ github.repository }}" \
             --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
