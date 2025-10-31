@@ -20,7 +20,7 @@ A Helm chart to install the Science Portal UI
 | deployment.hostname | string | `"example.host.com"` |  |
 | deployment.sciencePortal.gmsID | string | `nil` |  |
 | deployment.sciencePortal.identityManagerClass | string | `"org.opencadc.auth.StandardIdentityManager"` |  |
-| deployment.sciencePortal.image | string | `"images.opencadc.org/platform/science-portal:1.0.1"` |  |
+| deployment.sciencePortal.image | string | `"images.opencadc.org/platform/science-portal:v1.2.0"` |  |
 | deployment.sciencePortal.imagePullPolicy | string | `"Always"` |  |
 | deployment.sciencePortal.resources.limits.cpu | string | `"500m"` |  |
 | deployment.sciencePortal.resources.limits.memory | string | `"500M"` |  |
