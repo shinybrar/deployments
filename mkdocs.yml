@@ -137,5 +137,4 @@ nav:
   - Operations:
     - operations/index.md
     - CI/CD Pipelines: operations/ci-cd.md
-    - CI/CD Architecture: operations/ci-cd-architecture.md
     - Release Process: operations/release-process.md

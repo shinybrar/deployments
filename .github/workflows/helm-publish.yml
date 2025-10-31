@@ -125,7 +125,7 @@ jobs:
             --username '${{ secrets.HELM_USERNAME }}' \
             --password '${{ secrets.HELM_PASSWORD }}' \
             ${{ steps.package.outputs.CHART_PACKAGE }} \
-            "https://${{ secrets.HELM_REGISTRY }}/chartrepo/${{ secrets.HELM_CHARTREPO }}"
+            "https://${{ secrets.HELM_REGISTRY }}/chartrepo/${{ secrets.HELM_REPOSITORY }}"
           echo "Helm Chart pushed to Chart Museum"
 
       - name: Create Release Notes
