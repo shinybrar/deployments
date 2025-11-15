@@ -35,7 +35,7 @@ A Helm chart to install the VOSpace User Storage API (Cavern)
 | deployment.cavern.resources.requests.cpu | string | `"500m"` |  |
 | deployment.cavern.resources.requests.memory | string | `"1Gi"` |  |
 | deployment.cavern.uws.db.database | string | `"uws"` |  |
-| deployment.cavern.uws.db.image | string | `"postgres:15.12"` |  |
+| deployment.cavern.uws.db.image | string | `"postgres:15.15"` |  |
 | deployment.cavern.uws.db.install | bool | `true` |  |
 | deployment.cavern.uws.db.maxActive | int | `2` |  |
 | deployment.cavern.uws.db.password | string | `"uwspwd"` |  |
