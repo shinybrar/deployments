@@ -36,7 +36,7 @@ A Helm chart to install the Science Portal UI
 | redis.architecture | string | `"standalone"` |  |
 | redis.auth.enabled | bool | `false` |  |
 | redis.image.repository | string | `"redis"` |  |
-| redis.image.tag | string | `"8.2.2-bookworm"` |  |
+| redis.image.tag | string | `"8.4.0-bookworm"` |  |
 | redis.master.persistence.enabled | bool | `false` |  |
 | replicaCount | int | `1` |  |
 | securityContext | object | `{}` |  |
