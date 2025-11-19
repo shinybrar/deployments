@@ -35,7 +35,7 @@ A Helm chart to install the Skaha web service of the CANFAR Science Platform
 | deployment.skaha.serviceAccountName | string | `"skaha"` |  |
 | deployment.skaha.sessions.expirySeconds | string | `"345600"` |  |
 | deployment.skaha.sessions.imagePullPolicy | string | `"Always"` |  |
-| deployment.skaha.sessions.initContainerImage | string | `"redis:8.2.2-bookworm"` |  |
+| deployment.skaha.sessions.initContainerImage | string | `"redis:8.4.0-bookworm"` |  |
 | deployment.skaha.sessions.kueue | object | `{}` |  |
 | deployment.skaha.sessions.maxCount | string | `"3"` |  |
 | deployment.skaha.sessions.maxEphemeralStorage | string | `"200Gi"` |  |
@@ -52,7 +52,7 @@ A Helm chart to install the Skaha web service of the CANFAR Science Platform
 | redis.architecture | string | `"standalone"` |  |
 | redis.auth.enabled | bool | `false` |  |
 | redis.image.repository | string | `"redis"` |  |
-| redis.image.tag | string | `"8.2.2-bookworm"` |  |
+| redis.image.tag | string | `"8.4.0-bookworm"` |  |
 | redis.master.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
 | redis.master.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | redis.master.containerSecurityContext.readOnlyRootFilesystem | bool | `true` |  |

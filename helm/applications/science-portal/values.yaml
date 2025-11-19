@@ -141,7 +141,7 @@ tolerations: []
 redis:
   image:
     repository: redis
-    tag: 8.2.2-bookworm
+    tag: 8.4.0-bookworm
   architecture: 'standalone'
   auth:
     enabled: false

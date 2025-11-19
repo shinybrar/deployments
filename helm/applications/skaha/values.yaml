@@ -101,7 +101,7 @@ deployment:
       # Example:
       #   initContainerImage: "private-image-repo/project/my-own-redis:1.0"
       # initContainerImage:
-      initContainerImage: "redis:8.2.2-bookworm"
+      initContainerImage: "redis:8.4.0-bookworm"
 
       # Optionally configure the Kueue system to handle large workloads.  Configurable per session type (e.g. desktop, notebook, etc.).
       # Leaving this empty will default to submitting Jobs to the base Kubernetes system.
@@ -331,7 +331,7 @@ storage:
 redis:
   image:
     repository: redis
-    tag: 8.2.2-bookworm
+    tag: 8.4.0-bookworm
   architecture: 'standalone'
   auth:
     enabled: false
