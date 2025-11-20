@@ -43,10 +43,10 @@ jobs:
       release_matrix: ${{ steps.build-matrix.outputs.matrix }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v7.1.1
+        uses: astral-sh/setup-uv@5a7eac68fb9809dea845d802897dc5c723910fa3 # v7.1.3
         with:
           version: "latest"
           python-version: 3.13
@@ -75,7 +75,7 @@ jobs:
         release: ${{ fromJson(needs.release-matrix.outputs.release_matrix) }}
     steps:
       - name: Dispatch Helm Chart Release Build
-        uses: peter-evans/repository-dispatch@v4.0.0
+        uses: peter-evans/repository-dispatch@28959ce8df70de7be546dd1250a005dd32156697 # v4.0.1
         with:
           event-type: helm-release-build
           token: ${{ secrets.GITHUB_TOKEN }}
