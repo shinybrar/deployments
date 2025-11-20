@@ -15,7 +15,7 @@ repos:
   # This configuration will add commitizen to your pre-commit hooks and will run it on commit-msg stage
   # of the git commit process.
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.9.1
+    rev: v4.10.0
     hooks:
       - id: commitizen
         stages: [commit-msg]
@@ -53,7 +53,7 @@ repos:
       # Checks for private key files.
       - id: detect-private-key
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.28.0
+    rev: v8.29.1
     hooks:
       - id: gitleaks
         name: check for secrets
