@@ -1,5 +1,47 @@
 # CHANGELOG for CANFAR Science Portal UI Helm Chart
 
+## [1.1.0](https://github.com/shinybrar/deployments/compare/scienceportal-1.0.0...scienceportal-1.1.0) (2025-10-31)
+
+
+### Features
+
+* add limit range configuration and update docs ([4eaf993](https://github.com/shinybrar/deployments/commit/4eaf993b33da03033d6fa83638791fea61d3b088))
+* add tolerations to apis and uis to allow fine grained node deployment ([a2ba229](https://github.com/shinybrar/deployments/commit/a2ba2291ffc4cbb41cf47b0d6f1376c8ec64d3d7))
+* **helm-docs:** migrated existing readme to docs, and auto-generated new chart readme, based on values.yml files ([fc2311f](https://github.com/shinybrar/deployments/commit/fc2311f11767056b3cc612f45af6e1e87e470ea3))
+* new portal update for storage info ([386a4b7](https://github.com/shinybrar/deployments/commit/386a4b738bf8e87bccdf5d52e458bd679520f87c))
+* new portal update for storage info ([9a5f081](https://github.com/shinybrar/deployments/commit/9a5f08103aaa6821f18e718536880c26cbb1d10a))
+* support pod security context ([0b1cb74](https://github.com/shinybrar/deployments/commit/0b1cb7490c93bc66f7df37dd7a82ff1ae2c9b4a3))
+* use release namespace ([16cc82a](https://github.com/shinybrar/deployments/commit/16cc82aff143a13e5913d27e53d9d33195b5caec))
+
+
+### Bug Fixes
+
+* add redis updates for cve fix and skaha limit range object ([e8c02c0](https://github.com/shinybrar/deployments/commit/e8c02c0e780d7eeebceed6c237e409d5fc84dba5))
+* add science portal chart ([19cec86](https://github.com/shinybrar/deployments/commit/19cec867d09b0fc62829234fc499e3580f62d33b))
+* add science portal chart ([ab1d891](https://github.com/shinybrar/deployments/commit/ab1d8915b1ffaa3f2ca119d0e92abec605049462))
+* add storage ui chart with security fixes ([9d3af7c](https://github.com/shinybrar/deployments/commit/9d3af7c8b1ff197adfade1615a7b0fc1868dbdff))
+* add storage ui chart with security fixes ([016f3cc](https://github.com/shinybrar/deployments/commit/016f3cced6d4925f5fddbb7f581d96a459ba4765))
+* add timeouts to kill warnings ([9658a11](https://github.com/shinybrar/deployments/commit/9658a117bafefcb41f56e3f5ed2c97515e3339be))
+* disable specific experimental features ([33586a6](https://github.com/shinybrar/deployments/commit/33586a676b80696dcd89c75cd09b1e002e3b8c82))
+* documentation link updates ([70411d8](https://github.com/shinybrar/deployments/commit/70411d8afdc2382bbf81663da3f65465417f7873))
+* documentation link updates ([7264452](https://github.com/shinybrar/deployments/commit/72644529e631bdb97efd86926f99812b2eaa477c))
+* fix for helm versions ([543bd8e](https://github.com/shinybrar/deployments/commit/543bd8ee065b4ed07c37108c2efdc0faf54babbb))
+* **helm:** added chart lock files ([e81b72d](https://github.com/shinybrar/deployments/commit/e81b72d06dacf2a2c797afc5368db81f57c95bc1))
+* **helm:** maintainer updates ([6af7785](https://github.com/shinybrar/deployments/commit/6af7785e0b840d4b58224f114caa20ef255cd473))
+* **helm:** updated maintainers ([67803b1](https://github.com/shinybrar/deployments/commit/67803b18ec5e2762f0942451894e4c9b8c7ee2f9))
+* **maintainers:** now need atleast 15 commits in the last 12 months to be considered a maintainer ([02954e4](https://github.com/shinybrar/deployments/commit/02954e4e190774cf4756e9b3f90594eac2a80499))
+* **merge:** conflict ([8c14f17](https://github.com/shinybrar/deployments/commit/8c14f1738feba41cd6ae78812b77661e543a2617))
+* **pre-commit:** added auto-generated helm-maintainers section to all helm charts ([882dfb9](https://github.com/shinybrar/deployments/commit/882dfb9f2cf2f0d1b3615d7768b92a2f39c122b8))
+* **pre-commit:** end-of-file-fixer ([1d658c7](https://github.com/shinybrar/deployments/commit/1d658c75c74faedd7293d5151be51df295a1ddd9))
+* **pre-commit:** removed helm-docs version footer, since its disabled by default in go install and was causing ci issues ([6d84426](https://github.com/shinybrar/deployments/commit/6d844263ef0af30047f09e47d6c0c63ae7d1c1c9))
+* **pre-commit:** trailing-whitespaces ([178468c](https://github.com/shinybrar/deployments/commit/178468c8082ca69a395ebc5e185a2186afbb3335))
+* properly set the experimental feature if configured ([f9843a2](https://github.com/shinybrar/deployments/commit/f9843a22c6f7d69e1f9c001643ccd9834aad8f5b))
+* **release:** helm-docs now add the release-please slug, renovate now updates AppVersion, deprecated requirement for maintainers in helm charts, updated release please config, updated release-matrix logic to properly create downstream payloads for releasing charts ([2c2b931](https://github.com/shinybrar/deployments/commit/2c2b9313c469475bd2b1f6bcfdb3b041a0f0f715))
+* specific experimental feature settings ([223f48b](https://github.com/shinybrar/deployments/commit/223f48b771732c3f0147a493b92f294be3035d69))
+* use proper indent ([86fe85a](https://github.com/shinybrar/deployments/commit/86fe85a95eab9615085104d9ae16c4882d79e6af))
+* version revert to remove accidentally released portal change and fix client secret setting ([73f9639](https://github.com/shinybrar/deployments/commit/73f96398de23d1f3363f462b71f1d7399a8b33a6))
+* version revert to remove accidentally released portal change and… ([ce78285](https://github.com/shinybrar/deployments/commit/ce782855d1e1100a73fc1d116e5b867d7f78e737))
+
 ## 2025.09.09 (1.0.0)
 - Official release
 - Add Cavern portal information
