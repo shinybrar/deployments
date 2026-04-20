@@ -4,7 +4,7 @@ A Helm chart to install the UID/GID POSIX Mapper
 
 | Chart | AppVersion | Type |
 |:-----:|:----------:|:----:|
-|0.5.0<!-- x-release-please-version --> | 0.3.2 | application |
+|0.5.0<!-- x-release-please-version --> | 0.3.3 | application |
 
 ## Values
 
@@ -12,7 +12,7 @@ A Helm chart to install the UID/GID POSIX Mapper
 |-----|------|---------|-------------|
 | deployment.hostname | string | `"example.org"` |  |
 | deployment.posixMapper.gmsID | string | `nil` |  |
-| deployment.posixMapper.image | string | `"images.opencadc.org/platform/posix-mapper:0.3.2"` |  |
+| deployment.posixMapper.image | string | `"images.opencadc.org/platform/posix-mapper:0.3.3"` |  |
 | deployment.posixMapper.imagePullPolicy | string | `"Always"` |  |
 | deployment.posixMapper.minGID | int | `900000` |  |
 | deployment.posixMapper.minUID | int | `10000` |  |
